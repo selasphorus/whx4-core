@@ -8,8 +8,8 @@ class RepeaterChangeDetector
      * Detect removed repeater rows based on a subfield.
      *
      * @param int $post_id
-     * @param string $repeater_field_name The meta key (e.g. 'whx4_events_excluded_dates')
-     * @param string $subfield_name The subfield name (e.g. 'whx4_events_exdate_date')
+     * @param string $repeater_field_name The meta key (e.g. 'bhwp_events_excluded_dates')
+     * @param string $subfield_name The subfield name (e.g. 'bhwp_events_exdate_date')
      * @return string[] List of removed values
      */
     public static function detectRemovedValues( int $post_id, string $repeater_field_name, string $subfield_name ): array

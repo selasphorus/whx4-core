@@ -97,7 +97,7 @@ final class Plugin implements PluginContext
 		}
 
 		// Allow others to register modules early
-		do_action( 'whx4_pre_boot', $this );
+		do_action( 'bhwp_pre_boot', $this );
 
 		WHx4::setContext($this); // <-- make context available to all handlers
 
@@ -137,7 +137,7 @@ final class Plugin implements PluginContext
 			(new SettingsPageController())->addHooks();
 			(new FieldKeyAuditPageController($this))->addHooks();
 			
-			// THEN initialize the registry, which fires the 'whx4_admin_pages_init' action
+			// THEN initialize the registry, which fires the 'bhwp_admin_pages_init' action
 			$registry = \atc\WHx4\Admin\AdminPageRegistry::getInstance();
 			$registry->init();
 			
@@ -155,7 +155,7 @@ final class Plugin implements PluginContext
         add_action( 'wp_enqueue_scripts', [ $this, 'enqueuePublicAssets' ] );
 
 		// After modules boot, assign capabilities based on handlers
-		add_action( 'whx4_modules_booted', [ $this, 'assignPostTypeCaps' ], 20, 2 );
+		add_action( 'bhwp_modules_booted', [ $this, 'assignPostTypeCaps' ], 20, 2 );
     }*/
 
     public function finishBoot(): void
@@ -168,8 +168,8 @@ final class Plugin implements PluginContext
         // Load modules and config
 
         // Discover all modules registered by core + add‑ons
-        $modules = apply_filters( 'whx4_register_modules', [] );
-		//error_log( 'modules discovered via whx4_register_modules: '.print_r($modules, true) );
+        $modules = apply_filters( 'bhwp_register_modules', [] );
+		//error_log( 'modules discovered via bhwp_register_modules: '.print_r($modules, true) );
         $this->setAvailableModules( $modules );
 
         // Settings
@@ -187,7 +187,7 @@ final class Plugin implements PluginContext
 		// Ensure the active CPTs filter is added AFTER CPTs (10) and BEFORE Taxonomies (12)
 		// WIP 08/23/25
 		add_action('init', function (): void {
-			add_filter('whx4_active_post_types', function (array $cpts): array {
+			add_filter('bhwp_active_post_types', function (array $cpts): array {
 				// Return slugs of currently active CPTs
 				return array_keys($this->getActivePostTypes());
 			}, 10, 1);
@@ -205,13 +205,13 @@ final class Plugin implements PluginContext
 
         // Register shared/global taxonomies? WIP
         /*
-        add_filter('whx4_register_taxonomy_handlers', function(array $list): array {
+        add_filter('bhwp_register_taxonomy_handlers', function(array $list): array {
 			$list[] = \smith\Rex\Core\Taxonomies\RexTag::class; // object_types may be ['*'] or an explicit list
 			return $list;
 		});
 
 		// ... and expose active CPTs (for the '*' wildcard) via a small filter the registrar reads:
-		add_filter('whx4_active_post_types', function(array $cpts) use ($plugin): array {
+		add_filter('bhwp_active_post_types', function(array $cpts) use ($plugin): array {
 			return array_keys($plugin->getActivePostTypes());
 		});
 		*/
@@ -241,7 +241,7 @@ final class Plugin implements PluginContext
         // Load modules and config
 
         // Discover all modules registered by core + add‑ons
-        $modules = apply_filters( 'whx4_register_modules', [] );
+        $modules = apply_filters( 'bhwp_register_modules', [] );
         $this->setAvailableModules( $modules );
 
         // Settings
@@ -309,7 +309,7 @@ final class Plugin implements PluginContext
 
 	protected function isSettingsPage(): bool
 	{
-		return isset( $_GET['page'] ) && $_GET['page'] === 'whx4_settings';
+		return isset( $_GET['page'] ) && $_GET['page'] === 'bhwp_settings';
 	}
 
 	public function setAvailableModules( array $modules ): void
@@ -422,7 +422,7 @@ final class Plugin implements PluginContext
 		 * @param self     $plugin
 		 * @param string[] $bootedModules
 		 */
-		do_action('whx4_modules_booted', $this, $this->bootedModules);
+		do_action('bhwp_modules_booted', $this, $this->bootedModules);
 
 		return $count;
     }
@@ -572,7 +572,7 @@ final class Plugin implements PluginContext
             // Optional: short-circuit if nothing changed since last run
 			$activeSlugs = array_keys($this->getActivePostTypes());
 			$hash = md5(implode('|', $activeSlugs));
-			$stored = get_option('whx4_caps_hash');
+			$stored = get_option('bhwp_caps_hash');
 
 			if ($stored === $hash) {
 				return;
@@ -584,7 +584,7 @@ final class Plugin implements PluginContext
             //error_log('Capabilities assigned successfully.');
             //self::log('Capabilities assigned successfully.');
 
-            //update_option('whx4_caps_hash', $hash);
+            //update_option('bhwp_caps_hash', $hash);
         } catch (\Throwable $e) {
             error_log('Error in assignPostTypeCaps: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine() );
             /*self::log(
@@ -627,8 +627,8 @@ final class Plugin implements PluginContext
 
     /*
 	register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
-	register_activation_hook( __FILE__, 'whx4_flush_rewrites' );
-	function whx4_flush_rewrites() {
+	register_activation_hook( __FILE__, 'bhwp_flush_rewrites' );
+	function bhwp_flush_rewrites() {
 		// call your CPT registration function here (it should also be hooked into 'init')
 		myplugin_custom_post_types_registration();
 		flush_rewrite_rules();

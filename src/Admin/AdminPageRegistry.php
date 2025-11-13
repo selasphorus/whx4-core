@@ -34,7 +34,7 @@ class AdminPageRegistry
     public function init(): void
     {
         // Allow plugins to register pages early
-        do_action('whx4_admin_pages_init', $this);
+        do_action('bhwp_admin_pages_init', $this);
         
         // Register all pages on admin_menu
         add_action('admin_menu', [$this, 'registerPages'], 10);

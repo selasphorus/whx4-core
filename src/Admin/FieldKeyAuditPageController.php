@@ -34,12 +34,12 @@ final class FieldKeyAuditPageController
 
     public static function renderPage(): void
     {
-        if ( isset( $_POST['run_audit'] ) && check_admin_referer( 'whx4_field_audit_action', 'whx4_field_audit_nonce' ) ) {
+        if ( isset( $_POST['run_audit'] ) && check_admin_referer( 'bhwp_field_audit_action', 'bhwp_field_audit_nonce' ) ) {
             self::renderResults();
             return;
         }
 
-        if ( isset( $_POST['delete_orphans'] ) && check_admin_referer( 'whx4_field_audit_action', 'whx4_field_audit_nonce' ) ) {
+        if ( isset( $_POST['delete_orphans'] ) && check_admin_referer( 'bhwp_field_audit_action', 'bhwp_field_audit_nonce' ) ) {
             self::handleDeleteOrphans();
             return;
         }
@@ -49,7 +49,7 @@ final class FieldKeyAuditPageController
             <h1>ACF Field Key Audit</h1>
             <?php self::maybeRenderNotice(); ?>
             <form method="post">
-                <?php wp_nonce_field( 'whx4_field_audit_action', 'whx4_field_audit_nonce' ); ?>
+                <?php wp_nonce_field( 'bhwp_field_audit_action', 'bhwp_field_audit_nonce' ); ?>
                 <p><button type="submit" class="button button-primary" name="run_audit">Run Audit</button></p>
             </form>
         </div>
@@ -58,7 +58,7 @@ final class FieldKeyAuditPageController
 
     private static function renderResults(): void
     {
-        $registeredKeys = apply_filters( 'whx4_registered_field_keys', [] );
+        $registeredKeys = apply_filters( 'bhwp_registered_field_keys', [] );
         $audit = FieldKeyMigrator::auditFieldKeys( $registeredKeys );
 
         ?>
@@ -74,7 +74,7 @@ final class FieldKeyAuditPageController
 
             <h2>Orphaned Field Keys (Not Registered)</h2>
             <form method="post">
-                <?php wp_nonce_field( 'whx4_field_audit_action', 'whx4_field_audit_nonce' ); ?>
+                <?php wp_nonce_field( 'bhwp_field_audit_action', 'bhwp_field_audit_nonce' ); ?>
                 <ul>
                     <?php foreach ( $audit['orphaned'] as $key ) : ?>
                         <li style="color:red;">

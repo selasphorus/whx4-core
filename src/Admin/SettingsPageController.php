@@ -11,7 +11,7 @@ class SettingsPageController
     {
         //error_log( '=== SettingsPageController::addHooks() ===' );
         // Register the settings page using the new registry system
-        add_action('whx4_admin_pages_init', [$this, 'registerSettingsPage']);
+        add_action('bhwp_admin_pages_init', [$this, 'registerSettingsPage']);
         
         // Register settings on admin_init (unchanged)
         add_action('admin_init', [$this, 'registerSettings']);
@@ -47,13 +47,13 @@ class SettingsPageController
     public function registerSettings(): void
     {
         //error_log( '=== SettingsPageController::registerSettings() ===' );
-        register_setting('whx4_plugin_settings_group', 'whx4_plugin_settings');
+        register_setting('bhwp_plugin_settings_group', 'bhwp_plugin_settings');
 
         add_settings_section(
-            'whx4_main_settings',
+            'bhwp_main_settings',
             'Module and Post Type Settings',
             null,
-            'whx4_plugin_settings'
+            'bhwp_plugin_settings'
         );
     }
 
