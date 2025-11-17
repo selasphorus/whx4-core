@@ -78,6 +78,19 @@ add_filter( 'bhwp_registered_field_keys', function() {
     return $keys;
 });
 
+// TODO -- move this elsewhere, perhaps?
+// Add post_type query var to edit_post_link so as to be able to selectively load plugins via plugins-corral MU plugin
+add_filter( 'get_edit_post_link', 'add_post_type_query_var', 10, 3 );
+function add_post_type_query_var( $url, $post_id, $context )
+{
+    $post_type = get_post_type( $post_id );
+
+    // TODO: consider whether to add query_arg only for certain CPTS?
+    if ( $post_type && !empty($post_type) ) { $url = add_query_arg( 'post_type', $post_type, $url ); }
+
+    return $url;
+}
+
 // Once plugins are loaded, boot everything up
 add_action( 'plugins_loaded', function() {
     Plugin::getInstance()->boot();
@@ -168,18 +181,3 @@ function bhwp_redirect() {
         }
     } );
 }*/
-
-// The following methods may or may not be useful long-term, TBD
-
-// Add post_type query var to edit_post_link so as to be able to selectively load plugins via plugins-corral MU plugin
-add_filter( 'get_edit_post_link', 'add_post_type_query_var', 10, 3 );
-function add_post_type_query_var( $url, $post_id, $context )
-{
-    $post_type = get_post_type( $post_id );
-
-    // TODO: consider whether to add query_arg only for certain CPTS?
-    if ( $post_type && !empty($post_type) ) { $url = add_query_arg( 'post_type', $post_type, $url ); }
-
-    return $url;
-}
-
