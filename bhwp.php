@@ -80,7 +80,7 @@ add_filter( 'bhwp_registered_field_keys', function() {
 
 // TODO -- move this elsewhere, perhaps?
 // Add post_type query var to edit_post_link so as to be able to selectively load plugins via plugins-corral MU plugin
-add_filter( 'get_edit_post_link', 'add_post_type_query_var', 10, 3 );
+//add_filter( 'get_edit_post_link', 'add_post_type_query_var', 10, 3 );
 function add_post_type_query_var( $url, $post_id, $context )
 {
     $post_type = get_post_type( $post_id );
