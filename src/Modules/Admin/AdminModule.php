@@ -6,8 +6,8 @@ use WXC\Module as BaseModule;
 
 // Post Types
 use WXC\Modules\Admin\PostTypes\AdminNote;
-//use atc\Bkkp\Modules\Admin\PostTypes\YYY;
-//use atc\Bkkp\Modules\Admin\PostTypes\ZZZ;
+//use Bkkp\Modules\Admin\PostTypes\YYY;
+//use Bkkp\Modules\Admin\PostTypes\ZZZ;
 
 final class AdminModule extends BaseModule
 {
@@ -18,7 +18,7 @@ final class AdminModule extends BaseModule
 
         /*add_filter( 'wxc_register_subtypes', function( array $providers ): array {
              // TODO: add use statement above to simplify these lines?
-            //$providers[] = new \atc\[PluginName]\Modules\Admin\Subtypes\[SubtypeName]Subtype(); // Subtype of XXX PostType
+            //$providers[] = new \[PluginName]\Modules\Admin\Subtypes\[SubtypeName]Subtype(); // Subtype of XXX PostType
             return $providers;
         } );*/
     }

@@ -15,7 +15,7 @@
 
 declare(strict_types=1);
 
-namespace atc\WXC;
+namespace WXC;
 
 // Prevent direct access
 if ( !defined( 'ABSPATH' ) ) exit;

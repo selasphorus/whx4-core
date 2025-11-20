@@ -2,7 +2,7 @@
 
 // Initialize the plugin, register hooks, and manage dependencies
 
-namespace atc\WXC;
+namespace WXC;
 
 use WXC\Contracts\PluginContext;
 use WXC\App;

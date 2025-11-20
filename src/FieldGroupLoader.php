@@ -203,13 +203,13 @@ class FieldGroupLoader
         // Replace directory separators with backslashes and strip ".php"
         $relativePath = str_replace( [DIRECTORY_SEPARATOR, '.php'], ['\\', ''], $relativePath );
 
-        return 'atc\\WXC\\' . $relativePath;
+        return 'WXC\\' . $relativePath;
     }*/
 
     // WIP alt generalized method
     /*protected function getFullyQualifiedClassName(string $file): string
     {
-        return NamespaceUtil::fqcnFromFile($file, 'atc\\WXC', dirname(__DIR__, 2) . '/src/');
+        return NamespaceUtil::fqcnFromFile($file, 'WXC', dirname(__DIR__, 2) . '/src/');
     }*/
 
     // Get fqcn from filename
@@ -235,7 +235,7 @@ class FieldGroupLoader
         $relativePath = preg_replace('/\.php$/', '', $relativePath);
 
         // Keep old behavior for backward compatibility
-        return 'atc\\WXC\\' . $relativePath;
+        return 'WXC\\' . $relativePath;
     }
 
     /**
