@@ -6,7 +6,7 @@ namespace atc\WXC;
 
 use atc\WXC\Contracts\PluginContext;
 use atc\WXC\App;
-//
+// TODO: reduce number of use statements and use FQCNs instead as needed
 use atc\WXC\CoreServices;
 use atc\WXC\BootOrder;
 use atc\WXC\PostTypes\PostTypeRegistrar;
@@ -433,7 +433,7 @@ final class Plugin implements PluginContext
 					continue;
 				}
 
-				if( !is_subclass_of($moduleClass, atc\WXC\Contracts\ModuleInterface::class) ) {
+				if( !is_subclass_of($moduleClass, Contracts\ModuleInterface::class) ) {
 					error_log("Class $moduleClass is not a ModuleInterface.");
 					continue;
 				}
