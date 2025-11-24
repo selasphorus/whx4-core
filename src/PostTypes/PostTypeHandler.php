@@ -141,7 +141,7 @@ abstract class PostTypeHandler extends BaseHandler
 	{
 		//error_log( "PostTypeHandler::resolvePostTypeFromContext" );
 		try {
-			$ctx = WXC::ctx();
+			$ctx = App::ctx();
 			$map = is_array($ctx->getActivePostTypes()) ? $ctx->getActivePostTypes() : [];
 			foreach ($map as $ptype => $class) {
 				if ($class === static::class) {
@@ -412,7 +412,7 @@ abstract class PostTypeHandler extends BaseHandler
             return null;
         }
 
-        $activePostTypes = WXC::ctx()->getActivePostTypes(); // ['person' => \...Person::class]
+        $activePostTypes = App::ctx()->getActivePostTypes(); // ['person' => \...Person::class]
         if ( empty( $activePostTypes ) ) {
 			return null;
 		}

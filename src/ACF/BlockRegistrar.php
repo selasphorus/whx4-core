@@ -17,8 +17,8 @@ class BlockRegistrar
             return;
         }
 
-        $modules = WXC::ctx()->getActiveModules();
-        $postTypes = WXC::ctx()->getActivePostTypes();
+        $modules = App::ctx()->getActiveModules();
+        $postTypes = App::ctx()->getActivePostTypes();
 
         foreach ( $modules as $module ) {
             $blockDir = $module->getPath() . '/Blocks';

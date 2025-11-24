@@ -35,7 +35,7 @@ abstract class Module implements ModuleInterface
 		//error_log( '=== Module class boot() for module: ' . $this->getSlug() . '===' );
         $this->registerDefaultViewRoot();
 
-        $enabledSlugs = WXC::ctx()
+        $enabledSlugs = App::ctx()
 			->getSettingsManager()
 			->getEnabledPostTypeSlugsByModule()[ $this->getSlug() ] ?? [];
 
@@ -101,7 +101,7 @@ abstract class Module implements ModuleInterface
 	
 	protected function findViaHandler(string $postType, array $filters): array
 	{
-		$map   = WXC::ctx()->getActivePostTypes(); // ['monster' => Monster::class, ...]
+		$map   = App::ctx()->getActivePostTypes(); // ['monster' => Monster::class, ...]
 		$class = $map[$postType] ?? null;
 	
 		if (!$class || !is_subclass_of($class, PostTypeHandler::class)) {

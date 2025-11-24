@@ -28,7 +28,7 @@ class FieldGroupLoader
         //error_log( '=== FieldGroupLoader::boot() ===' );
 
         // Abort if no modules have been booted
-        if ( !WXC::ctx()->modulesBooted() ) {
+        if ( !App::ctx()->modulesBooted() ) {
             //error_log( '=== no modules booted yet => abort ===' );
             return;
         }
@@ -41,7 +41,7 @@ class FieldGroupLoader
     public function registerAll(): void
     {
         //error_log( '=== registerAll field groups ===' );
-        foreach( WXC::ctx()->getActiveModules() as $moduleClass ) {
+        foreach( App::ctx()->getActiveModules() as $moduleClass ) {
             $this->registerFieldsForModule( $moduleClass );
         }
     }
@@ -59,7 +59,7 @@ class FieldGroupLoader
             return;
         }
 
-        $activePostTypes = WXC::ctx()->getActivePostTypes();
+        $activePostTypes = App::ctx()->getActivePostTypes();
         //error_log( 'activePostTypes: ' . print_r($activePostTypes, true) );
 
         // === Build a map of postType slug => short class name (e.g. rex_event => Event)

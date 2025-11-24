@@ -71,7 +71,7 @@ final class TemplateRouter
      */
     private static function locatePostTypeTemplate(string $kind, string $postType, string $fallback): ?string
     {
-        $activePostTypes = WXC::ctx()->getActivePostTypes(); // ['person' => \...Person::class]
+        $activePostTypes = App::ctx()->getActivePostTypes(); // ['person' => \...Person::class]
         $handlerClass = $activePostTypes[$postType] ?? null;
         if (!$handlerClass || !class_exists($handlerClass)) {
             return null;
@@ -97,7 +97,7 @@ final class TemplateRouter
      */
     /*public static function viewKeyForPostType(string $postType): ?string
     {
-        $activePostTypes = WXC::ctx()->getActivePostTypes(); // ['person' => \...Person::class]
+        $activePostTypes = App::ctx()->getActivePostTypes(); // ['person' => \...Person::class]
         $handlerClass = $activePostTypes[$postType] ?? null;
         if (!$handlerClass || !class_exists($handlerClass)) {
             return null;

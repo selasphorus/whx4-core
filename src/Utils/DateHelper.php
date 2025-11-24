@@ -379,7 +379,7 @@ class DateHelper
      * Resolve the site timezone with sensible fallbacks.
      *
      * Order of precedence:
-     * 1) WXC context (if available) via WXC::ctx()->getTimezone()
+     * 1) WXC context (if available) via App::ctx()->getTimezone()
      * 2) WordPress helper wp_timezone()
      * 3) WordPress options: timezone_string, then gmt_offset
      * 4) PHP ini setting, else UTC
@@ -389,7 +389,7 @@ class DateHelper
         // 1) WXC context (soft dependency; ignore if unavailable)
         try {
             if (class_exists(WXC::class)) {
-                $ctx = WXC::ctx();
+                $ctx = App::ctx();
                 if ($ctx && method_exists($ctx, 'getTimezone')) {
                     $tz = $ctx->getTimezone();
                     if ($tz instanceof DateTimeZone) {

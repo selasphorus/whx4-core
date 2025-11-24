@@ -139,7 +139,7 @@ final class PostQuery
         //error_log('[PostQuery::find] args BEFORE adjustQueryArgs: ' . json_encode($args, JSON_UNESCAPED_SLASHES));
         
         // 5) Allow the active CPT handler to refine args (AFTER base args are built)
-        $handlerClass = WXC::ctx()->getActivePostTypes()[$ptype] ?? null;
+        $handlerClass = App::ctx()->getActivePostTypes()[$ptype] ?? null;
         if ($handlerClass && is_a($handlerClass, QueryContributor::class, true)) {
             /** @var QueryContributor $contrib */
             $contrib = new $handlerClass();
@@ -211,7 +211,7 @@ final class PostQuery
     {
         // 1) Post type must be active/enabled
         $ptype = isset($params['post_type']) ? (string)$params['post_type'] : 'post';
-        $enabled = array_keys(WXC::ctx()->getActivePostTypes());
+        $enabled = array_keys(App::ctx()->getActivePostTypes());
         if (!in_array($ptype, $enabled, true)) {
             // Fallback to 'post' (or throw) — your call:
             $ptype = 'post';

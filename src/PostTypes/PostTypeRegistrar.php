@@ -29,12 +29,12 @@ class PostTypeRegistrar
         //error_log( '=== PostTypeRegistrar::bootstrap() ===' );
 
         // Abort if no modules have been booted
-		if ( !WXC::ctx()->modulesBooted() ) {
+		if ( !App::ctx()->modulesBooted() ) {
 		    error_log( '=== no modules booted yet => abort ===' );
 			return;
 		}
 
-        $activePostTypes = WXC::ctx()->getActivePostTypes();
+        $activePostTypes = App::ctx()->getActivePostTypes();
         if ( empty( $activePostTypes ) ) {
 			error_log( 'No active post types found. Skipping registration.' );
 			return;
@@ -146,7 +146,7 @@ class PostTypeRegistrar
 		//$roles = ['administrator']; //
 		$roles = ['administrator', 'editor'];
 
-		$activePostTypes = WXC::ctx()->getActivePostTypes();
+		$activePostTypes = App::ctx()->getActivePostTypes();
 		//error_log( 'activePostTypes: ' . print_r($activePostTypes, true). ' ==' );
 
 		foreach ( $activePostTypes as $slug => $handlerClass ) {

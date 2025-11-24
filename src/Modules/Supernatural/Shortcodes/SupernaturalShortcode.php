@@ -18,7 +18,7 @@ final class SupernaturalShortcode implements ShortcodeInterface
     {
         $info = "";
         
-        $ctx = WXC::ctx();
+        $ctx = App::ctx();
         $key = ClassInfo::getModuleKey(self::class);
         $module = $ctx->getModule($key);
         if (!$module) {

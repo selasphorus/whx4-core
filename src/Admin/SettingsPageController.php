@@ -61,9 +61,9 @@ class SettingsPageController
     {
         //error_log( '=== SettingsPageController::renderSettingsPage() ===' );
         ViewLoader::render('settings-page', [
-            'availableModules' => WXC::ctx()->getAvailableModules(),
-            'activeModules'    => WXC::ctx()->getSettingsManager()->getActiveModuleSlugs(),
-            'enabledPostTypes' => WXC::ctx()->getSettingsManager()->getEnabledPostTypeSlugsByModule(),
+            'availableModules' => App::ctx()->getAvailableModules(),
+            'activeModules'    => App::ctx()->getSettingsManager()->getActiveModuleSlugs(),
+            'enabledPostTypes' => App::ctx()->getSettingsManager()->getEnabledPostTypeSlugsByModule(),
         ]);
     }
 
