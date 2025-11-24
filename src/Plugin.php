@@ -139,7 +139,7 @@ final class Plugin implements PluginContext
 			(new FieldKeyAuditPageController($this))->addHooks();
 			
 			// THEN initialize the registry, which fires the 'wxc_admin_pages_init' action
-			$registry = \atc\WXC\Admin\AdminPageRegistry::getInstance();
+			$registry = Admin\AdminPageRegistry::getInstance();
 			$registry->init();
 			
 			add_action('admin_enqueue_scripts', [$this, 'enqueueAdminAssets']);
