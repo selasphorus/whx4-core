@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace WXC\Core;
+namespace WXC\Templates;
 
 use WXC\App;
 use WXC\Templates\ViewKind;

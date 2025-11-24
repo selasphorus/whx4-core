@@ -1,6 +1,6 @@
 <?php
 
-namespace WXC\Core;
+namespace WXC\PostTypes;
 // TODO: move this and BaseHandler to WXC\Handlers\ ?
 
 use WXC\App;

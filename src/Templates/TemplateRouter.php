@@ -1,5 +1,5 @@
 <?php
-namespace WXC\Core;
+namespace WXC\Templates;
 
 use WXC\App;
 use WXC\Templates\ViewLoader;

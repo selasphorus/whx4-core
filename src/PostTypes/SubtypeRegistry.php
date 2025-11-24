@@ -1,6 +1,6 @@
 <?php
 
-namespace WXC\Core;
+namespace WXC\PostTypes;
 
 use WXC\BootOrder;
 use WXC\Contracts\SubtypeInterface;

@@ -1,6 +1,6 @@
 <?php
 
-namespace WXC\Core;
+namespace WXC;
 
 use WXC\Utils\TitleFilter;
 use WXC\FieldGroupLoader;

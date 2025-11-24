@@ -1,5 +1,5 @@
 <?php
-namespace WXC\Core;
+namespace WXC;
 
 final class BootOrder
 {
