@@ -99,7 +99,7 @@ final class Plugin implements PluginContext
 		// Allow others to register modules early
 		do_action( 'wxc_pre_boot', $this );
 
-		WXC::setContext($this); // <-- make context available to all handlers
+		App::setContext($this); // <-- make context available to all handlers
 
         //$this->defineConstants(); // phased out (for now) -- constants now defined via wxc.php
         $this->registerAdminHooks();
