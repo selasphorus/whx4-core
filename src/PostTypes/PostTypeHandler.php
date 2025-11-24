@@ -7,6 +7,7 @@ use atc\WXC\App;
 use atc\WXC\BaseHandler;
 use atc\WXC\Traits\AppliesTitleArgs;
 use atc\WXC\Query\PostQuery;
+use atc\WXC\Templates\ViewLoader;
 //
 use atc\WXC\Utils\ClassInfo;
 
