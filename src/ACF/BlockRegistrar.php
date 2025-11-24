@@ -1,8 +1,8 @@
 <?php
 
-namespace WXC\ACF;
+namespace atc\WXC\ACF;
 
-use WXC\App;
+use atc\WXC\App;
 
 class BlockRegistrar
 {

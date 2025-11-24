@@ -1,9 +1,9 @@
 <?php
-namespace WXC\Templates;
+namespace atc\WXC\Templates;
 
-use WXC\App;
-use WXC\Templates\ViewLoader;
-use WXC\Utils\ClassInfo;
+use atc\WXC\App;
+use atc\WXC\Templates\ViewLoader;
+use atc\WXC\Utils\ClassInfo;
 
 /**
  * Routes WP's single/archive template resolution for WXC-managed CPTs.

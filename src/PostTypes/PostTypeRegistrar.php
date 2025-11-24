@@ -1,11 +1,11 @@
 <?php
 
-namespace WXC\PostTypes;
+namespace atc\WXC\PostTypes;
 
-use WXC\App;
-use WXC\BootOrder;
-use WXC\PostTypes\PostTypeHandler;
-use WXC\Utils\Text;
+use atc\WXC\App;
+use atc\WXC\BootOrder;
+use atc\WXC\PostTypes\PostTypeHandler;
+use atc\WXC\Utils\Text;
 
 class PostTypeRegistrar
 {

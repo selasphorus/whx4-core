@@ -1,6 +1,6 @@
 <?php
 
-namespace WXC\Helpers;
+namespace atc\WXC\Helpers;
 
 class FieldDisplayHelpers
 {

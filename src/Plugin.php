@@ -2,29 +2,29 @@
 
 // Initialize the plugin, register hooks, and manage dependencies
 
-namespace WXC;
+namespace atc\WXC;
 
-use WXC\Contracts\PluginContext;
-use WXC\App;
+use atc\WXC\Contracts\PluginContext;
+use atc\WXC\App;
 //
-use WXC\CoreServices;
-use WXC\BootOrder;
-use WXC\PostTypes\PostTypeRegistrar;
-use WXC\PostTypes\SubtypeRegistry;
-use WXC\Taxonomies\TaxonomyRegistrar;
-use WXC\FieldGroupLoader;
-//use WXC\PostTypes\SubtypeTermSeeder;
-use WXC\Contracts\ModuleInterface;
-use WXC\SettingsManager;
-use WXC\Admin\SettingsPageController;
-use WXC\Admin\FieldKeyAuditPageController;
+use atc\WXC\CoreServices;
+use atc\WXC\BootOrder;
+use atc\WXC\PostTypes\PostTypeRegistrar;
+use atc\WXC\PostTypes\SubtypeRegistry;
+use atc\WXC\Taxonomies\TaxonomyRegistrar;
+use atc\WXC\FieldGroupLoader;
+//use atc\WXC\PostTypes\SubtypeTermSeeder;
+use atc\WXC\Contracts\ModuleInterface;
+use atc\WXC\SettingsManager;
+use atc\WXC\Admin\SettingsPageController;
+use atc\WXC\Admin\FieldKeyAuditPageController;
 
-use WXC\Templates\ViewLoader;
-use WXC\Utils\TitleFilter;
+use atc\WXC\Templates\ViewLoader;
+use atc\WXC\Utils\TitleFilter;
 //
-use WXC\ACF\JsonPaths;
-use WXC\ACF\RestrictAccess;
-use WXC\ACF\BlockRegistrar;
+use atc\WXC\ACF\JsonPaths;
+use atc\WXC\ACF\RestrictAccess;
+use atc\WXC\ACF\BlockRegistrar;
 
 final class Plugin implements PluginContext
 {

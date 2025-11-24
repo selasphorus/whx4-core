@@ -1,8 +1,8 @@
 <?php
 
-namespace WXC\Traits;
+namespace atc\WXC\Traits;
 
-use WXC\Utils\TitleFilter;
+use atc\WXC\Utils\TitleFilter;
 
 trait AppliesTitleArgs
 {

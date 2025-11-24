@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace WXC\Query;
+namespace atc\WXC\Query;
 
-use WXC\Query\QueryHelpers;
+use atc\WXC\Query\QueryHelpers;
 
 final class TaxQueryBuilder
 {

@@ -15,7 +15,7 @@
 
 declare(strict_types=1);
 
-namespace WXC;
+namespace atc\WXC;
 
 // Prevent direct access
 if ( !defined( 'ABSPATH' ) ) exit;
@@ -43,14 +43,14 @@ define( 'WXC_DEBUG', true ); // tft!
 require_once plugin_dir_path(__FILE__) . 'vendor/autoload.php';
 
 //
-use WXC\Plugin;
-use WXC\PostTypes\PostUtils;
+use atc\WXC\Plugin;
+use atc\WXC\PostTypes\PostUtils;
 
 // Test Module
-use WXC\Modules\Supernatural\SupernaturalModule as Supernatural;
+use atc\WXC\Modules\Supernatural\SupernaturalModule as Supernatural;
 
 // Modules
-use WXC\Modules\Admin\AdminModule as Admin;
+use atc\WXC\Modules\Admin\AdminModule as Admin;
 
 // Init
 add_filter( 'wxc_register_modules', function( array $modules ) {

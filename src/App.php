@@ -1,9 +1,9 @@
 <?php
 
-namespace WXC;
+namespace atc\WXC;
 
 use LogicException;
-use WXC\Contracts\PluginContext;
+use atc\WXC\Contracts\PluginContext;
 
 final class App
 {

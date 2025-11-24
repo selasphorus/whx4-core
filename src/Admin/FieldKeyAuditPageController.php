@@ -1,9 +1,9 @@
 <?php
 
-namespace WXC\Admin;
+namespace atc\WXC\Admin;
 
-use WXC\App;
-use WXC\Migrations\FieldKeyMigrator;
+use atc\WXC\App;
+use atc\WXC\Migrations\FieldKeyMigrator;
 
 final class FieldKeyAuditPageController
 {

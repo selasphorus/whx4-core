@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace WXC\Query;
+namespace atc\WXC\Query;
 
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
 use Exception; // for the defensive catch (Exception $e) when creating DateTimeZone
 use InvalidArgumentException; // for the explicit throw on bad args
-use WXC\Utils\Text;
-use WXC\Utils\DateHelper;
+use atc\WXC\Utils\Text;
+use atc\WXC\Utils\DateHelper;
 
 class ScopedDateResolver
 {

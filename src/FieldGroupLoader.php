@@ -1,16 +1,16 @@
 <?php
 
-namespace WXC;
+namespace atc\WXC;
 
-use WXC\App;
-//use WXC\Util\NamespaceUtil;
+use atc\WXC\App;
+//use atc\WXC\Util\NamespaceUtil;
 use ReflectionClass;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RegexIterator;
-use WXC\Contracts\FieldGroupInterface;
-use WXC\Contracts\PostTypeFieldGroupInterface;
-use WXC\Contracts\SubtypeFieldGroupInterface;
+use atc\WXC\Contracts\FieldGroupInterface;
+use atc\WXC\Contracts\PostTypeFieldGroupInterface;
+use atc\WXC\Contracts\SubtypeFieldGroupInterface;
 
 class FieldGroupLoader
 {

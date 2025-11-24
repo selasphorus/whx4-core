@@ -1,8 +1,8 @@
 <?php
 
-namespace WXC\Modules\Admin\Fields;
+namespace atc\WXC\Modules\Admin\Fields;
 
-use WXC\Contracts\FieldGroupInterface;
+use atc\WXC\Contracts\FieldGroupInterface;
 
 // TODO: rename all fields (keys/names) according to wxc naming conventions
 final class AdminNoteFields implements FieldGroupInterface
@@ -12,7 +12,7 @@ final class AdminNoteFields implements FieldGroupInterface
         //error_log( '=== AdminNoteFields: register()) ===' );
         if ( !function_exists('acf_add_local_field_group') ) return;
 
-        //use WXC\Migrations\FieldKeyMigrator;
+        //use atc\WXC\Migrations\FieldKeyMigrator;
         /*
         // Migrate
         FieldKeyMigrator::migrate([

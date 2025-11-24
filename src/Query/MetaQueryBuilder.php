@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace WXC\Query;
+namespace atc\WXC\Query;
 
-use WXC\Query\QueryHelpers;
-use WXC\Utils\DateHelper;
+use atc\WXC\Query\QueryHelpers;
+use atc\WXC\Utils\DateHelper;
 
 /**
  * MetaQueryBuilder

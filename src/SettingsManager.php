@@ -1,8 +1,8 @@
 <?php
 
-namespace WXC;
+namespace atc\WXC;
 
-use WXC\Plugin;
+use atc\WXC\Plugin;
 
 final class SettingsManager
 {

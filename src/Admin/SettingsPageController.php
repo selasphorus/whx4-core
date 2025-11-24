@@ -1,9 +1,9 @@
 <?php
 
-namespace WXC\Admin;
+namespace atc\WXC\Admin;
 
-use WXC\App;
-use WXC\Templates\ViewLoader;
+use atc\WXC\App;
+use atc\WXC\Templates\ViewLoader;
 
 class SettingsPageController
 {

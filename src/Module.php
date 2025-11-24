@@ -1,12 +1,12 @@
 <?php
 
-namespace WXC;
+namespace atc\WXC;
 
-use WXC\App;
-use WXC\Contracts\ModuleInterface;
-use WXC\Templates\ViewLoader;
-use WXC\PostTypes\PostTypeHandler;
-use WXC\Shortcodes\ShortcodeManager;
+use atc\WXC\App;
+use atc\WXC\Contracts\ModuleInterface;
+use atc\WXC\Templates\ViewLoader;
+use atc\WXC\PostTypes\PostTypeHandler;
+use atc\WXC\Shortcodes\ShortcodeManager;
 
 // TODO: make this final class?
 abstract class Module implements ModuleInterface

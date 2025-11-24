@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace WXC\Templates;
+namespace atc\WXC\Templates;
 
 /**
  * Enumerates the categories of view templates Rex can load.

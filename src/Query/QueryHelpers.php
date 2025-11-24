@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace WXC\Query;
+namespace atc\WXC\Query;
 
-use WXC\Utils\Text;
+use atc\WXC\Utils\Text;
 
 final class QueryHelpers
 {

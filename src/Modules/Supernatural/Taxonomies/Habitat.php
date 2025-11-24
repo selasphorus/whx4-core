@@ -1,8 +1,8 @@
 <?php
 
-namespace WXC\Modules\Supernatural\Taxonomies;
+namespace atc\WXC\Modules\Supernatural\Taxonomies;
 
-use WXC\Taxonomies\TaxonomyHandler;
+use atc\WXC\Taxonomies\TaxonomyHandler;
 
 class Habitat extends TaxonomyHandler
 {

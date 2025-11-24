@@ -6,7 +6,7 @@
  * See: /docs/FieldGroupStandards.md
  */
 
-namespace WXC\Contracts;
+namespace atc\WXC\Contracts;
 
 interface FieldGroupInterface
 {

@@ -1,13 +1,13 @@
 <?php
 
-namespace WXC\Utils;
+namespace atc\WXC\Utils;
 
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
 use Exception;
-use WXC\App;
-use WXC\Query\ScopedDateResolver;
+use atc\WXC\App;
+use atc\WXC\Query\ScopedDateResolver;
 
 
 class DateHelper

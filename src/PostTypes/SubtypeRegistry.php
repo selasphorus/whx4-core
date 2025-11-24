@@ -1,9 +1,9 @@
 <?php
 
-namespace WXC\PostTypes;
+namespace atc\WXC\PostTypes;
 
-use WXC\BootOrder;
-use WXC\Contracts\SubtypeInterface;
+use atc\WXC\BootOrder;
+use atc\WXC\Contracts\SubtypeInterface;
 
 // WIP 08/22/25
 final class SubtypeRegistry

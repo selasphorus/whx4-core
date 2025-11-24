@@ -1,6 +1,6 @@
 <?php
 
-namespace WXC\PostTypes;
+namespace atc\WXC\PostTypes;
 
 class PostUtils
 {

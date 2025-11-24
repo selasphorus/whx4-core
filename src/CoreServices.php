@@ -1,12 +1,12 @@
 <?php
 
-namespace WXC;
+namespace atc\WXC;
 
-use WXC\Utils\TitleFilter;
-use WXC\FieldGroupLoader;
-use WXC\Templates\TemplateRouter;
-use WXC\Shortcodes\ShortcodeManager;
-use WXC\Assets\AssetManager;
+use atc\WXC\Utils\TitleFilter;
+use atc\WXC\FieldGroupLoader;
+use atc\WXC\Templates\TemplateRouter;
+use atc\WXC\Shortcodes\ShortcodeManager;
+use atc\WXC\Assets\AssetManager;
 
 class CoreServices
 {

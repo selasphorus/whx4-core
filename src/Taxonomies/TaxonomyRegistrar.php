@@ -1,10 +1,10 @@
 <?php
 
-namespace WXC\Taxonomies;
+namespace atc\WXC\Taxonomies;
 
-use WXC\BootOrder;
-use WXC\Taxonomies\TaxonomyHandler;
-//use WXC\PostTypes\SubtypeRegistry;
+use atc\WXC\BootOrder;
+use atc\WXC\Taxonomies\TaxonomyHandler;
+//use atc\WXC\PostTypes\SubtypeRegistry;
 
 final class TaxonomyRegistrar
 {

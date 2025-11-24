@@ -1,6 +1,6 @@
 <?php
 
-namespace WXC\Traits;
+namespace atc\WXC\Traits;
 
 // TODO: adapt as needed to apply to taxonomies and blocks as well as post types -- ???
 trait HasTypeProperties

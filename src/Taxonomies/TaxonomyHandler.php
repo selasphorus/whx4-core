@@ -1,8 +1,8 @@
 <?php
 
-namespace WXC\Taxonomies;
+namespace atc\WXC\Taxonomies;
 
-use WXC\BaseHandler;
+use atc\WXC\BaseHandler;
 
 abstract class TaxonomyHandler extends BaseHandler
 {

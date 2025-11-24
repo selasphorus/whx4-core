@@ -1,14 +1,14 @@
 <?php
 
-namespace WXC\PostTypes;
+namespace atc\WXC\PostTypes;
 // TODO: move this and BaseHandler to WXC\Handlers\ ?
 
-use WXC\App;
-use WXC\BaseHandler;
-use WXC\Traits\AppliesTitleArgs;
-use WXC\Query\PostQuery;
+use atc\WXC\App;
+use atc\WXC\BaseHandler;
+use atc\WXC\Traits\AppliesTitleArgs;
+use atc\WXC\Query\PostQuery;
 //
-use WXC\Utils\ClassInfo;
+use atc\WXC\Utils\ClassInfo;
 
 abstract class PostTypeHandler extends BaseHandler
 {

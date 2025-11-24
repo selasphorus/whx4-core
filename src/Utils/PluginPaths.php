@@ -1,6 +1,6 @@
 <?php
 
-namespace WXC\Utils;
+namespace atc\WXC\Utils;
 
 class PluginPaths
 {

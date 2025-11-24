@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace WXC\Templates;
+namespace atc\WXC\Templates;
 
-use WXC\App;
-use WXC\Templates\ViewKind;
-use WXC\Utils\Text;
-use WXC\Utils\ClassInfo;
+use atc\WXC\App;
+use atc\WXC\Templates\ViewKind;
+use atc\WXC\Utils\Text;
+use atc\WXC\Utils\ClassInfo;
 
 /**
  * Framework-level view resolver & renderer.

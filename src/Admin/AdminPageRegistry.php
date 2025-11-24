@@ -1,6 +1,6 @@
 <?php
 
-namespace WXC\Admin;
+namespace atc\WXC\Admin;
 
 /**
  * Registry for admin pages that allows add-on plugins to register their own pages

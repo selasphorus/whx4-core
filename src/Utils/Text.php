@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace WXC\Utils;
+namespace atc\WXC\Utils;
 
 /**
  * Generic string utilities for WXC.

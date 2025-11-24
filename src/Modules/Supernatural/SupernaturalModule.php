@@ -1,14 +1,14 @@
 <?php
 
-namespace WXC\Modules\Supernatural;
+namespace atc\WXC\Modules\Supernatural;
 
-use WXC\Module as BaseModule;
-use WXC\Query\PostQuery;
-use WXC\Shortcodes\ShortcodeManager;
+use atc\WXC\Module as BaseModule;
+use atc\WXC\Query\PostQuery;
+use atc\WXC\Shortcodes\ShortcodeManager;
 
-use WXC\Modules\Supernatural\PostTypes\Monster;
-use WXC\Modules\Supernatural\PostTypes\Enchanter;
-use WXC\Modules\Supernatural\PostTypes\Spell;
+use atc\WXC\Modules\Supernatural\PostTypes\Monster;
+use atc\WXC\Modules\Supernatural\PostTypes\Enchanter;
+use atc\WXC\Modules\Supernatural\PostTypes\Spell;
 
 final class SupernaturalModule extends BaseModule
 {

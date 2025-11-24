@@ -1,13 +1,13 @@
 <?php
 
-namespace WXC\Modules\Admin;
+namespace atc\WXC\Modules\Admin;
 
-use WXC\Module as BaseModule;
+use atc\WXC\Module as BaseModule;
 
 // Post Types
-use WXC\Modules\Admin\PostTypes\AdminNote;
-//use Bkkp\Modules\Admin\PostTypes\YYY;
-//use Bkkp\Modules\Admin\PostTypes\ZZZ;
+use atc\WXC\Modules\Admin\PostTypes\AdminNote;
+//use atc\Bkkp\Modules\Admin\PostTypes\YYY;
+//use atc\Bkkp\Modules\Admin\PostTypes\ZZZ;
 
 final class AdminModule extends BaseModule
 {

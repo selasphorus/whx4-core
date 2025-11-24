@@ -1,8 +1,8 @@
 <?php
 
-namespace WXC\Modules\Supernatural\Fields;
+namespace atc\WXC\Modules\Supernatural\Fields;
 
-use WXC\Contracts\FieldGroupInterface;
+use atc\WXC\Contracts\FieldGroupInterface;
 
 final class MonsterFields implements FieldGroupInterface
 {

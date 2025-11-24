@@ -1,11 +1,11 @@
 <?php
 
-namespace WXC\Modules\Supernatural\Shortcodes;
+namespace atc\WXC\Modules\Supernatural\Shortcodes;
 
-use WXC\Contracts\ShortcodeInterface;
-use WXC\App;
-use WXC\Utils\ClassInfo;
-use WXC\Templates\ViewLoader;
+use atc\WXC\Contracts\ShortcodeInterface;
+use atc\WXC\App;
+use atc\WXC\Utils\ClassInfo;
+use atc\WXC\Templates\ViewLoader;
 
 final class SupernaturalShortcode implements ShortcodeInterface
 {

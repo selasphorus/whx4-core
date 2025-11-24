@@ -1,8 +1,8 @@
 <?php
 
-namespace WXC\Utils;
+namespace atc\WXC\Utils;
 
-use WXC\App;
+use atc\WXC\App;
 
 class TitleFilter
 {

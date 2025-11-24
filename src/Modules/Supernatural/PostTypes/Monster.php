@@ -1,9 +1,9 @@
 <?php
 
-namespace WXC\Modules\Supernatural\PostTypes;
+namespace atc\WXC\Modules\Supernatural\PostTypes;
 
-use WXC\PostTypes\PostTypeHandler;
-use WXC\Modules\Supernatural\Taxonomies\Habitat; // ???
+use atc\WXC\PostTypes\PostTypeHandler;
+use atc\WXC\Modules\Supernatural\Taxonomies\Habitat; // ???
 
 class Monster extends PostTypeHandler
 {

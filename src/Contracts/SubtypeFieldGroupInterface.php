@@ -1,6 +1,6 @@
 <?php
 
-namespace WXC\Contracts;
+namespace atc\WXC\Contracts;
 
 interface SubtypeFieldGroupInterface
 {

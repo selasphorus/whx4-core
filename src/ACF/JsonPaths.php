@@ -1,6 +1,6 @@
 <?php
 
-namespace WXC\ACF;
+namespace atc\WXC\ACF;
 
 class JsonPaths
 {

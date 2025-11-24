@@ -1,8 +1,8 @@
 <?php
 
-namespace WXC;
+namespace atc\WXC;
 
-use WXC\Traits\HasTypeProperties;
+use atc\WXC\Traits\HasTypeProperties;
 
 // Shared logic & constructor for all registrable types (CPTs, taxonomies, maybe more)
 abstract class BaseHandler
