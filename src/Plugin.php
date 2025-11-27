@@ -207,7 +207,7 @@ final class Plugin implements PluginContext
         // Register shared/global taxonomies? WIP
         /*
         add_filter('wxc_register_taxonomy_handlers', function(array $list): array {
-			$list[] = \WXC\Taxonomies\RexTag::class; // object_types may be ['*'] or an explicit list
+			$list[] = \atc\WXC\Taxonomies\RexTag::class; // object_types may be ['*'] or an explicit list
 			return $list;
 		});
 
