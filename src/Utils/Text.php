@@ -73,7 +73,6 @@ final class Text
         return $v;
     }
 
-
     // Hyperlinks -- TODO: move this to separate class? maybe...
 
     // Make hyperlink
@@ -90,4 +89,76 @@ final class Text
 
         return $link;
     }
+    
+    //
+    
+	function sdg_digit_to_word ( $number ) 
+	{
+		switch($number){
+			case 0:$word = "zero";break;
+			case 1:$word = "one";break;
+			case 2:$word = "two";break;
+			case 3:$word = "three";break;
+			case 4:$word = "four";break;
+			case 5:$word = "five";break;
+			case 6:$word = "six";break;
+			case 7:$word = "seven";break;
+			case 8:$word = "eight";break;
+			case 9:$word = "nine";break;
+		}
+		return $word;
+	}
+	
+	function sdg_word_to_digit ( $word ) 
+	{
+		$words_to_digits = [
+			'zero' => 0,
+			'one' => 1,
+			'first' => 1,
+			'two' => 2,
+			'second' => 2,
+			'three' => 3,
+			'third' => 3,
+			'four' => 4,
+			'fourth' => 4,
+			'five' => 5,
+			'fifth' => 5,
+			'six' => 6,
+			'sixth' => 6,
+			'seven' => 7,
+			'seventh' => 7,
+			'eight' => 8,
+			'eighth' => 8,
+			'nine' => 9,
+			'ninth' => 9,
+			'ten' => 10,
+			'tenth' => 10,
+		];
+	
+		return isset($words_to_digits[$word]) ? $words_to_digits[$word] : null;
+	}
+	
+	function containsNumbers ( $string )
+	{
+		if ( preg_match('/first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|one|two|three|four|five|six|seven|eight|nine|ten|[0-9]+/', $string) ) {
+			return true;
+		}
+		return false;
+	}
+	
+	function extractNumbers ( $string ) 
+	{
+	
+		$numbers = array();
+		preg_match_all('/first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|one|two|three|four|five|six|seven|eight|nine|ten|[0-9]+/', $string, $matches); //PREG_OFFSET_CAPTURE
+	
+		// Make sure the numbers are digits -- convert them as needed
+		foreach ( $matches as $match ) {
+			$word = $match[0];
+			$num = sdg_word_to_digit ( $word );
+			if ( $num ) { $numbers[]= $num; } else { $numbers[]= $word; }
+		}
+		return $numbers;
+	}
+	
 }
