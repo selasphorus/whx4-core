@@ -17,6 +17,8 @@ final class Page extends PostTypeHandler
                 'singular_name' => 'Page',
             ],
             'taxonomies'   => [ 'page_tag' ],
+            // Keep supports minimal; core already defines this post type.
+            // Your system can still hook titles/content/etc. by slug.
         ];
 
         parent::__construct($config, $post);

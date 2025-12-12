@@ -1,6 +1,6 @@
 <?php
 
-namespace atc\WHx4\Modules\Core\Taxonomies;
+namespace atc\WXC\Modules\Core\Taxonomies;
 
 use atc\WXC\Taxonomies\TaxonomyHandler;
 
