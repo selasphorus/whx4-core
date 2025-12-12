@@ -16,6 +16,7 @@ final class Attachment extends PostTypeHandler
                 'name'          => 'Media',
                 'singular_name' => 'File',
             ],
+            'taxonomies'   => [ 'media_category' ],
             // Attachments are special in WP; don't redefine supports here.
         ];
 
