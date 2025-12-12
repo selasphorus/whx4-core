@@ -410,8 +410,10 @@ abstract class PostTypeHandler extends BaseHandler
         $activePostTypeSlugs = (array) apply_filters('wxc_active_post_types', []);
 
         if ( !in_array($postType, $activePostTypeSlugs, true) ) {
+            //error_log( 'postType '.$postType.' is NOT a WXC-managed post type' );
             return null;
         }
+        //error_log( 'postType '.$postType.' is a WXC-managed post type' );
 
         $activePostTypes = App::ctx()->getActivePostTypes(); // ['person' => \...Person::class]
         if ( empty( $activePostTypes ) ) {
