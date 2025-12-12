@@ -119,7 +119,8 @@ register_deactivation_hook( __FILE__, function() {
 /* ***** TODO: Move most or all of the following away into classes ***** */
 
 // Function to check for main dev/admin user
-function wxc_queenbee() {
+function wxc_queenbee() 
+{
 	$current_user = wp_get_current_user();
 	$username = $current_user->user_login;
 	$useremail = $current_user->user_email;
@@ -131,10 +132,31 @@ function wxc_queenbee() {
     }
 }
 
+function is_dev_site() 
+{
+	$options = get_option( 'sdg_settings' );
+
+	if ( isset($options['is_dev_site']) ) {
+		if ( !empty($options['is_dev_site']) ) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	if ( isset($_SERVER['HTTP_HOST']) ) {
+		$subdomain = explode('.', $_SERVER['HTTP_HOST'])[0];
+		if ( $subdomain == "dev" ) { return true; } // RS dev site
+	}
+
+	return false;
+}
+
 /* +~+~+ Misc Functions WIP +~+~+ */
 
 //add_action( 'init', 'wxc_redirect');
-function wxc_redirect() {
+function wxc_redirect() 
+{
 
 	// If /events/ with query args and limit is set to 1, then see if there's a matching event and redirect to that event
 	// /events/?scope=future&category=sunday-recital-series&limit=1&dev=events
