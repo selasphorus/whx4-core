@@ -16,6 +16,7 @@ final class Page extends PostTypeHandler
                 'name'          => 'Pages',
                 'singular_name' => 'Page',
             ],
+            'taxonomies'   => [ 'page_tag' ],
         ];
 
         parent::__construct($config, $post);
