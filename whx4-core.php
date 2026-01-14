@@ -132,6 +132,7 @@ function wxc_queenbee()
     }
 }
 
+// WIP -- phase this out? Check by some other option or move option to wxc settings?
 function is_dev_site() 
 {
 	$options = get_option( 'sdg_settings' );
@@ -197,4 +198,18 @@ function wxc_redirect()
         //wp_redirect( site_url('/de/') );
         //exit;
     }
+}
+
+
+/**
+ * Explode list using "," and ", ".
+ *
+ * @param string $string String to split up.
+ * @return array Array of string parts.
+ */
+// Move this to Text utility class? TBD -- need to make sure this fcn is available to other plugins
+function wxc_att_explode ( $string = '' ) 
+{
+	$string = str_replace( ', ', ',', $string );
+	return explode( ',', $string );
 }

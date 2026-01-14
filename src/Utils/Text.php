@@ -91,7 +91,8 @@ final class Text
     }
     
     // WIP
-	function digit_to_word ( $number ) 
+    // digit_to_word >> used currently only by Display Content plugin...
+	function digitToWord ( $number ) 
 	{
 		switch($number){
 			case 0:$word = "zero";break;
