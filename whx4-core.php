@@ -118,7 +118,7 @@ register_deactivation_hook( __FILE__, function() {
 // Global Wrapper Functions for theme access
 // WIP!!!
 
-function wxc_devmode_active( $arr_qvar_vals = [] ) {
+function wxc_devmode( $arr_qvar_vals = [] ) {
     return atc\WXC\WXC_Environment::devmode($arr_qvar_vals);
 }
 
