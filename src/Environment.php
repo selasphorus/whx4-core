@@ -2,7 +2,7 @@
 
 namespace atc\WXC;
 
-final class WXC_Environment {
+final class Environment {
     // Certain operations should only be run in devmode
 	function devmode( $arr_qvar_vals = [] ) {
 	

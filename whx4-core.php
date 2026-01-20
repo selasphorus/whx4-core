@@ -119,11 +119,11 @@ register_deactivation_hook( __FILE__, function() {
 // WIP!!!
 
 function wxc_devmode( $arr_qvar_vals = [] ) {
-    return atc\WXC\WXC_Environment::devmode($arr_qvar_vals);
+    return atc\WXC\Environment::devmode($arr_qvar_vals);
 }
 
 function wxc_devsite() {
-    return atc\WXC\WXC_Environment::devsite();
+    return atc\WXC\Environment::devsite();
 }
 
 /* ***** TODO: Move most or all of the following away into classes ***** */
