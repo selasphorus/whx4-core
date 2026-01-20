@@ -4,7 +4,7 @@ namespace atc\WXC;
 
 final class Environment {
     // Certain operations should only be run in devmode
-	function devmode( $arr_qvar_vals = [] ) {
+	public static function devmode( $arr_qvar_vals = [] ) {
 	
 		// TODO: enforce that user must be logged in as admin OR have proper cookie value saved in order to activate devmode(?)
 		/*if ( is_user_logged_in() ) {
@@ -32,7 +32,7 @@ final class Environment {
     }*/
     
     // WIP -- phase this out? Check by some other option or move option to wxc settings?
-	function devsite() 
+	public static function devsite() 
 	{
 		//$options = get_option( 'wxc_settings' ); // TODO: update to add this setting -- see SDG
 		$options = get_option( 'sdg_settings' );
