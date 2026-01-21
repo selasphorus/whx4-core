@@ -145,6 +145,7 @@ final class ViewLoader
             //error_log( 'self::moduleViewRoots[module]: ' . self::$moduleViewRoots[$module] . '' );
             $root = rtrim(self::$moduleViewRoots[$module], '/');
             if ($postType !== '') {
+                if ( $postType == "whx4_event" ) { $postType = "event"; } // Tmp WIP
                 $postTypePath = "{$root}/" . Text::studly($postType) . "/{$view}.php";
                 //$paths[] = "{$root}/" . Text::studly($postType) . "/{$view}.php"; // Within the Modules dir structure, postTypes are studly caps to match class names
                 $paths[] = $postTypePath;
