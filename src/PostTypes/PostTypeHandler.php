@@ -601,6 +601,7 @@ abstract class PostTypeHandler extends BaseHandler
 	{
 		$post = get_post();
 		$postType = get_post_type();
+		error_log( '[PostTypeHandler] postType: ' . $postType . '' );
 		if ( $postType == "whx4_event" ) { $postType = "event"; } // Tmp WIP
 	
 		if ( ! is_singular( $postType ) || ! in_the_loop() || ! is_main_query()  || !$post instanceof \WP_Post) {
