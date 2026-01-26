@@ -41,7 +41,12 @@ abstract class PostTypeHandler extends BaseHandler
 	{
         add_filter( 'the_content', [ self::class, 'appendCustomContent' ], 15 );
 	}
-
+	
+	public function getSlug(): string
+    {
+        return (string)$this->getConfig()['slug'];
+    }
+    
 	// Optional explicit setter (handy for guarantees/safety-net)
 	// TBD: is this still needed? Redundant w/ constructor...
 	public function setPost(?\WP_Post $post): static

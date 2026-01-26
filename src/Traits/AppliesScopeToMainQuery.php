@@ -30,7 +30,7 @@ trait AppliesScopeToMainQuery
         }
         
         // Get the post type slug from the implementing class
-        $postType = $this->getPostTypeSlug();
+        $postType = $this->getSlug();
         
         if ($query->get('post_type') !== $postType) {
             return;
