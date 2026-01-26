@@ -91,12 +91,4 @@ trait AppliesScopeToMainQuery
     {
         return 'DATE';
     }
-    
-    /**
-     * Get the post type slug.
-     * Assumes implementing class has a getSlug() or getPostTypeSlug() method.
-     *
-     * @return string|null
-     */
-    abstract protected function getPostTypeSlug(): ?string;
 }
