@@ -4,7 +4,7 @@
  * Description:       A WordPress plugin for core functionality used by WHx4, Bkkp, SDG, etc.
  * Dependencies:      
  * Requires Plugins:  advanced-custom-fields-pro
- * Version:           1.0
+ * Version:           1.012726.1
  * Author:            atc
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
