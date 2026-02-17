@@ -29,12 +29,10 @@ trait AppliesScopeToMainQuery
             return;
         }
         
-        // Get the post type slug from the implementing class
-        $postType = $this->getSlug();
-        
-        if ($query->get('post_type') !== $postType) {
-            return;
-        }
+        // Make sure we're handling the right post type
+        if ($query->get('post_type') !== $this->getSlug()) {
+			return;
+		}
         
         // Check for scope query var
         $scope = get_query_var('scope');
@@ -57,15 +55,49 @@ trait AppliesScopeToMainQuery
         if (empty($bounds['start']) || empty($bounds['end'])) {
             return;
         }
+        // Build meta_query with OR logic for non-recurring vs recurring events
+        $meta_query = $query->get('meta_query') ?: ['relation' => 'AND'];
         
         // Add meta_query for date filtering
-        $meta_query = $query->get('meta_query') ?: [];
+        /*$meta_query = $query->get('meta_query') ?: [];
         $meta_query[] = [
             'key'     => $dateMetaKey,
             'value'   => [$bounds['start'], $bounds['end']],
             'compare' => 'BETWEEN',
             'type'    => $metaType,
-        ];
+        ];*/
+        
+        $meta_query[] = [
+			'relation' => 'OR',
+			[
+				// Non-recurring events: start_date within scope AND no rrule
+				'relation' => 'AND',
+				[
+					'key'     => $dateMetaKey,
+					'value'   => [$bounds['start'], $bounds['end']],
+					'compare' => 'BETWEEN',
+					'type'    => $metaType,
+				],
+				[
+					'key'     => 'whx4_events_rrule',
+					'compare' => 'NOT EXISTS',
+				],
+			],
+			[
+				// Recurring events: start_date <= scope_end AND rrule exists
+				'relation' => 'AND',
+				[
+					'key'     => $dateMetaKey,
+					'value'   => $bounds['end'],
+					'compare' => '<=',
+					'type'    => $metaType,
+				],
+				[
+					'key'     => 'whx4_events_rrule',
+					'compare' => 'EXISTS',
+				],
+			],
+		];
         
         $query->set('meta_query', $meta_query);
     }
