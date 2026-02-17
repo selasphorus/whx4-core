@@ -149,7 +149,7 @@ final class ViewLoader
                 $postTypePath = "{$root}/" . Text::studly($postType) . "/{$view}.php";
                 //$paths[] = "{$root}/" . Text::studly($postType) . "/{$view}.php"; // Within the Modules dir structure, postTypes are studly caps to match class names
                 $paths[] = $postTypePath;
-                error_log( '[ViewLoader] postTypePath: ' . $postTypePath . '' );
+                error_log( '[WXC-ViewLoader] postTypePath: ' . $postTypePath . '' );
             }
             $paths[] = "{$root}/{$view}.php";
         }
