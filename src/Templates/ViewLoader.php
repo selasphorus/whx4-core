@@ -115,7 +115,7 @@ final class ViewLoader
      */
     protected static function generateSearchPaths(string $view, array $specs = []): array
     {
-        error_log( '=== generateSearchPaths for view: ' . $view . ' with specs: ' . print_r($specs,true) . '===' );
+        //error_log( '=== generateSearchPaths for view: ' . $view . ' with specs: ' . print_r($specs,true) . '===' );
         $paths       = [];
         $kind        = Text::slugify($specs['kind'] ?? '');
         $module      = Text::slugify($specs['module'] ?? '');
@@ -149,7 +149,7 @@ final class ViewLoader
                 $postTypePath = "{$root}/" . Text::studly($postType) . "/{$view}.php";
                 //$paths[] = "{$root}/" . Text::studly($postType) . "/{$view}.php"; // Within the Modules dir structure, postTypes are studly caps to match class names
                 $paths[] = $postTypePath;
-                error_log( 'WXC-ViewLoader -> postTypePath: ' . $postTypePath . '' );
+                //error_log( '(WXC-ViewLoader::generateSearchPaths) postTypePath: ' . $postTypePath . '' );
             }
             $paths[] = "{$root}/{$view}.php";
         }

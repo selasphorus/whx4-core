@@ -103,7 +103,7 @@ trait AppliesScopeToMainQuery
 			],
 		];
 		
-		error_log('(WXC) Final meta_query: ' . print_r($meta_query, true));
+		//error_log('(WXC) Final meta_query: ' . print_r($meta_query, true));
         
         $query->set('meta_query', $meta_query);
     }
