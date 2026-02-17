@@ -55,6 +55,11 @@ trait AppliesScopeToMainQuery
         if (empty($bounds['start']) || empty($bounds['end'])) {
             return;
         }
+        
+        //error_log('[WXC-applyScopeToMainQuery] postTypePath: ' . $postTypePath . '');
+        error_log('[WXC] Scope: ' . $scope);
+        error_log('-WXC- Scope: ' . $scope);
+        
         // Build meta_query with OR logic for non-recurring vs recurring events
         $meta_query = $query->get('meta_query') ?: ['relation' => 'AND'];
         
