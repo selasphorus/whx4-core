@@ -113,16 +113,23 @@ register_deactivation_hook( __FILE__, function() {
     //$plugin->removePostTypeCapabilities();
 });
 
-// Global Wrapper Functions for theme access
-// WIP!!!
+// =============================================================================
+// Global Wrapper Functions
+// Thin delegators providing theme/plugin access to WXC internals.
+// =============================================================================
 
-function wxc_devmode( $arr_qvar_vals = [] ) {
-    return atc\WXC\Environment::devmode($arr_qvar_vals);
+function wxc_devmode( array $arr_qvar_vals = [] ): bool {
+    return atc\WXC\Environment::devmode( $arr_qvar_vals );
 }
 
-function wxc_devsite() {
+function wxc_devsite(): bool {
     return atc\WXC\Environment::devsite();
 }
+
+function wxc_log( string $message, mixed $context = null, string $level = 'debug' ): void {
+    atc\WXC\Logger::log( $message, $level, $context );
+}
+
 
 /* ***** TODO: Move most or all of the following away into classes ***** */
 
