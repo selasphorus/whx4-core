@@ -30,12 +30,10 @@ class Monster extends PostTypeHandler
 	{
 	    parent::boot(); // Optional if you add shared logic later
 
-	    // Apply Title Args -- this modifies front-end display only
-	    // TODO: consider alternative approaches to allow for more customization? e.g. different args as with old SDG getPersonDisplayName method
-		$this->applyTitleArgs( $this->getSlug(), [
-			'line_breaks'    => true,
-			'show_subtitle'  => true,
-			'hlevel_sub'     => 4,
+	    self::registerTitleDefaults(static::getSlug(), [
+			'line_breaks'   => true,
+			'show_subtitle' => true,
+			'hlevel_sub'    => 4,
 			'called_by'      => 'Monster::boot',
 			'append'         => ' {Rowarrr!}',
 		]);
