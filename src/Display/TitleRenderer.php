@@ -30,6 +30,21 @@ namespace atc\WXC\Display;
  *   prepend             string  HTML prepended before the title. Default ''.
  *   append              string  HTML appended after the title. Default ''.
  *   the_title           string  Override: supply a title string directly.
+ *
+ * Usage:
+ * 1. via ContentRenderer::getItemTitle()
+ * 2. Direct static call:
+ *        echo TitleRenderer::render(get_post(), ['link' => true, 'hlevel' => 2]);
+ *        echo TitleRenderer::render(get_post($postId), ['show_subtitle' => true]);
+ * 3. Potentially via a wrapper function:
+    function wxc_the_title(\WP_Post|int $post, array $atts = []): string
+	{
+		$post = is_int($post) ? get_post($post) : $post;
+		if (!$post instanceof \WP_Post) {
+			return '';
+		}
+		return TitleRenderer::render($post, $atts);
+	}
  */
 class TitleRenderer
 {

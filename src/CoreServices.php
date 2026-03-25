@@ -34,5 +34,16 @@ class CoreServices
                 //if ( !class_exists( $class) ) { error_log( 'class: ' . $class . ' -- DOES NOT EXIST!'); }
             }
         }
+        
+        // Set up for customizing display of post images
+		add_filter('wxc_post_image', function(string $image, \WP_Post $post, string $size): string {
+			if ($image !== '') {
+				return $image;
+			}
+			if (!has_post_thumbnail($post->ID)) {
+				return '';
+			}
+			return get_the_post_thumbnail($post->ID, $size, ['class' => 'wxc-item__image']);
+		}, 5, 3);
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace atc\WXC\Display;
 
+use atc\WXC\Display\TitleRenderer;
+
 /**
  * Base renderer for lists of WP_Post objects.
  *
@@ -277,11 +279,9 @@ abstract class ContentRenderer
      * @return string
      */
     protected function getItemTitle(\WP_Post $post, array $atts): string
-    {
-        return '<a href="' . esc_url(get_permalink($post)) . '">'
-             . esc_html(get_the_title($post))
-             . '</a>';
-    }
+	{
+		return TitleRenderer::render($post, $atts);
+	}
 
     /**
      * Return the post thumbnail HTML, or empty string if none.
@@ -291,17 +291,11 @@ abstract class ContentRenderer
      * @return string
      */
     protected function getItemImage(\WP_Post $post, array $atts): string
-    {
-        $size = $atts['image_size'] ?? 'thumbnail';
-
-        if (!has_post_thumbnail($post->ID)) {
-            return '';
-        }
-
-        return get_the_post_thumbnail($post->ID, $size, [
-            'class' => 'wxc-item__image',
-        ]);
-    }
+	{
+		$size = $atts['image_size'] ?? 'thumbnail';
+	
+		return (string) apply_filters('wxc_post_image', '', $post, $size, $atts);
+	}
 
     /**
      * Return additional meta markup for a post item.
