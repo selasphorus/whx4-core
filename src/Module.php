@@ -99,7 +99,8 @@ abstract class Module implements ModuleInterface
 		}
 	}
 	
-	protected function findViaHandler(string $postType, array $filters): array
+	// findViaHandler v1
+	/*protected function findViaHandler(string $postType, array $filters): array
 	{
 		$map   = App::ctx()->getActivePostTypes(); // ['monster' => Monster::class, ...]
 		$class = $map[$postType] ?? null;
@@ -112,11 +113,87 @@ abstract class Module implements ModuleInterface
 		//error_log('[findViaHandler] class=' . (($class ?? 'NULL')));
 		//error_log('[findViaHandler] filters=' . json_encode($filters, JSON_UNESCAPED_SLASHES));
 		
-		/** @var class-string<PostTypeHandler> $class */
+		// @var class-string<PostTypeHandler> $class
 		$result = $class::find($filters);
 		
 		//error_log('[findViaHandler] result.debug=' . json_encode($result['debug'] ?? [], JSON_UNESCAPED_SLASHES));
 		return $result;
+	}*/
+
+	protected function findViaHandler(string|array $postType, array $filters): array
+	{
+		$postTypes = (array) $postType;
+	
+		if (count($postTypes) === 1) {
+			return $this->findSingleType($postTypes[0], $filters);
+		}
+	
+		return $this->findAcrossTypes($postTypes, $filters);
+	}
+	
+	private function findSingleType(string $postType, array $filters): array
+	{
+		$map   = App::ctx()->getActivePostTypes();
+		$class = $map[$postType] ?? null;
+	
+		if (!$class || !is_subclass_of($class, PostTypeHandler::class)) {
+			return $this->emptyResult($filters);
+		}
+	
+		/** @var class-string<PostTypeHandler> $class */
+		return $class::find($filters);
+	}
+	
+	private function findAcrossTypes(array $postTypes, array $filters): array
+	{
+		// Pagination is not well-defined across merged result sets.
+		// Fetch all matching posts from each type and merge.
+		$mergedFilters = array_merge($filters, ['limit' => -1, 'paged' => 1]);
+	
+		$allPosts = [];
+		$totalFound = 0;
+	
+		foreach ($postTypes as $type) {
+			$result = $this->findSingleType($type, array_merge($mergedFilters, ['post_type' => $type]));
+			$allPosts   = array_merge($allPosts, $result['posts'] ?? []);
+			$totalFound += $result['pagination']['found'] ?? 0;
+		}
+	
+		// Re-sort if requested — title sort is the common case
+		$orderby = $filters['orderby'] ?? null;
+		$order   = strtoupper($filters['order'] ?? 'ASC');
+	
+		if ($orderby === 'title') {
+			usort($allPosts, function (WP_Post $a, WP_Post $b) use ($order) {
+				$cmp = strcasecmp($a->post_title, $b->post_title);
+				return $order === 'DESC' ? -$cmp : $cmp;
+			});
+		}
+	
+		// Apply limit after merge+sort if one was requested
+		$limit = (int) ($filters['limit'] ?? -1);
+		if ($limit > 0) {
+			$allPosts = array_slice($allPosts, 0, $limit);
+		}
+	
+		return [
+			'posts'      => $allPosts,
+			'pagination' => [
+				'found'     => $totalFound,
+				'max_pages' => 1, // merged result treated as single page
+				'paged'     => 1,
+			],
+			'debug' => ['merged_types' => $postTypes],
+		];
+	}
+	
+	private function emptyResult(array $filters): array
+	{
+		return [
+			'posts'      => [],
+			'pagination' => ['found' => 0, 'max_pages' => 0, 'paged' => $filters['paged'] ?? 1],
+			'debug'      => ['error' => 'handler missing'],
+		];
 	}
 
 	protected function detectModuleSlugFromNamespace(): string
