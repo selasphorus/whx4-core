@@ -61,6 +61,8 @@ final class DisplayShortcode implements ShortcodeInterface
     /**
      * @return array<string,mixed>
      */
+    // TODO: add missing atts -- see birdhive_display_posts in display-content.php
+    // e.g. [display_posts category="NOT-website-archives" orderby="date" order="DESC" show_subtitles="false" limit="8" context="snippet" do_ts="true"]
     public static function defaults(): array
     {
         return [
