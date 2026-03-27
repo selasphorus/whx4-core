@@ -100,7 +100,8 @@ final class DisplayShortcode implements ShortcodeInterface
      */
     private function query(array $atts): array
     {
-        $result = PostQuery::find([
+        $result = (new PostQuery())->find([
+        //$result = PostQuery::find([
             'post_type'   => $atts['post_type'],
             'limit'       => (int) $atts['limit'],
             'orderby'     => $atts['orderby'],
