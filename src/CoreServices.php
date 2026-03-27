@@ -23,7 +23,6 @@ class CoreServices
             TemplateRouter::class,
             ShortcodeManager::class,
             AssetManager::class,
-            ShortcodeManager::add(DisplayShortcode::class),
         ]);
 
         foreach ( $services as $class ) {
@@ -36,6 +35,8 @@ class CoreServices
                 //if ( !class_exists( $class) ) { error_log( 'class: ' . $class . ' -- DOES NOT EXIST!'); }
             }
         }
+        
+        ShortcodeManager::add(DisplayShortcode::class);
         
         // Set up for customizing display of post images
 		add_filter('wxc_post_image', function(string $image, \WP_Post $post, string $size): string {
