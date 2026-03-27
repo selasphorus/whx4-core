@@ -7,6 +7,7 @@ use atc\WXC\FieldGroupLoader;
 use atc\WXC\Templates\TemplateRouter;
 use atc\WXC\Shortcodes\ShortcodeManager;
 use atc\WXC\Assets\AssetManager;
+use atc\WXC\Display\DisplayShortcode;
 
 class CoreServices
 {
@@ -22,6 +23,7 @@ class CoreServices
             TemplateRouter::class,
             ShortcodeManager::class,
             AssetManager::class,
+            ShortcodeManager::add(DisplayShortcode::class);
         ]);
 
         foreach ( $services as $class ) {
