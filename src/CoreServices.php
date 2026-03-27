@@ -23,7 +23,7 @@ class CoreServices
             TemplateRouter::class,
             ShortcodeManager::class,
             AssetManager::class,
-            ShortcodeManager::add(DisplayShortcode::class);
+            ShortcodeManager::add(DisplayShortcode::class),
         ]);
 
         foreach ( $services as $class ) {
