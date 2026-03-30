@@ -34,7 +34,7 @@ final class DisplayShortcode implements ShortcodeInterface
         $atts = shortcode_atts(self::defaults(), $atts, $tag);
 
         $postType = (string) $atts['post_type'];
-        $display  = (string) $atts['display'];
+        $display  = (string) $atts['display_format'];
 
         // Run query
         $posts = $this->query($atts);
@@ -61,8 +61,9 @@ final class DisplayShortcode implements ShortcodeInterface
     /**
      * @return array<string,mixed>
      */
-    // TODO: add missing atts -- see birdhive_display_posts in display-content.php
+    // TODO: separate out atts that are specific to one display_format (in WXC) or one post_type (in that post type handler class)
     // e.g. [display_posts category="NOT-website-archives" orderby="date" order="DESC" show_subtitles="false" limit="8" context="snippet" do_ts="true"]
+    // e.g. [display_posts return_format="grid" post_type="event" orderby="date" order="DESC" ids="374920, 369474, 374893, 374878, 374849, 370424, 370413, 370411" cols="2" debug="true"]
     public static function defaults(): array
     {
         return [
@@ -72,21 +73,45 @@ final class DisplayShortcode implements ShortcodeInterface
             'order'          => 'ASC',
             'meta_key'       => null,
             'meta_value'     => null,
+            //
             'ids'            => null,
             'slugs'          => null,
+            //
+            //'category' => null, // for posts/pages only
             'taxonomy'       => null,
             'tax_terms'      => null,
-            'display'        => 'list',   // list | table | grid | archive
-            'cols'           => 3,
+            //
+            'display_format' => 'list',   // list | table | grid | archive
+            //
+            'aspect_ratio' => 'square',
+			
+			// For grid display_format:
+			'cols' => 4,
+			'spacing' => 'spaced',
+			'header' => false,
+			'overlay' => false,
+            // For table display_format
+            'fields'  => null,
+            'headers'  => null,
+			//
+			'has_image' => false, // set to true to ONLY return posts with features images
             'image_size'     => 'thumbnail',
             'link_posts'     => true,
             'show_images'    => false,
             'show_subtitles' => true,
             'show_content'   => null,     // null | excerpts | full
+            'expandable' => false, // for excerpts
+            'text_length' => 'excerpt', // excerpt or full length
+            'preview_length' => '55',
+            //
             'prefer_short_title' => false,
-            'scope'          => null,
+            'scope'          => null, //'all', //'upcoming',
             'group_by'       => null,     // taxonomy slug to group results under
             'class'          => null,
+            // For Events or Sermons
+            'series' => false,
+            //
+            'context' => 'general', // wip
         ];
     }
 
@@ -102,8 +127,8 @@ final class DisplayShortcode implements ShortcodeInterface
      */
     private function query(array $atts): array
     {
-        $result = (new PostQuery())->find([
         //$result = PostQuery::find([
+        $result = (new PostQuery())->find([
             'post_type'   => $atts['post_type'],
             'limit'       => (int) $atts['limit'],
             'orderby'     => $atts['orderby'],
