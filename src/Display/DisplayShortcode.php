@@ -31,6 +31,8 @@ final class DisplayShortcode implements ShortcodeInterface
 
     public function render(array $atts = [], string $content = '', string $tag = ''): string
     {
+        Logger::debug( 'shortcode atts', $atts );
+        
         $atts = shortcode_atts(self::defaults(), $atts, $tag);
 
         $postType = (string) $atts['post_type'];
