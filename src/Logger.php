@@ -97,7 +97,10 @@ class Logger
                 continue;
             }
             return [
-                'class'    => $frame['class'] ?? basename( $frame['file'] ?? 'unknown' ),
+                //'class'    => $frame['class'] ?? basename( $frame['file'] ?? 'unknown' ),
+                'class' => isset( $frame['class'] )
+					? basename( str_replace( '\\', '/', $frame['class'] ) )
+					: basename( $frame['file'] ?? 'unknown' ),
                 'function' => $frame['function'] ?? 'unknown',
             ];
         }
