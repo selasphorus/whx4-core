@@ -12,7 +12,7 @@ namespace atc\WXC;
  *   Logger::debug( 'Booting', $someVar );
  *   Logger::warn( 'Unexpected value' );
  *   Logger::error( 'Critical failure' );
- *   Logger::log( 'Message', Logger::INFO, $context );
+ *   Logger::log( 'Message', Logger::INFO, $data );
  */
 class Logger
 {
@@ -21,7 +21,7 @@ class Logger
     public const WARN  = 'warn';
     public const ERROR = 'error';
 
-    public static function log( string $message, string $level = self::DEBUG, mixed $context = null, ?string $tag = null ): void
+    public static function log( string $message, string $level = self::DEBUG, mixed $data = null, ?string $context = null ): void
     {
         if ( ! self::shouldLog( $level ) ) {
             return;
@@ -31,22 +31,22 @@ class Logger
 
         $entry = sprintf( '(%s::%s) [%s] %s', $caller['class'], $caller['function'], strtoupper( $level ), $message );
 
-        /*if ( $context !== null ) {
-            $entry .= ' | ' . ( is_string( $context ) ? $context : print_r( $context, true ) );
+        /*if ( $data !== null ) {
+            $entry .= ' | ' . ( is_string( $data ) ? $data : print_r( $data, true ) );
         }*/
         
-        if ( $context !== null ) {
-			$dump = is_string( $context ) ? $context : print_r( $context, true );
+        if ( $data !== null ) {
+			$dump = is_string( $data ) ? $data : print_r( $data, true );
 			$entry .= ' | ' . preg_replace( '/\s+/', ' ', trim( $dump ) );
 		}
 
         error_log( $entry );
     }
     
-    public static function debug( string $message, mixed $context = null, ?string $tag = null ): void { self::log( $message, self::DEBUG, $context, $tag ); }
-	public static function info(  string $message, mixed $context = null, ?string $tag = null ): void { self::log( $message, self::INFO,  $context, $tag ); }
-	public static function warn(  string $message, mixed $context = null, ?string $tag = null ): void { self::log( $message, self::WARN,  $context, $tag ); }
-	public static function error( string $message, mixed $context = null, ?string $tag = null ): void { self::log( $message, self::ERROR, $context, $tag ); }
+    public static function debug( string $message, mixed $data = null, ?string $context = null ): void { self::log( $message, self::DEBUG, $data, $context ); }
+	public static function info(  string $message, mixed $data = null, ?string $context = null ): void { self::log( $message, self::INFO,  $data, $context ); }
+	public static function warn(  string $message, mixed $data = null, ?string $context = null ): void { self::log( $message, self::WARN,  $data, $context ); }
+	public static function error( string $message, mixed $data = null, ?string $context = null ): void { self::log( $message, self::ERROR, $data, $context ); }
 
     // -------------------------------------------------------------------------
 
@@ -59,10 +59,10 @@ class Logger
 	 *  3. With debug active, the ?dev query param controls filtering:
 	 *       - absent      → suppress everything below ERROR
 	 *       - ?dev=true   → log all levels
-	 *       - ?dev=<tag>  → log only calls whose $tag matches
-	 *     Untagged non-error calls are suppressed when a specific tag is set.
+	 *       - ?dev=<context>  → log only calls whose $context matches
+	 *     Untagged non-error calls are suppressed when a specific context is set.
 	 */
-	private static function shouldLog( string $level, ?string $tag = null ): bool
+	private static function shouldLog( string $level, ?string $context = null ): bool
 	{
 		if ( $level === self::ERROR ) {
 			return true;
@@ -75,6 +75,7 @@ class Logger
 			return false;
 		}
 	
+		//get_query_var('dev')
 		$devParam = isset( $_GET['dev'] ) ? sanitize_key( $_GET['dev'] ) : null;
 	
 		if ( $devParam === null ) {
@@ -85,7 +86,7 @@ class Logger
 			return true;
 		}
 	
-		return $tag !== null && $devParam === $tag;
+		return $context !== null && $devParam === $context;
 	}
 
     /** Return the first backtrace frame that isn't Logger itself. */
