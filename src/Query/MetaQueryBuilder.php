@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace atc\WXC\Query;
 
+use atc\WXC\Logger;
 use atc\WXC\Query\QueryHelpers;
 use atc\WXC\Utils\DateHelper;
 
@@ -42,14 +43,14 @@ final class MetaQueryBuilder
      */
     public static function build(array $spec): array
     {
-        error_log( 'spec: ' . print_r($spec, true) );
+        Logger::debug( 'spec', $spec, 'query' );
 
         $relation = QueryHelpers::normalizeRelation($spec['relation'] ?? 'AND');
         $clauses  = $spec['clauses'] ?? [];
 
         $built = [];
         foreach ($clauses as $clauseSpec) {
-            error_log( 'clauseSpec: ' . print_r($clauseSpec, true) );
+            Logger::debug( 'clauseSpec', $clauseSpec, 'query' );
             $clause = self::makeClause($clauseSpec);
             if ($clause === null) {
                 continue; // Skip invalid/unknown clauses silently (debug logging belongs elsewhere).
@@ -76,7 +77,7 @@ final class MetaQueryBuilder
     {
         // TEMP debug
 		if (!isset($spec['key'])) {
-			error_log('missing key: ' . print_r($spec, true));
+			Logger::debug( 'missing key', $spec, 'query' );
 			return null;
 		}
 	
@@ -84,7 +85,7 @@ final class MetaQueryBuilder
 		if (array_key_exists('equals', $spec)) {
 			$value = $spec['equals'];
 			if ($value === '' || $value === null) {
-				error_log('equals empty for key=' . $spec['key']);
+				Logger::debug( 'equals empty for key=', $spec['key'], 'query' );
 				return null;
 			}
 			$clause = [
@@ -102,16 +103,16 @@ final class MetaQueryBuilder
         $clauseType = isset($spec['type']) ? (string)$spec['type'] : '';
         /*if ( isset($spec['meta_type']) ) {
             $metaType = self::normalizeMetaType($spec['meta_type']);
-            error_log( 'spec[meta_type]: ' . $spec['meta_type'] );
+            Logger::debug( 'spec[meta_type]: ' . $spec['meta_type'] );
         } else {
             $metaType = "";
         }*/
         $metaType = self::normalizeMetaType($spec['meta_type'] ?? $spec['cast'] ?? null);
         
-        error_log( 'metaType: ' . $metaType );
+        Logger::debug( 'metaType: '.$metaType );
 
-        //error_log( 'spec: ' . print_r($spec, true) );
-        //error_log( 'clauseType: ' . $clauseType . '; metaType: ' . $metaType );
+        //Logger::debug( 'spec', $spec, 'query' );
+        //Logger::debug( 'clauseType: ' . $clauseType . '; metaType: ' . $metaType );
 
         switch ($clauseType) {
             case 'equals':
@@ -156,10 +157,10 @@ final class MetaQueryBuilder
                 if (!QueryHelpers::requireFields($spec, ['key']) || !array_key_exists('min', $spec) || !array_key_exists('max', $spec)) {
                     return null;
                 }
-                error_log('spec[min]: ' . $spec['min']);
+                Logger::debug('spec[min]: ' . $spec['min']);
                 $min = self::formatValue($spec['min'], $metaType);
                 $max = self::formatValue($spec['max'], $metaType);
-                error_log('formatted min: ' . $min);
+                Logger::debug('formatted min: ' . $min);
                 return self::assembleClause(
                     (string)$spec['key'],
                     'BETWEEN',
@@ -258,15 +259,15 @@ final class MetaQueryBuilder
 
         $group = ['relation' => 'AND'];
 
-        //error_log( 'spec[end]: ' . print_r($spec['end'], true) );
-        //error_log( 'spec[start]: ' . print_r($spec['start'], true) );
+        //Logger::debug( 'spec[end]', $spec['end'], 'query' );
+        //Logger::debug( 'spec[start]', $spec['start'], 'query' );
 
         $endValue   = self::formatValue($spec['end'], $metaType);
         $startValue = self::formatValue($spec['start'], $metaType);
 
-        //error_log( 'metaType: ' . print_r($metaType, true) );
-        //error_log( 'endValue: ' . print_r($endValue, true) );
-        //error_log( 'startValue: ' . print_r($startValue, true) );
+        //Logger::debug( 'metaType', $metaType, 'query' );
+        //Logger::debug( 'endValue', $endValue, 'query' );
+        //Logger::debug( 'startValue', $startValue, 'query' );
 
         // start_key <= end
         $group[] = self::assembleClause((string)$spec['start_key'], '<=', $endValue, $metaType);
@@ -282,7 +283,7 @@ final class MetaQueryBuilder
         } else {
             $group[] = $endCond;
         }
-        //error_log( 'group: ' . print_r($group, true) );
+        //Logger::debug( 'group', $group, 'query' );
         return ['__group' => $group];
     }
 
@@ -376,7 +377,7 @@ final class MetaQueryBuilder
     // Format values for use in WP_Query
     private static function formatValue($value, ?string $metaType)
 	{
-		error_log('value: ' . $value . '; metaType: ' . $metaType);
+		Logger::debug('value: ' . $value . '; metaType: ' . $metaType);
 		return self::normalizeValueForMetaType($value, $metaType);
 	}
 	
@@ -391,7 +392,7 @@ final class MetaQueryBuilder
 	 */
 	private static function normalizeValueForMetaType(mixed $value, ?string $metaType): mixed
 	{
-	    error_log('value: ' . $value . '; metaType: ' . $metaType);
+	    Logger::debug('value: ' . $value . '; metaType: ' . $metaType);
 	    $type = is_string($metaType) ? strtoupper(trim($metaType)) : null;
 	    
 	    if (is_array($value)) {
@@ -420,7 +421,7 @@ final class MetaQueryBuilder
 	 */
 	public static function fromYearsWindow(string $key, string $keyType, array $win, string $metaType = 'NUMERIC'): array
 	{
-		error_log('key: ' . $key . '; keyType: ' . $keyType  . '; metaType: ' . $metaType . '');
+		Logger::debug('key: ' . $key . '; keyType: ' . $keyType  . '; metaType: ' . $metaType . '');
 		
 		// Empty window → no-op spec
 		if (empty($win['years'])) {

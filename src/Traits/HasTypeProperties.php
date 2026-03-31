@@ -2,6 +2,8 @@
 
 namespace atc\WXC\Traits;
 
+use atc\WXC\Logger;
+
 // TODO: adapt as needed to apply to taxonomies and blocks as well as post types -- ???
 trait HasTypeProperties
 {
@@ -10,7 +12,7 @@ trait HasTypeProperties
 
     public function getSlug(): string
     {
-        //error_log( 'config: ' . print_r( $this->getConfig(), true ) );
+        //Logger::debug( 'config', $this->getConfig(), 'wxc' );
         return $this->getConfig()['slug'] ?? strtolower( basename( str_replace( '\\', '/', static::class ) ) );
     }
 
@@ -28,9 +30,9 @@ trait HasTypeProperties
 		$labels = array_merge($defaults, $overrides);
 
 		// Troubleshooting...
-		//error_log( 'default labels: ' . print_r( $defaults, true ) );
-		//error_log( 'override labels: ' . print_r( $overrides, true ) );
-    	//error_log( 'labels (merged): ' . print_r( $labels, true ) );
+		//Logger::debug( 'default labels', $defaults, 'wxc' );
+		//Logger::debug( 'override labels', $overrides, 'wxc' );
+		//Logger::debug( 'labels (merged)', $labels, 'wxc' );
 
     	// Filter the array
 		$filtered = apply_filters("wxc_labels_{$slug}", $labels, $slug, $this);
@@ -86,7 +88,7 @@ trait HasTypeProperties
             $singular = $this->getSlug();
             $plural   = $this->getPluralSlug() ?? "{$singular}s";
         }
-        //error_log( 'type: ' . $type . '; singular: ' . $singular . '; plural: ' . $plural );
+        //Logger::debug( 'type: ' . $type . '; singular: ' . $singular . '; plural: ' . $plural );
 
         if ( $type === 'taxonomy' ) {
             return [

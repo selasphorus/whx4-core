@@ -2,6 +2,7 @@
 namespace atc\WXC\Templates;
 
 use atc\WXC\App;
+use atc\WXC\Logger;
 use atc\WXC\Templates\ViewLoader;
 use atc\WXC\Utils\ClassInfo;
 

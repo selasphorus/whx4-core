@@ -2,6 +2,7 @@
 
 namespace atc\WXC\PostTypes;
 
+use atc\WXC\Logger;
 use atc\WXC\BootOrder;
 use atc\WXC\Contracts\SubtypeInterface;
 
@@ -27,13 +28,13 @@ final class SubtypeRegistry
         
         // 1) Gather providers
         $providers = apply_filters('wxc_register_subtypes', []);  // array of SubtypeInterface|class-string
-        //error_log( 'providers: ' . print_r($providers, true) );
+        //Logger::debug( 'providers', $providers, 'wxc' );
         
         foreach ($providers as $provider) {
 			$instance = is_string($provider) ? (class_exists($provider) ? new $provider() : null) : $provider;
 			if (!$instance instanceof SubtypeInterface) {
 				// quietly skip invalid entries; optionally log under REX_DEBUG
-				error_log( 'subtype provider: ' . $provider->getSlug() . ' is NOT a valid SubtypeInterface.');
+				Logger::debug( 'subtype provider: ' . $provider->getSlug() . ' is NOT a valid SubtypeInterface.');
 				continue;
 			}
 	
@@ -80,7 +81,7 @@ final class SubtypeRegistry
     // Resolvers
 	public static function resolve(string $postType, string $slug): ?SubtypeInterface
 	{
-		error_log( 'Attempting to resolve subtype with postType: ' . $postType . ' and slug: ' . $slug);
+		Logger::debug( 'Attempting to resolve subtype with postType: ' . $postType . ' and slug: ' . $slug);
 		return self::$instances[$postType][$slug] ?? null;
 	}
 	

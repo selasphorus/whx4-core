@@ -3,6 +3,7 @@
 namespace atc\WXC\Admin;
 
 use atc\WXC\App;
+use atc\WXC\Logger;
 use atc\WXC\Migrations\FieldKeyMigrator;
 
 final class FieldKeyAuditPageController

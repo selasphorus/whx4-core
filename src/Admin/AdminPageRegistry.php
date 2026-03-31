@@ -2,6 +2,8 @@
 
 namespace atc\WXC\Admin;
 
+use atc\WXC\Logger;
+
 /**
  * Registry for admin pages that allows add-on plugins to register their own pages
  * 
@@ -61,12 +63,12 @@ class AdminPageRegistry
     {
         // Validate required fields
         if (empty($config['page_title']) || empty($config['menu_title'])) {
-            error_log("page_title and menu_title are required for page '{$id}'");
+            Logger::debug("page_title and menu_title are required for page '{$id}'");
             return;
         }
         
         if (empty($config['controller']) || !is_callable($config['controller'])) {
-            error_log("Valid controller callable is required for page '{$id}'");
+            Logger::debug("Valid controller callable is required for page '{$id}'");
             return;
         }
         
@@ -79,7 +81,7 @@ class AdminPageRegistry
         
         // Validate submenu has parent_slug
         if ($config['type'] === 'submenu' && empty($config['parent_slug'])) {
-            error_log("parent_slug is required for submenu page '{$id}'");
+            Logger::debug("parent_slug is required for submenu page '{$id}'");
             return;
         }
         

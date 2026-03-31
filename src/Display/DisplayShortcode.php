@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace atc\WXC\Display;
 
+use atc\WXC\Logger;
 use atc\WXC\Contracts\ShortcodeInterface;
 use atc\WXC\Query\PostQuery;
-use atc\WXC\Logger;
 
 /**
  * Generic multi-type display shortcode.

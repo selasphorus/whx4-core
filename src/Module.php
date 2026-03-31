@@ -3,6 +3,7 @@
 namespace atc\WXC;
 
 use atc\WXC\App;
+use atc\WXC\Logger;
 use atc\WXC\Contracts\ModuleInterface;
 use atc\WXC\Templates\ViewLoader;
 use atc\WXC\PostTypes\PostTypeHandler;
@@ -32,43 +33,42 @@ abstract class Module implements ModuleInterface
 
     public function boot(): void
     {
-		//error_log( 'module: ' . $this->getSlug() );
+		//Logger::debug( 'module: ' . $this->getSlug() );
         $this->registerDefaultViewRoot();
 
         $enabledSlugs = App::ctx()
 			->getSettingsManager()
 			->getEnabledPostTypeSlugsByModule()[ $this->getSlug() ] ?? [];
 
-		//error_log( 'enabledSlugs: ' . print_r($enabledSlugs,true) );
+		//Logger::debug( 'enabledSlugs', $enabledSlugs, 'wxc' );
 
 		// Get all the post type handlers for this module
 		foreach ( $this->getPostTypeHandlerClasses() as $handlerClass ) {
 			if ( ! class_exists( $handlerClass ) ) {
-				error_log( "Missing post type handler: $handlerClass" );
+				Logger::warn( "Missing post type handler: $handlerClass" );
 				continue;
 			}
 
 			$handler = new $handlerClass();
 
 			if ( ! method_exists( $handler, 'getSlug' ) ) {
-				error_log( "Handler class $handlerClass missing getSlug()" );
+				Logger::warn( "Handler class $handlerClass missing getSlug()" );
 				continue;
 			}
 
 			if ( ! in_array( $handler->getSlug(), $enabledSlugs, true ) ) {
-				//error_log( 'slug: ' . $handler->getSlug() . ' is not in the enabledSlugs array: ' . print_r($enabledSlugs,true) );
+				//Logger::debug( 'slug: ' . $handler->getSlug() . ' is not in the enabledSlugs array: ' . print_r($enabledSlugs,true) );
 				continue; // Skip if not enabled for this module
 			}
 
-			//error_log( 'About to attempt handler boot() for PostType handlerClass: ' . $handlerClass . '===' );
+			//Logger::debug( 'About to attempt handler boot() for PostType handlerClass: ' . $handlerClass . '===' );
 			if ( ! method_exists( $handler, 'boot' ) ) {
-				error_log( "Handler class $handlerClass missing boot()" );
+				Logger::warn( "Handler class $handlerClass missing boot()" );
 				continue;
 			}
 			$handler->boot();
 		}
 
-		//error_log('Module::boot -> calling ShortcodeManager::add');
         ShortcodeManager::add(WXC\Shortcodes\WXCListShortcode::class);
     }
 
@@ -109,14 +109,14 @@ abstract class Module implements ModuleInterface
 			return ['posts' => [], 'pagination' => ['found' => 0, 'max_pages' => 0, 'paged' => $filters['paged'] ?? 1], 'debug' => ['error' => 'handler missing']];
 		}
 		
-		//error_log('postType=' . $postType);
-		//error_log('class=' . (($class ?? 'NULL')));
-		//error_log('filters=' . json_encode($filters, JSON_UNESCAPED_SLASHES));
+		//Logger::debug('postType=' . $postType);
+		//Logger::debug('class=' . (($class ?? 'NULL')));
+		//Logger::debug('filters=' . json_encode($filters, JSON_UNESCAPED_SLASHES));
 		
 		// @var class-string<PostTypeHandler> $class
 		$result = $class::find($filters);
 		
-		//error_log('result.debug=' . json_encode($result['debug'] ?? [], JSON_UNESCAPED_SLASHES));
+		//Logger::debug('result.debug=' . json_encode($result['debug'] ?? [], JSON_UNESCAPED_SLASHES));
 		return $result;
 	}*/
 
@@ -228,11 +228,11 @@ abstract class Module implements ModuleInterface
 				$label = $handler->getLabels()['singular_name']; // or getLabel()
 				$postTypes[ $slug ] = $label;
 			} catch( \Throwable $e ) {
-				error_log( "Error in post type handler {$class}: " . $e->getMessage() );
+				Logger::error( "Error in post type handler {$class}", $e->getMessage() );
 			}
 		}
 
-		//error_log("postTypes: " . print_r($postTypes, true));
+		//Logger::Logger::debug("postTypes", $postTypes, 'wxc' );
 
 		return $postTypes;
 	}

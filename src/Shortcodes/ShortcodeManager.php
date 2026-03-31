@@ -1,6 +1,7 @@
 <?php
 namespace atc\WXC\Shortcodes;
 
+use atc\WXC\Logger;
 use atc\WXC\Contracts\ShortcodeInterface;
 
 final class ShortcodeManager
@@ -24,7 +25,7 @@ final class ShortcodeManager
 
     public static function add(string $fqcn): void
     {
-        //error_log('add called for ' . $fqcn . '; init? ' . did_action('init'));
+        //Logger::debug('add called for ' . $fqcn . '; init? ' . did_action('init'));
 
         self::$registry[$fqcn] = $fqcn;
 
@@ -39,7 +40,7 @@ final class ShortcodeManager
         // Merge explicit registry and filter-provided classes
         $viaFilter  = (array)apply_filters('wxc_register_shortcodes', []);
         $candidates = array_unique(array_merge(array_values(self::$registry), $viaFilter));
-        //error_log('Shortcode candidates: ' . json_encode($candidates, JSON_UNESCAPED_SLASHES));
+        //Logger::debug('Shortcode candidates: ' . json_encode($candidates, JSON_UNESCAPED_SLASHES));
 
         foreach ($candidates as $fqcn) {
             self::registerClass($fqcn);
@@ -48,7 +49,7 @@ final class ShortcodeManager
 
     private static function registerClass(string $fqcn): void
     {
-        //error_log('About to attempt registration of shortcode class: ' . $fqcn);
+        //Logger::debug('About to attempt registration of shortcode class: ' . $fqcn);
 
         if (!class_exists($fqcn)) {
             return;

@@ -2,6 +2,7 @@
 
 namespace atc\WXC\Taxonomies;
 
+use atc\WXC\Logger;
 use atc\WXC\BootOrder;
 use atc\WXC\Taxonomies\TaxonomyHandler;
 //use atc\WXC\PostTypes\SubtypeRegistry;
@@ -28,7 +29,7 @@ final class TaxonomyRegistrar
         /*$subtypes = SubtypeRegistry::getAll();
         foreach (array_keys($subtypes) as $postType) {
             $slug = SubtypeRegistry::getTaxonomyForPostType($postType);
-            error_log( 'Subtype slug: ' . $slug . '/postType: '. $postType );
+            Logger::debug( 'Subtype slug: ' . $slug . '/postType: '. $postType );
 
             // Anonymous handler that behaves like a TaxonomyHandler
             $handlers[] = new class($slug, $postType) extends TaxonomyHandler {
@@ -48,7 +49,7 @@ final class TaxonomyRegistrar
             return; // nothing to do
         }
 
-        //error_log("taxonomy handlers: " . print_r($handlers, true));
+        //Logger::debug("taxonomy handlers", $handlers, 'wxc' );
 
         // Resolve active CPTs (for '*' wildcard); decouple via a filter
         $activePostTypes = (array) apply_filters('wxc_active_post_types', []);
@@ -57,12 +58,12 @@ final class TaxonomyRegistrar
             // Accept FQCNs or ready instances
             if (is_string($h)) {
                 if (!class_exists($h) || !is_subclass_of($h, TaxonomyHandler::class)) {
-                    //error_log("handler class: " . $h . " is not a valid TaxonomyHandler class.");
+                    //Logger::warn("handler class: " . $h . " is not a valid TaxonomyHandler class.");
                     continue;
                 }
                 $h = new $h();
             } elseif (!$h instanceof TaxonomyHandler) {
-                //error_log("handler class: " . $h . " is not a valid TaxonomyHandler class.");
+                //Logger::warn("handler class: " . $h . " is not a valid TaxonomyHandler class.");
                 continue;
             }
 
@@ -88,10 +89,10 @@ final class TaxonomyRegistrar
 
             // Finally, register it (handler knows how to call register_taxonomy)
             try {
-                $h->registerTaxonomy();
-            } catch (\Throwable) {
-                // optional: error_log(...)
-            }
+				$h->registerTaxonomy();
+			} catch ( \Throwable $e ) {
+				Logger::error( $e->getMessage(), $e->getTraceAsString() );
+			}
         }
     }
 }

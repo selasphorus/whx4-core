@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace atc\WXC\Templates;
 
 use atc\WXC\App;
+use atc\WXC\Logger;
 use atc\WXC\Templates\ViewKind;
 use atc\WXC\Utils\Text;
 use atc\WXC\Utils\ClassInfo;
@@ -40,7 +41,7 @@ final class ViewLoader
     {
         $key = Text::slugify($moduleSlug); // just in case
         $viewRoot = rtrim( $absolutePath, '/' );
-        //error_log( '=== viewRoot for moduleSlug/key: ' . $key . ' is: ' . $viewRoot . '===' );
+        //Logger::debug( '=== viewRoot for moduleSlug/key: ' . $key . ' is: ' . $viewRoot . '===' );
         self::$moduleViewRoots[ $key ] = $viewRoot;
     }
 
@@ -63,7 +64,7 @@ final class ViewLoader
      */
     public static function renderToString(string $view, array $vars = [], array $specs = []): string
     {
-        //error_log( 'called for view: ' . $view . ' with vars: ' . print_r($vars,true) . ' and spec: ' . print_r($specs,true) . '===' );
+        //Logger::debug( 'called for view: ' . $view . ' with vars: ' . print_r($vars,true) . ' and spec: ' . print_r($specs,true) . '===' );
         $path = self::getViewPath($view, $specs);
         //
         $kind   = self::normalizeKind($specs['kind'] ?? null);
@@ -89,13 +90,13 @@ final class ViewLoader
      */
     public static function getViewPath(string $view, array $specs = []): ?string
     {
-        //error_log( '=== getViewPath for view: ' . $view . ' with spec: ' . print_r($specs,true) . '===' );
+        //Logger::debug( '=== getViewPath for view: ' . $view . ' with spec: ' . print_r($specs,true) . '===' );
         foreach (self::generateSearchPaths($view, $specs) as $path) {
             if (file_exists($path)) {
-                //error_log( '=== File found at path: ' . $path . '===' );
+                //Logger::debug( '=== File found at path: ' . $path . '===' );
                 return $path;
             }
-            //error_log( 'No file_exists at path: ' . $path . '' );
+            //Logger::debug( 'No file_exists at path: ' . $path . '' );
         }
 
         return null;
@@ -114,15 +115,15 @@ final class ViewLoader
      */
     protected static function generateSearchPaths(string $view, array $specs = []): array
     {
-        //error_log( '=== generateSearchPaths for view: ' . $view . ' with specs: ' . print_r($specs,true) . '===' );
+        //Logger::debug( '=== generateSearchPaths for view: ' . $view . ' with specs: ' . print_r($specs,true) . '===' );
         $paths       = [];
         $kind        = Text::slugify($specs['kind'] ?? '');
         $module      = Text::slugify($specs['module'] ?? '');
         $postType    = Text::slugify($specs['post_type'] ?? '');
         $allowTheme  = $specs['allow_theme'] ?? true;
-        //error_log( 'kind: ' . $kind . '' );
-        //error_log( 'module: ' . $module . '' );
-        //error_log( 'postType: ' . $postType . '' );
+        //Logger::debug( 'kind: ' . $kind . '' );
+        //Logger::debug( 'module: ' . $module . '' );
+        //Logger::debug( 'postType: ' . $postType . '' );
 
         // 1) Theme overrides (child → parent)
         if ( $allowTheme ) {
@@ -141,14 +142,14 @@ final class ViewLoader
 
         // 2) Module-registered root (e.g., wxc/src/Modules/Supernatural/Views)
         if ($module !== '' && isset(self::$moduleViewRoots[$module])) {
-            //error_log( 'self::moduleViewRoots[module]: ' . self::$moduleViewRoots[$module] . '' );
+            //Logger::debug( 'self::moduleViewRoots[module]: ' . self::$moduleViewRoots[$module] . '' );
             $root = rtrim(self::$moduleViewRoots[$module], '/');
             if ($postType !== '') {
                 if ( $postType == "whx4_event" ) { $postType = "event"; } // Tmp WIP
                 $postTypePath = "{$root}/" . Text::studly($postType) . "/{$view}.php";
                 //$paths[] = "{$root}/" . Text::studly($postType) . "/{$view}.php"; // Within the Modules dir structure, postTypes are studly caps to match class names
                 $paths[] = $postTypePath;
-                //error_log( 'postTypePath: ' . $postTypePath . '' );
+                //Logger::debug( 'postTypePath: ' . $postTypePath . '' );
             }
             $paths[] = "{$root}/{$view}.php";
         }

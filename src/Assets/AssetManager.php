@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace atc\WXC\Assets;
 
+use atc\WXC\Logger;
+
 final class AssetManager
 {
     /** @var array<string,mixed> */
@@ -33,10 +35,10 @@ final class AssetManager
         $assets = self::filterShape($assets);
         self::$catalog = $assets;
         
-        //error_log('assets: ' . print_r($assets, true));
+        //Logger::debug('assets', $assets, 'wxc');
 
         foreach ($assets['styles'] as $s) {
-            //error_log('style: ' . print_r($s, true));
+            //Logger::debug('style', $s, 'wxc');
             $handle = (string)($s['handle'] ?? '');
             $src    = (string)($s['src'] ?? '');
             if ($handle === '' || $src === '') {
@@ -45,7 +47,7 @@ final class AssetManager
             $deps = is_array($s['deps'] ?? null) ? $s['deps'] : [];
             $ver  = self::resolveVersion($s);
             $media = (string)($s['media'] ?? 'all');
-            //error_log('About to register style with handle: ' . $handle);
+            //Logger::debug('About to register style with handle: '.$handle, null, 'wxc');
             wp_register_style($handle, $src, $deps, $ver, $media);
         }
 

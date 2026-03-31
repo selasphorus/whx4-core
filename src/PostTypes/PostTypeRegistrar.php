@@ -3,6 +3,7 @@
 namespace atc\WXC\PostTypes;
 
 use atc\WXC\App;
+use atc\WXC\Logger;
 use atc\WXC\BootOrder;
 use atc\WXC\PostTypes\PostTypeHandler;
 use atc\WXC\Utils\Text;
@@ -26,20 +27,18 @@ class PostTypeRegistrar
 
     public function bootstrap(): void
     {
-        //error_log( '=== PostTypeRegistrar::bootstrap() ===' );
-
         // Abort if no modules have been booted
 		if ( !App::ctx()->modulesBooted() ) {
-		    error_log( '=== no modules booted yet => abort ===' );
+		    Logger::debug( '=== no modules booted yet => abort ===' );
 			return;
 		}
 
         $activePostTypes = App::ctx()->getActivePostTypes();
         if ( empty( $activePostTypes ) ) {
-			error_log( 'No active post types found. Skipping registration.' );
+			Logger::debug( 'No active post types found. Skipping registration.' );
 			return;
 		}
-		//error_log( 'activePostTypes: '.print_r($activePostTypes, true) );
+		//Logger::debug( 'activePostTypes', $activePostTypes, 'wxc' );
 
 		// Register CPTs
 		$this->registerMany( $activePostTypes );
@@ -68,29 +67,27 @@ class PostTypeRegistrar
 	// Registers a custom post type using a PostTypeHandler
     public function registerCPT(PostTypeHandler $handler): void
     {
-        //error_log( '=== PostTypeRegistrar->registerCPT() ===' );
-
-    	$slug = $handler->getSlug();
-    	//error_log('slug: '.$slug);
+        $slug = $handler->getSlug();
+    	//Logger::debug('slug: '.$slug);
 
     	$capType = $handler->getCapType();
-    	//error_log('capType: '.print_r($capType,true));
+    	//Logger::debug( 'capType', $capType, 'wxc' );
 
     	$labels = $handler->getLabels();
-    	//error_log('labels: '.print_r($labels,true));
+    	//Logger::debug( 'labels', $labels, 'wxc' );
 
     	$supports = $handler->getSupports();
-    	//error_log('supports: '.print_r($supports,true));
+    	//Logger::debug( 'supports', $supports, 'wxc' );
 
     	$taxonomies = $handler->getTaxonomies();
-    	//error_log('taxonomies: '.print_r($taxonomies,true));
+    	//Logger::debug( 'taxonomies', $taxonomies, 'wxc' );
 
     	// Get capabilities (if defined, otherwise fall back to defaults)
         $capabilities = $handler->getCapabilities();
-    	//error_log('capabilities: '.print_r($capabilities,true));
+    	//Logger::debug( 'capabilities', $capabilities, 'wxc' );
 
     	$icon = $handler->getMenuIcon();
-    	//error_log('icon: '.$icon);
+    	//Logger::debug('icon: '.$icon);
 
     	// WIP: better to enclose the following in mini-methods like getSupports? or simplify them all/most?
     	$hierarchical = $handler->getConfig()['hierarchical'] ?? false;
@@ -124,56 +121,54 @@ class PostTypeRegistrar
     //
     public function registerMany( array $postTypeClasses ): void
     {
-    	//error_log( 'postTypeClasses: ' . print_r( $postTypeClasses, true ) );
+    	//Logger::debug( 'postTypeClasses', $postTypeClasses, 'wxc' );
         foreach( $postTypeClasses as $slug => $handlerClass ) {
-        	//error_log( 'attempting to register handlerClass: '.$handlerClass );
+        	//Logger::debug( 'attempting to register handlerClass: '.$handlerClass );
         	$handler = new $handlerClass();
         	if (!post_type_exists($slug)) {
 				// Only register if it doesn't already exist
 				$this->registerCPT( $handler );
 			} else {
-			    //error_log( 'already post_type_exists: '.$slug );
+			    //Logger::debug( 'already post_type_exists: '.$slug );
         	}
         	//$handler->boot();
         }
     }
 
-	//public function assignPostTypeCapabilities(array $handlers): void
 	public function assignPostTypeCapabilities(): void
 	{
-		//$roles = ['administrator']; //
 		$roles = ['administrator', 'editor'];
 
 		$activePostTypes = App::ctx()->getActivePostTypes();
-		//error_log( 'activePostTypes: ' . print_r($activePostTypes, true). ' ==' );
+		//Logger::debug( 'activePostTypes', $activePostTypes, 'wxc' );
 
 		foreach ( $activePostTypes as $slug => $handlerClass ) {
-		    //error_log( 'preparing to add caps for handlerClass: '.$handlerClass );
+		    //Logger::debug( 'preparing to add caps for handlerClass: '.$handlerClass );
 			// Make sure the handler is of correct type
-			$handler = new $handlerClass(); // $postTypeHandlerClass();
-			//error_log( 'handler: ' . print_r($handler, true). ' ==' );
+			$handler = new $handlerClass();
+			//Logger::debug( 'handler', $handler, 'wxc' );
 			if ( $handler instanceof PostTypeHandler ) {
 				$caps = $handler->getCapabilities();
 				$obsoleteCaps = [];
 				//$obsoleteCaps = [ 'delete_venue', 'edit_venue', 'read_venue', 'delete_wxc_event', 'edit_wxc_event', 'read_wxc_event', 'delete_workpayment', 'edit_workpayment', 'read_workpayment', 'delete_person', 'edit_person', 'read_person', 'edit_transactions', 'edit_others_transactions', 'delete_transactions', 'publish_transactions', 'read_private_transactions', 'delete_private_transactions', 'delete_published_transactions', 'delete_others_transactions', 'edit_private_transactions', 'edit_published_transactions'];
-				//error_log( 'caps for handler ' . $handler->getSlug() . ': ' . print_r($caps, true) );
+				//Logger::debug( 'caps for handler ' . $handler->getSlug() . ': ' . print_r($caps, true) );
 				//
 				foreach ($roles as $roleName) {
 					$role = get_role($roleName);
 					if ($role) {
 						foreach ($caps as $cap) {
-						    //error_log( ' adding cap: ' . $cap . ' for roleName: '. $roleName );
+						    //Logger::debug( ' adding cap: ' . $cap . ' for roleName: '. $roleName );
 							$role->add_cap($cap);
 						}
 						// Remove obsolete caps (tmp)
 						foreach ($obsoleteCaps as $cap) {
-						    //error_log( ' removing cap: ' . $cap . ' for roleName: '. $roleName );
+						    //Logger::debug( ' removing cap: ' . $cap . ' for roleName: '. $roleName );
 							$role->remove_cap($cap);
 						}
 					}
 				}
 			} else {
-			    error_log('handler is not a PostTypeHandler.');
+			    Logger::debug('handler is not a PostTypeHandler.');
 			}
 		}
 	}
@@ -207,7 +202,8 @@ class PostTypeRegistrar
     protected function resolveTaxonomyClasses(string $handlerClass, array|string $taxonomies): array
     {
         $taxonomies = is_array($taxonomies) ? $taxonomies : [ $taxonomies ];
-        //error_log( 'taxonomies: ' . print_r($taxonomies, true) );
+        
+        //Logger::debug( 'taxonomies', $taxonomies, 'wxc' );
         $resolved   = [];
 
         // WIP: modify to return associative array of slug => fqcn instead of ONLY the class names
@@ -218,7 +214,7 @@ class PostTypeRegistrar
             }
             $resolved[] = $this->resolveTaxonomyFqcn($handlerClass, $t);
         }
-        //error_log( 'resolved: ' . print_r($resolved, true) );
+        //Logger::debug( 'resolved', $resolved, 'wxc' );
 
         return array_values(array_unique($resolved));
     }
@@ -226,11 +222,11 @@ class PostTypeRegistrar
     // TODO: generalize
     protected function resolveTaxonomyFqcn(string $handlerClass, string $name): string
     {
-		//error_log( 'name to resolve: ' . $name );
+		//Logger::debug( 'name to resolve: ' . $name );
 
         // Already a FQCN?
         if (str_contains($name, '\\')) {
-            //error_log( 'already a fqcn' );
+            //Logger::debug( 'already a fqcn' );
             return ltrim($name, '\\');
         }
 
@@ -239,16 +235,16 @@ class PostTypeRegistrar
         // -> prefix: WXC\Modules\, currentModule: Supernatural
         /*$class = static::class;
         if (!preg_match('/^(.*\\\\Modules\\\\)([^\\\\]+)/', $class, $m)) {
-            error_log( 'class: ' . $class );
+            Logger::debug( 'class: ' . $class );
             // Fallback: just StudlyCase in current namespace root (unlikely)
             return $this->studly($name);
         }*/
         if (!preg_match('/^(.*\\\\Modules\\\\)([^\\\\]+)/', $handlerClass, $m)) {
-            //error_log( 'handlerClass: ' . $handlerClass );
+            //Logger::debug( 'handlerClass: ' . $handlerClass );
             // Fallback: just StudlyCase in current namespace root (unlikely)
             //return $this->studly($name);
         }
-        //error_log( 'm: ' . print_r($m, true) );
+        //Logger::debug( 'm: ' . print_r($m, true) );
         $modulesPrefix = $m[1]; // "WXC\Modules\"
         $currentModule = $m[2]; // "Supernatural"
 
@@ -265,7 +261,7 @@ class PostTypeRegistrar
         // Build FQCN: <prefix><Module>\Taxonomies\<Studly>
         // TODO: generalize for classes other than Taxonomies by replacing hardcoded '\\Taxonomies\\' with another var
         $fqcn = $modulesPrefix . $targetModule . '\\Taxonomies\\' . Text::studly($basename);
-        //error_log( 'fqcn: ' . $fqcn );
+        //Logger::debug( 'fqcn: ' . $fqcn );
         return $fqcn;
     }
 

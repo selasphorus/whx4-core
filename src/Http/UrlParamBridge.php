@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace atc\WXC\Http;
 
+use atc\WXC\Logger;
+
 /**
  * UrlParamBridge
  *
@@ -31,7 +33,7 @@ final class UrlParamBridge
     */
     public static function collect(string $targetHandlerClass, ?array $only = null): array
     {
-        //error_log( '=== UrlParamBridge::collect for targetHandlerClass: ' . $targetHandlerClass . ' (only: ' . $only . ') ===' );
+        //Logger::debug( '=== UrlParamBridge::collect for targetHandlerClass: ' . $targetHandlerClass . ' (only: ' . $only . ') ===', null, 'wxc' );
         return self::fromSource($targetHandlerClass, $_GET, $only);
     }
 
