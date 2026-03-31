@@ -45,11 +45,14 @@ class Logger
 
     // -------------------------------------------------------------------------
 
-    /** ERROR always logs; all other levels require WP_DEBUG. */
+    /** ERROR always logs; all other levels require WP_DEBUG or WXC_DEBUG. */
     private static function shouldLog( string $level ): bool
-    {
-        return $level === self::ERROR || ( defined( 'WP_DEBUG' ) && WP_DEBUG );
-    }
+	{
+		$debugActive = ( defined( 'WP_DEBUG' ) && WP_DEBUG )
+					|| ( defined( 'WXC_DEBUG' ) && WXC_DEBUG );
+	
+		return $level === self::ERROR || $debugActive;
+	}
 
     /** Return the first backtrace frame that isn't Logger itself. */
     private static function resolveCaller( array $trace ): array
