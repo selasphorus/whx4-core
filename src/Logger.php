@@ -78,7 +78,7 @@ class Logger
 		//$devParam = get_query_var('dev'); // nope too early
 		//$devParam = isset( $_GET['dev'] ) ? sanitize_key( $_GET['dev'] ) : null;
 		$devParam = isset( $_GET['dev'] ) ? strtolower( trim( $_GET['dev'] ) ) : null;
-		error_log( 'devParam: ' . var_export( $devParam, true ) . ' | context: ' . var_export( $context, true ) );
+		//error_log( 'devParam: ' . var_export( $devParam, true ) . ' | context: ' . var_export( $context, true ) ); // tft
 	
 		if ( $devParam === null ) {
 			return false;
