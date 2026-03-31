@@ -31,9 +31,14 @@ class Logger
 
         $entry = sprintf( '(%s::%s) [%s] %s', $caller['class'], $caller['function'], strtoupper( $level ), $message );
 
-        if ( $context !== null ) {
+        /*if ( $context !== null ) {
             $entry .= ' | ' . ( is_string( $context ) ? $context : print_r( $context, true ) );
-        }
+        }*/
+        
+        if ( $context !== null ) {
+			$dump = is_string( $context ) ? $context : print_r( $context, true );
+			$entry .= ' | ' . preg_replace( '/\s+/', ' ', trim( $dump ) );
+		}
 
         error_log( $entry );
     }
