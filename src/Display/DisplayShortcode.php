@@ -32,7 +32,7 @@ final class DisplayShortcode implements ShortcodeInterface
 
     public function render(array $atts = [], string $content = '', string $tag = ''): string
     {
-        Logger::debug( 'shortcode atts: ', $atts, 'shortcodes' );
+        Logger::debug( 'shortcode atts', $atts, 'shortcodes' );
         
         $atts = shortcode_atts(self::defaults(), $atts, $tag);
 
