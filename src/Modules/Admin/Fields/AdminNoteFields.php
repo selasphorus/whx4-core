@@ -9,7 +9,6 @@ final class AdminNoteFields implements FieldGroupInterface
 {
     public static function register(): void
     {
-        //error_log( '=== AdminNoteFields: register()) ===' );
         if ( !function_exists('acf_add_local_field_group') ) return;
 
         //use atc\WXC\Migrations\FieldKeyMigrator;

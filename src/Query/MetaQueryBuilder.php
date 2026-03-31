@@ -42,7 +42,6 @@ final class MetaQueryBuilder
      */
     public static function build(array $spec): array
     {
-        error_log( '=== MetaQueryBuilder::build() ===' );
         error_log( 'spec: ' . print_r($spec, true) );
 
         $relation = QueryHelpers::normalizeRelation($spec['relation'] ?? 'AND');
@@ -75,11 +74,9 @@ final class MetaQueryBuilder
      */
     private static function makeClause(array $spec): ?array
     {
-        error_log( '=== MetaQueryBuilder::makeClause() ===' );
-        
         // TEMP debug
 		if (!isset($spec['key'])) {
-			error_log('[MetaQB::makeClause] missing key: ' . print_r($spec, true));
+			error_log('missing key: ' . print_r($spec, true));
 			return null;
 		}
 	
@@ -87,7 +84,7 @@ final class MetaQueryBuilder
 		if (array_key_exists('equals', $spec)) {
 			$value = $spec['equals'];
 			if ($value === '' || $value === null) {
-				error_log('[MetaQB::makeClause] equals empty for key=' . $spec['key']);
+				error_log('equals empty for key=' . $spec['key']);
 				return null;
 			}
 			$clause = [
@@ -105,13 +102,13 @@ final class MetaQueryBuilder
         $clauseType = isset($spec['type']) ? (string)$spec['type'] : '';
         /*if ( isset($spec['meta_type']) ) {
             $metaType = self::normalizeMetaType($spec['meta_type']);
-            error_log( '[MetaQB::makeClause] spec[meta_type]: ' . $spec['meta_type'] );
+            error_log( 'spec[meta_type]: ' . $spec['meta_type'] );
         } else {
             $metaType = "";
         }*/
         $metaType = self::normalizeMetaType($spec['meta_type'] ?? $spec['cast'] ?? null);
         
-        error_log( '[MetaQB::makeClause] metaType: ' . $metaType );
+        error_log( 'metaType: ' . $metaType );
 
         //error_log( 'spec: ' . print_r($spec, true) );
         //error_log( 'clauseType: ' . $clauseType . '; metaType: ' . $metaType );
@@ -159,10 +156,10 @@ final class MetaQueryBuilder
                 if (!QueryHelpers::requireFields($spec, ['key']) || !array_key_exists('min', $spec) || !array_key_exists('max', $spec)) {
                     return null;
                 }
-                error_log('[MQB::makeClause] spec[min]: ' . $spec['min']);
+                error_log('spec[min]: ' . $spec['min']);
                 $min = self::formatValue($spec['min'], $metaType);
                 $max = self::formatValue($spec['max'], $metaType);
-                error_log('[MQB::makeClause] formatted min: ' . $min);
+                error_log('formatted min: ' . $min);
                 return self::assembleClause(
                     (string)$spec['key'],
                     'BETWEEN',
@@ -255,8 +252,6 @@ final class MetaQueryBuilder
      */
     private static function makeOverlapGroup(array $spec, ?string $metaType, bool $endOptional=false): ?array
     {
-        error_log( '=== MetaQueryBuilder::makeOverlapGroup() ===' );
-
         if (!QueryHelpers::requireFields($spec, ['start_key', 'end_key', 'start', 'end'])) {
             return null;
         }
@@ -381,7 +376,7 @@ final class MetaQueryBuilder
     // Format values for use in WP_Query
     private static function formatValue($value, ?string $metaType)
 	{
-		error_log('[MQB::formatValue] value: ' . $value . '; metaType: ' . $metaType);
+		error_log('value: ' . $value . '; metaType: ' . $metaType);
 		return self::normalizeValueForMetaType($value, $metaType);
 	}
 	
@@ -396,7 +391,7 @@ final class MetaQueryBuilder
 	 */
 	private static function normalizeValueForMetaType(mixed $value, ?string $metaType): mixed
 	{
-	    error_log('[MQB::normalizeValueForMetaType] value: ' . $value . '; metaType: ' . $metaType);
+	    error_log('value: ' . $value . '; metaType: ' . $metaType);
 	    $type = is_string($metaType) ? strtoupper(trim($metaType)) : null;
 	    
 	    if (is_array($value)) {
@@ -425,7 +420,7 @@ final class MetaQueryBuilder
 	 */
 	public static function fromYearsWindow(string $key, string $keyType, array $win, string $metaType = 'NUMERIC'): array
 	{
-		error_log('[fromYearsWindow] key: ' . $key . '; keyType: ' . $keyType  . '; metaType: ' . $metaType . '');
+		error_log('key: ' . $key . '; keyType: ' . $keyType  . '; metaType: ' . $metaType . '');
 		
 		// Empty window → no-op spec
 		if (empty($win['years'])) {

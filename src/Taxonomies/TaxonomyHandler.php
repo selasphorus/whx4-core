@@ -3,6 +3,7 @@
 namespace atc\WXC\Taxonomies;
 
 use atc\WXC\BaseHandler;
+use atc\WXC\Logger;
 
 abstract class TaxonomyHandler extends BaseHandler
 {
@@ -45,20 +46,18 @@ abstract class TaxonomyHandler extends BaseHandler
 
     public function registerTaxonomy(): void
     {
-        //error_log( '=== TaxonomyHandler::registerTaxonomy() ===' );
         $slug  = $this->getSlug();
         $types = $this->getObjectTypes();
         $args  = $this->getArgs();
 
         if (!taxonomy_exists($slug)) {
-            //error_log( "about to register taxonomy: " . $slug . " for posttypes: " . print_r($types,true) . "with args: " . print_r($args,true) );
+            Logger::debug( 'about to register taxonomy: ' . $slug . ' for posttypes: ' . print_r($types,true) . "with args: " . print_r($args,true), 'wptx' );
             register_taxonomy($slug, $types, $args);
         } else {
             foreach ($types as $pt) {
-                //error_log( "about to register taxonomy: " . $slug . " for posttype: " . $pt );
+                Logger::debug( "about to register taxonomy: " . $slug . " for posttype: " . $pt, 'wptx' );
                 register_taxonomy_for_object_type($slug, $pt);
             }
         }
     }
-
 }

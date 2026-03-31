@@ -11,7 +11,6 @@ final class AssetManager
 
     public static function boot(): void
     {
-        //error_log( '=== AssetManager::boot() ===' );
         add_action('init', [self::class, 'collectAndRegister'], 8);
         add_action('wp_enqueue_scripts', [self::class, 'maybeAutoloadFront'], 11);
         add_action('admin_enqueue_scripts', [self::class, 'maybeAutoloadAdmin'], 11);
@@ -30,15 +29,14 @@ final class AssetManager
 
     public static function collectAndRegister(): void
     {
-        //error_log( '=== AssetManager::collectAndRegister() ===' );
         $assets = apply_filters('wxc_assets', ['styles' => [], 'scripts' => []]);
         $assets = self::filterShape($assets);
         self::$catalog = $assets;
         
-        //error_log('[AssetManager::collectAndRegister] assets: ' . print_r($assets, true));
+        //error_log('assets: ' . print_r($assets, true));
 
         foreach ($assets['styles'] as $s) {
-            //error_log('[AssetManager::collectAndRegister] style: ' . print_r($s, true));
+            //error_log('style: ' . print_r($s, true));
             $handle = (string)($s['handle'] ?? '');
             $src    = (string)($s['src'] ?? '');
             if ($handle === '' || $src === '') {
@@ -47,7 +45,7 @@ final class AssetManager
             $deps = is_array($s['deps'] ?? null) ? $s['deps'] : [];
             $ver  = self::resolveVersion($s);
             $media = (string)($s['media'] ?? 'all');
-            //error_log('[AssetManager::collectAndRegister] About to register style with handle: ' . $handle);
+            //error_log('About to register style with handle: ' . $handle);
             wp_register_style($handle, $src, $deps, $ver, $media);
         }
 

@@ -9,7 +9,6 @@ final class FieldKeyAuditPageController
 {
     public function addHooks(): void
     {
-        //error_log( '=== FieldKeyAuditPageController: addHooks() ===' );
         ////add_action( 'admin_menu', [ $this, 'addMenuPage' ] );
         //add_action( 'admin_init', [ $this, 'registerSettings' ] );
     }

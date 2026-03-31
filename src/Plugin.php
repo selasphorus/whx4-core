@@ -6,6 +6,8 @@ namespace atc\WXC;
 
 use atc\WXC\Contracts\PluginContext;
 use atc\WXC\App;
+use atc\WXC\Logger;
+
 // TODO: reduce number of use statements and use FQCNs instead as needed
 use atc\WXC\CoreServices;
 use atc\WXC\BootOrder;
@@ -92,7 +94,6 @@ final class Plugin implements PluginContext
 
     public function boot(): void
     {
-        //error_log( '=== WXC\Plugin::boot() ===' );
         if ( $this->booted ) {
             return;
 		}
@@ -109,14 +110,13 @@ final class Plugin implements PluginContext
         
         // Run as early as possible on init so modules are ready before init:10 work.
 		if ( did_action('init') ) {
-		    //error_log( 'Already did init; finishBoot now.' );
+		    Logger::debug( 'Already did init; finishBoot now.' );
 			$this->finishBoot(); // if we're already past init (rare), just run now
 		} else {
 			add_action('init', [$this, 'finishBoot'], 0);
 		}
 
 		/*
-		error_log( 'About to setContext for TitleFilter' );
         TitleFilter::setContext( $this ); // $this implements PluginContext
         TitleFilter::boot();
         */
@@ -132,7 +132,6 @@ final class Plugin implements PluginContext
 
     protected function registerAdminHooks(): void
     {
-        //error_log( '=== Plugin::registerAdminHooks() ===' );
 		if (is_admin()) {
 			// Register core admin pages FIRST so they can listen for the init action
 			(new SettingsPageController())->addHooks();
@@ -148,7 +147,6 @@ final class Plugin implements PluginContext
 
     /*protected function registerPublicHooks(): void
     {
-        error_log( '=== Plugin::registerPublicHooks() ===' );
         // on 'init': Register post types, taxonomies, shortcodes
         add_action( 'init', [ $this, 'registerPostTypes' ], 10 );
         add_action( 'init', [ $this, 'collectSubtypes' ], 11 );
@@ -161,8 +159,6 @@ final class Plugin implements PluginContext
 
     public function finishBoot(): void
 	{
-	    //error_log('=== Plugin::finishBoot() @ init:0 ===');
-
 		// Boot core services -- TODO: make sure this is still useful...
 		//CoreServices::boot();
 
@@ -170,7 +166,7 @@ final class Plugin implements PluginContext
 
         // Discover all modules registered by core + add‑ons
         $modules = apply_filters( 'wxc_register_modules', [] );
-		//error_log( 'modules discovered via wxc_register_modules: '.print_r($modules, true) );
+        //Logger::debug( 'modules discovered via wxc_register_modules:'.print_r($modules, true) );
         $this->setAvailableModules( $modules );
 
         // Settings
@@ -285,17 +281,16 @@ final class Plugin implements PluginContext
 
 	public function setAvailableModules( array $modules ): void
 	{
-        //error_log( '=== Plugin::setAvailableModules() ===' );
-		//error_log( 'modules: '.print_r($modules, true) );
+		Logger::debug( 'modules:'.print_r($modules, true) );
 
 		// Validate classes -- make sure they implement ModuleInterface
 		foreach( $modules as $slug => $class ) {
 			if ( !class_exists( $class ) ) {
-			     error_log( 'The class: ' .$class . ' does not exist.' );
+			    Logger::warn( 'The class:'.$class . ' does not exist.' );
 			}
 			if ( is_subclass_of( $class, ModuleInterface::class ) ) {
 				$this->availableModules[$slug] = $class;
-				//error_log( 'Module with slug: ' .$slug . ' and class: ' .$class . ' has been added to availableModules.' );
+			    //Logger::debug( 'Module with slug: ' .$slug . ' and class: ' .$class . ' has been added to availableModules.' );
 			} else {
 			    error_log( 'Module with slug: ' .$slug . ' and class: ' .$class . ' is not a subclass of ModuleInterface.' );
 			}
@@ -359,9 +354,7 @@ final class Plugin implements PluginContext
 
     public function bootActiveModules(): int
     {
-        //error_log( '=== Plugin::bootActiveModules() ===' );
         $this->bootedModules = [];
-        //error_log( '=== Plugin: bootActiveModules() ===' );
         foreach ( $this->getActiveModules() as $moduleClass ) {
             //error_log( 'About to attempt instantiation for moduleClass: ' . $moduleClass );
         	$module = new $moduleClass();
@@ -410,9 +403,7 @@ final class Plugin implements PluginContext
      */
     public function getActivePostTypes(): array
 	{
-    	//error_log( '=== Plugin::getActivePostTypes() ===' );
-
-		// Don't reload activePostTypes if we've cached them already
+    	// Don't reload activePostTypes if we've cached them already
 		if ( ! empty( $this->activePostTypes ) ) {
 		    //error_log( 'activePostTypes already cached' );
 			return $this->activePostTypes;
@@ -487,7 +478,6 @@ final class Plugin implements PluginContext
 			}
 		}
 
-		//error_log( '=== END getActivePostTypes() ===' );
 		//error_log("active postTypeClasses: " . print_r($postTypeClasses, true));
 
 		// Make sure WP default Post Types are also accounted for so that Subtypes will work -- e.g. subtype of Post
@@ -505,8 +495,6 @@ final class Plugin implements PluginContext
 	/// WIP
 	public function assignPostTypeCaps(array $bootedModules = []): void
     {
-        //error_log( '=== assignPostTypeCaps ===' );
-
         if ($this->capsAssigned) {
 			return;
 		}
@@ -575,7 +563,7 @@ final class Plugin implements PluginContext
         }
 
         // Otherwise log to php/wp debug.log
-        error_log('[WXC] ' . $msg);
+        error_log($msg);
     }*/
 
 	//

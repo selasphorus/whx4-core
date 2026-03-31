@@ -15,7 +15,6 @@ final class ShortcodeManager
 
     public static function boot(): void
     {
-        //error_log('=== ShortcodeManager::boot() ===');
         if (did_action('init')) {
             self::registerAll();
             return;
@@ -25,8 +24,7 @@ final class ShortcodeManager
 
     public static function add(string $fqcn): void
     {
-        //error_log('=== ShortcodeManager::add() ===');
-        //error_log('ShortcodeManager::add called for ' . $fqcn . '; init? ' . did_action('init'));
+        //error_log('add called for ' . $fqcn . '; init? ' . did_action('init'));
 
         self::$registry[$fqcn] = $fqcn;
 
@@ -38,7 +36,6 @@ final class ShortcodeManager
 
     public static function registerAll(): void
     {
-        //error_log('=== ShortcodeManager::registerAll() ===');
         // Merge explicit registry and filter-provided classes
         $viaFilter  = (array)apply_filters('wxc_register_shortcodes', []);
         $candidates = array_unique(array_merge(array_values(self::$registry), $viaFilter));
@@ -51,7 +48,6 @@ final class ShortcodeManager
 
     private static function registerClass(string $fqcn): void
     {
-        //error_log('=== ShortcodeManager::registerClass() ===');
         //error_log('About to attempt registration of shortcode class: ' . $fqcn);
 
         if (!class_exists($fqcn)) {

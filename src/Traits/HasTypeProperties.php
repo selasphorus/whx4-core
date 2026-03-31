@@ -10,7 +10,7 @@ trait HasTypeProperties
 
     public function getSlug(): string
     {
-        //error_log( 'HasTypeProperties::getSlug() config: ' . print_r( $this->getConfig(), true ) );
+        //error_log( 'config: ' . print_r( $this->getConfig(), true ) );
         return $this->getConfig()['slug'] ?? strtolower( basename( str_replace( '\\', '/', static::class ) ) );
     }
 
@@ -21,7 +21,6 @@ trait HasTypeProperties
 
     public function getLabels(): array
 	{
-		//error_log('=== getLabels() ===');
 		$slug = $this->getSlug();
 		$defaults = $this->getDefaultLabels();
 		$overrides = $this->getConfig()['labels'] ?? [];
@@ -79,7 +78,6 @@ trait HasTypeProperties
 
     public function getDefaultCapabilities( array $capType = [] ): array
     {
-        //error_log( '=== HasTypeProperties::getDefaultCapabilities() ===' );
         $type     = $this->getType();
         if ( $capType ) {
             $singular = $capType[0];

@@ -9,7 +9,6 @@ class SettingsPageController
 {
     public function addHooks(): void
     {
-        //error_log( '=== SettingsPageController::addHooks() ===' );
         // Register the settings page using the new registry system
         add_action('wxc_admin_pages_init', [$this, 'registerSettingsPage']);
         
@@ -19,7 +18,6 @@ class SettingsPageController
 
     /*public function addSettingsPage(): void
     {
-        //error_log( '=== SettingsPageController::addSettingsPage() ===' );
         add_options_page(
             'WXC v2 Plugin Settings', // page_title
             'WXC v2 Settings', // menu_title
@@ -46,7 +44,6 @@ class SettingsPageController
 
     public function registerSettings(): void
     {
-        //error_log( '=== SettingsPageController::registerSettings() ===' );
         register_setting('wxc_plugin_settings_group', 'wxc_plugin_settings');
 
         add_settings_section(
@@ -59,7 +56,6 @@ class SettingsPageController
 
     public function renderSettingsPage(): void
     {
-        //error_log( '=== SettingsPageController::renderSettingsPage() ===' );
         ViewLoader::render('settings-page', [
             'availableModules' => App::ctx()->getAvailableModules(),
             'activeModules'    => App::ctx()->getSettingsManager()->getActiveModuleSlugs(),

@@ -25,8 +25,6 @@ class FieldGroupLoader
 
     public function boot(): void
     {
-        //error_log( '=== FieldGroupLoader::boot() ===' );
-
         // Abort if no modules have been booted
         if ( !App::ctx()->modulesBooted() ) {
             //error_log( '=== no modules booted yet => abort ===' );
@@ -36,11 +34,8 @@ class FieldGroupLoader
         $this->registerAll();
     }
 
-    ////
-
     public function registerAll(): void
     {
-        //error_log( '=== registerAll field groups ===' );
         foreach( App::ctx()->getActiveModules() as $moduleClass ) {
             $this->registerFieldsForModule( $moduleClass );
         }

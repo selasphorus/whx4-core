@@ -2,6 +2,8 @@
 
 namespace atc\WXC\Utils;
 
+use atc\WXC\Logger;
+
 class RepeaterChangeDetector
 {
     /**
@@ -14,8 +16,7 @@ class RepeaterChangeDetector
      */
     public static function detectRemovedValues( int $post_id, string $repeater_field_name, string $subfield_name ): array
     {
-        error_log( '=== RepeaterChangeDetector::detectRemovedValues ===' );
-        //error_log( 'post_id: '. $post_id . '; repeater_field_name: '.$repeater_field_name . '; subfield_name: '.$subfield_name );
+        Logger::debug( 'post_id: '. $post_id . '; repeater_field_name: '.$repeater_field_name . '; subfield_name: '.$subfield_name, 'meta' );
 
         $old_rows = get_field( $repeater_field_name, $post_id ) ?: [];
         $old_values = [];
@@ -25,7 +26,7 @@ class RepeaterChangeDetector
                 $old_values[] = $row[ $subfield_name ];
             }
         }
-        error_log( 'old_values: ' . print_r($old_values,true) );
+        Logger::debug( 'old_values: ' . print_r($old_values,true), 'meta' );
 
         // Get field keys
         $repeater_field = get_field_object( $repeater_field_name, $post_id );
@@ -69,7 +70,7 @@ class RepeaterChangeDetector
 
             $new_values[] = $value;
         }
-        error_log( 'new_values: ' . print_r($new_values,true) );
+        Logger::debug( 'new_values: ' . print_r($new_values,true), 'meta' );
 
         return array_diff( $old_values, $new_values );
     }

@@ -124,7 +124,6 @@ class PostTypeRegistrar
     //
     public function registerMany( array $postTypeClasses ): void
     {
-    	//error_log( '=== PostTypeRegistrar->registerMany() ===' );
     	//error_log( 'postTypeClasses: ' . print_r( $postTypeClasses, true ) );
         foreach( $postTypeClasses as $slug => $handlerClass ) {
         	//error_log( 'attempting to register handlerClass: '.$handlerClass );
@@ -142,7 +141,6 @@ class PostTypeRegistrar
 	//public function assignPostTypeCapabilities(array $handlers): void
 	public function assignPostTypeCapabilities(): void
 	{
-		//error_log( '=== PostTypeRegistrar::assignPostTypeCapabilities() ===' );
 		//$roles = ['administrator']; //
 		$roles = ['administrator', 'editor'];
 
@@ -208,7 +206,6 @@ class PostTypeRegistrar
      */
     protected function resolveTaxonomyClasses(string $handlerClass, array|string $taxonomies): array
     {
-		//error_log( '=== PostTypeRegistrar::resolveTaxonomyClasses() ===' );
         $taxonomies = is_array($taxonomies) ? $taxonomies : [ $taxonomies ];
         //error_log( 'taxonomies: ' . print_r($taxonomies, true) );
         $resolved   = [];
@@ -229,7 +226,6 @@ class PostTypeRegistrar
     // TODO: generalize
     protected function resolveTaxonomyFqcn(string $handlerClass, string $name): string
     {
-		//error_log( '=== PostTypeRegistrar::resolveTaxonomyFqcn() ===' );
 		//error_log( 'name to resolve: ' . $name );
 
         // Already a FQCN?

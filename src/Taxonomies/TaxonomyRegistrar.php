@@ -10,7 +10,6 @@ final class TaxonomyRegistrar
 {
     public static function register(): void
     {
-        //error_log( '=== TaxonomyRegistrar::register() ===' );
         add_action( 'init', [ self::class, 'bootstrap' ], BootOrder::TAXONOMIES );
     }
 
@@ -21,8 +20,6 @@ final class TaxonomyRegistrar
      */
     public static function bootstrap(): void
     {
-        //error_log( '=== TaxonomyRegistrar::bootstrap() ===' );
-
         // 1) Start with any handlers contributed by CPTs/modules/core
         $handlers = (array) apply_filters('wxc_register_taxonomy_handlers', []);
         $handlers = array_unique($handlers); // Get rid of duplicates

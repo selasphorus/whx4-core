@@ -79,7 +79,6 @@ abstract class PostTypeHandler extends BaseHandler
 
     public static function queryDefaults(): array
     {
-        //error_log( "PostTypeHandler::queryDefaults" );
         $spec = static::getQuerySpec();
         //if ( isset($spec['cpt']) ) { error_log( "spec['cpt']: " . $spec['cpt'] ); } else { error_log( "spec['cpt'] not set" ); }
         $ptype = $spec['cpt'] ?? (static::resolvePostTypeFromContext() ?? '');
@@ -112,7 +111,7 @@ abstract class PostTypeHandler extends BaseHandler
 	 */
 	public static function sanitizeScopeParam(mixed $value): ?string
 	{
-	    error_log('[sanitizeScopeParam] value (as received): ' . $value);
+	    error_log('value (as received): ' . $value);
 
 		if ($value === null) { return null; }
 		if (is_array($value)) { $value = reset($value); }
@@ -145,7 +144,6 @@ abstract class PostTypeHandler extends BaseHandler
 
     protected static function resolvePostTypeFromContext(): ?string
 	{
-		//error_log( "PostTypeHandler::resolvePostTypeFromContext" );
 		try {
 			$ctx = App::ctx();
 			$map = is_array($ctx->getActivePostTypes()) ? $ctx->getActivePostTypes() : [];
@@ -226,10 +224,10 @@ abstract class PostTypeHandler extends BaseHandler
 
     public static function buildQueryParams(array $normalized): array
     {
-        //error_log('[buildQueryParams::find] normalized: ' . print_r($normalized, true)); // ok
+        //error_log('normalized: ' . print_r($normalized, true)); // ok
         
         $spec = static::getQuerySpec();
-        //error_log('[buildQueryParams::find] spec: ' . print_r($spec, true));
+        //error_log('spec: ' . print_r($spec, true));
         
         $tax = [];
         foreach (($normalized['tax_inputs'] ?? []) as $taxonomy => $slugs) {
@@ -282,33 +280,33 @@ abstract class PostTypeHandler extends BaseHandler
 			$params['tax'] = $tax;
 		}
 		
-		//error_log('[buildQueryParams::find] params: ' . print_r($params, true));
+		//error_log('params: ' . print_r($params, true));
 		
 		// Trim nulls while preserving 0/false
 		$params = array_filter(
 			$params,
 			static fn($v) => $v !== null && ($v !== [] || is_array($v) === false)
 		);
-		//error_log('[buildQueryParams::find] params after trim: ' . print_r($params, true));
+		//error_log('params after trim: ' . print_r($params, true));
 
         /** @var array $filtered */
         //$filtered = apply_filters('wxc_generic_query_params', $params, $normalized, $spec);
         $filtered = $params; // tft
         
-        //error_log('[buildQueryParams::find] filtered: ' . print_r($filtered, true));
+        //error_log('filtered: ' . print_r($filtered, true));
         return $filtered;
     }
     
     // TODO: standardize terminology for "find" methods -- filters? params?
     public static function find(array $filters): array
     {
-        error_log('[PostTypeHandler::find] filters: ' . print_r($filters, true));
+        error_log('filters: ' . print_r($filters, true));
         
         $normalized = static::normalizeFilters($filters);
-        //error_log('[PostTypeHandler::find] normalized filters: ' . print_r($normalized, true));
+        //error_log('normalized filters: ' . print_r($normalized, true));
         
         $params = static::buildQueryParams($normalized);
-        //error_log('[PostTypeHandler::find] params: ' . print_r($params, true));
+        //error_log('params: ' . print_r($params, true));
 
         $query  = new PostQuery();
         $result = $query->find($params);
@@ -705,8 +703,7 @@ abstract class PostTypeHandler extends BaseHandler
 	 */
 	public static function getScopeFromRequest(array $atts = [], string $default = 'this_year')
 	{
-		error_log( "PostTypeHandler::getScopeFromRequest" );
-		error_log('[getScopeFromRequest] atts: ' . print_r($atts, true));
+		error_log('atts: ' . print_r($atts, true));
 		
 		$scope = $atts['scope'] ?? $default;
 	
@@ -721,7 +718,7 @@ abstract class PostTypeHandler extends BaseHandler
 		    if ($sanitized !== null) { $scope = $sanitized; }
 		}
 		
-		error_log('[getScopeFromRequest] returning scope: ' . $scope);
+		error_log('returning scope: ' . $scope);
 	
 		return $scope;
 	}

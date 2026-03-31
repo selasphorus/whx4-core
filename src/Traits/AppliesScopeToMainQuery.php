@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace atc\WXC\Traits;
 
+use atc\WXC\Logger;
 use atc\WXC\Query\ScopedDateResolver;
 
 trait AppliesScopeToMainQuery
@@ -51,13 +52,12 @@ trait AppliesScopeToMainQuery
         // Resolve scope to date bounds
         $mode = ($metaType === 'NUMERIC') ? 'DATE' : 'DATE'; // Both use DATE mode for windowing
         $bounds = ScopedDateResolver::resolve($scope, ['mode' => $mode]);
-        error_log('(WXC) Bounds: ' . print_r($bounds, true));
+        Logger::debug( 'Bounds: ' . print_r($bounds, true), 'query' );
         
         if (empty($bounds['start']) || empty($bounds['end'])) {
             return;
         }
-        
-        error_log('(WXC) Scope: ' . $scope);
+        Logger::debug( 'Scope: ' . $scope, 'query' );
         
         // Build meta_query with OR logic for non-recurring vs recurring events
         $meta_query = $query->get('meta_query') ?: ['relation' => 'AND'];
@@ -102,8 +102,7 @@ trait AppliesScopeToMainQuery
 				],
 			],
 		];
-		
-		//error_log('(WXC) Final meta_query: ' . print_r($meta_query, true));
+		//Logger::debug( 'Final meta_query: ' . print_r($meta_query, true), 'query' );
         
         $query->set('meta_query', $meta_query);
     }

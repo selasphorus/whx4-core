@@ -32,7 +32,7 @@ abstract class Module implements ModuleInterface
 
     public function boot(): void
     {
-		//error_log( '=== Module class boot() for module: ' . $this->getSlug() . '===' );
+		//error_log( 'module: ' . $this->getSlug() );
         $this->registerDefaultViewRoot();
 
         $enabledSlugs = App::ctx()
@@ -109,14 +109,14 @@ abstract class Module implements ModuleInterface
 			return ['posts' => [], 'pagination' => ['found' => 0, 'max_pages' => 0, 'paged' => $filters['paged'] ?? 1], 'debug' => ['error' => 'handler missing']];
 		}
 		
-		//error_log('[findViaHandler] postType=' . $postType);
-		//error_log('[findViaHandler] class=' . (($class ?? 'NULL')));
-		//error_log('[findViaHandler] filters=' . json_encode($filters, JSON_UNESCAPED_SLASHES));
+		//error_log('postType=' . $postType);
+		//error_log('class=' . (($class ?? 'NULL')));
+		//error_log('filters=' . json_encode($filters, JSON_UNESCAPED_SLASHES));
 		
 		// @var class-string<PostTypeHandler> $class
 		$result = $class::find($filters);
 		
-		//error_log('[findViaHandler] result.debug=' . json_encode($result['debug'] ?? [], JSON_UNESCAPED_SLASHES));
+		//error_log('result.debug=' . json_encode($result['debug'] ?? [], JSON_UNESCAPED_SLASHES));
 		return $result;
 	}*/
 
@@ -219,7 +219,6 @@ abstract class Module implements ModuleInterface
 	// ?? obsolete/redundant
 	public function getPostTypes(): array
 	{
-		//error_log( '=== \Core\Module -- getPostTypes() ===' );
 		$postTypes = [];
 
 		foreach( $this->getPostTypeHandlerClasses() as $class ) {

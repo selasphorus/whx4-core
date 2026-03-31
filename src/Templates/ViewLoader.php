@@ -63,8 +63,7 @@ final class ViewLoader
      */
     public static function renderToString(string $view, array $vars = [], array $specs = []): string
     {
-        //error_log( '[ViewLoader::renderToString] called for view: ' . $view . ' with vars: ' . print_r($vars,true) . ' and spec: ' . print_r($specs,true) . '===' );
-        //error_log( '=== renderToString for view: ' . $view . ' with spec: ' . print_r($specs,true) . '===' );
+        //error_log( 'called for view: ' . $view . ' with vars: ' . print_r($vars,true) . ' and spec: ' . print_r($specs,true) . '===' );
         $path = self::getViewPath($view, $specs);
         //
         $kind   = self::normalizeKind($specs['kind'] ?? null);
@@ -149,13 +148,12 @@ final class ViewLoader
                 $postTypePath = "{$root}/" . Text::studly($postType) . "/{$view}.php";
                 //$paths[] = "{$root}/" . Text::studly($postType) . "/{$view}.php"; // Within the Modules dir structure, postTypes are studly caps to match class names
                 $paths[] = $postTypePath;
-                //error_log( '(WXC-ViewLoader::generateSearchPaths) postTypePath: ' . $postTypePath . '' );
+                //error_log( 'postTypePath: ' . $postTypePath . '' );
             }
             $paths[] = "{$root}/{$view}.php";
         }
 
         // 3) Plugin fallback (wxc/views/<view>.php)
-        //error_log( 'WXC_PLUGIN_DIR: ' . WXC_PLUGIN_DIR . '' );
         self::appendPermutations(
             $paths,
             rtrim(WXC_PLUGIN_DIR, '/'),

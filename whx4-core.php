@@ -52,7 +52,6 @@ use atc\WXC\Modules\Admin\AdminModule as Admin;
 
 // Init
 add_filter( 'wxc_register_modules', function( array $modules ) {
-    //error_log( 'wxc_register_modules fired' );
     return array_merge( $modules, [
         'admin' 		=> Admin::class,
         'supernatural' 	=> Supernatural::class,

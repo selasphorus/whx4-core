@@ -61,12 +61,12 @@ class AdminPageRegistry
     {
         // Validate required fields
         if (empty($config['page_title']) || empty($config['menu_title'])) {
-            error_log("AdminPageRegistry: page_title and menu_title are required for page '{$id}'");
+            error_log("page_title and menu_title are required for page '{$id}'");
             return;
         }
         
         if (empty($config['controller']) || !is_callable($config['controller'])) {
-            error_log("AdminPageRegistry: Valid controller callable is required for page '{$id}'");
+            error_log("Valid controller callable is required for page '{$id}'");
             return;
         }
         
@@ -79,7 +79,7 @@ class AdminPageRegistry
         
         // Validate submenu has parent_slug
         if ($config['type'] === 'submenu' && empty($config['parent_slug'])) {
-            error_log("AdminPageRegistry: parent_slug is required for submenu page '{$id}'");
+            error_log("parent_slug is required for submenu page '{$id}'");
             return;
         }
         

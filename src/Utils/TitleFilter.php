@@ -3,12 +3,13 @@
 namespace atc\WXC\Utils;
 
 use atc\WXC\App;
+use atc\WXC\Logger;
 
 class TitleFilter
 {
     public static function boot(): void
     {
-        //error_log( '=== TitleFilter::boot() ===' );
+        Logger::debug( 'boot...', 'titles' );
         //add_filter( 'the_title', [ self::class, 'filterTitle' ], 10, 2 );
     }
 
@@ -54,7 +55,6 @@ class TitleFilter
         */
 
         //return self::renderTitle( $args ); //return self::renderTitle( $post->ID, $args );
-
     }
 
     //public static function renderTitle( array $args ): string //int $postID,
@@ -167,8 +167,7 @@ class TitleFilter
         // Merge per-post-type customizations
         $custom = [];
 
-        //$handlerClass = self::$ctx?->getActivePostTypes()[ $postType ] ?? null; //$activePostTypes = self::$ctx?->getActivePostTypes()[ $postType ] ?? null;
-        //error_log( 'normalizeTitleArgs >> activePostTypes: ' . print_r($activePostTypes, true) );
+        //$handlerClass = self::$ctx?->getActivePostTypes()[ $postType ] ?? null;
         /*if ( method_exists( $handlerClass, 'getCustomTitleArgs' ) ) {
             $handler = new $handlerClass();
             $custom = $handler->getCustomTitleArgs( $post );
@@ -196,5 +195,4 @@ class TitleFilter
 
         return null;
     }
-
 }

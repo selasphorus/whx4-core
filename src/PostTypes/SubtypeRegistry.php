@@ -15,14 +15,12 @@ final class SubtypeRegistry
 
     public static function register(): void
     {
-        //error_log( '=== SubtypeRegistry::register() ===' );
         add_action('init', [self::class, 'collect'], BootOrder::SUBTYPES);
     }
     
     // Normalize providers, store instance + meta, no side-effects
     public static function collect(): void
     {
-        //error_log( '=== SubtypeRegistry::collect() ===' );
         //self::$subtypes = [];
         self::$instances = [];
         self::$meta = [];
@@ -82,7 +80,6 @@ final class SubtypeRegistry
     // Resolvers
 	public static function resolve(string $postType, string $slug): ?SubtypeInterface
 	{
-		error_log( '=== SubtypeRegistry::resolve() ===' );
 		error_log( 'Attempting to resolve subtype with postType: ' . $postType . ' and slug: ' . $slug);
 		return self::$instances[$postType][$slug] ?? null;
 	}

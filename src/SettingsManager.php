@@ -3,6 +3,7 @@
 namespace atc\WXC;
 
 use atc\WXC\Plugin;
+use atc\WXC\Logger;
 
 final class SettingsManager
 {
@@ -39,7 +40,6 @@ final class SettingsManager
      */
     public function ensureInitialized(array $availableModules): void //, array $allPostTypesByModule
     {
-        //error_log( '=== SettingsManager::ensureInitialized() ===' );
         $opt = $this->getOption();
 
         $needsSeeding =
@@ -89,7 +89,6 @@ final class SettingsManager
      */
     public function getDefaultActiveModules(array $allModules): array
     {
-        //error_log( '=== SettingsManager::getDefaultActiveModules() ===' );
         $allModuleSlugs = array_keys($allModules);
         $defaultSlugs = apply_filters('wxc_default_active_modules', $allModuleSlugs);
         //return array_values(array_unique(array_filter($defaults, 'is_string')));
@@ -99,7 +98,6 @@ final class SettingsManager
     /*
     protected function getDefaultActiveModules(): array
     {
-        error_log( '=== Plugin::getDefaultActiveModules() ===' );
         // Default = “all discovered modules”, overrideable via filter
         // Keys must match what you use in getAvailableModules(), e.g., slugs or FQCNs
         $all = array_keys($this->getAvailableModules());
