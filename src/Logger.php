@@ -75,8 +75,8 @@ class Logger
 			return false;
 		}
 	
-		//get_query_var('dev')
-		$devParam = isset( $_GET['dev'] ) ? sanitize_key( $_GET['dev'] ) : null;
+		$devParam = get_query_var('dev');
+		//$devParam = isset( $_GET['dev'] ) ? sanitize_key( $_GET['dev'] ) : null;
 	
 		if ( $devParam === null ) {
 			return false;

@@ -169,6 +169,13 @@ function wxc_redirect()
     }
 }
 
+// Add custom query vars -- TMP -- do this better?
+add_filter( 'query_vars', 'wxc_query_vars' );
+function wxc_query_vars( $qvars )
+{
+    $qvars[] = 'dev';
+    return $qvars;
+}
 
 /**
  * Explode list using "," and ", ".
