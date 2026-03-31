@@ -52,7 +52,7 @@ final class PostQuery
         // First, ensure normalized contract
         $p = $this->normalizeContract($params); //$p = self::normalizeContract($params);
 		
-        //error_log('[PostQuery::find] params (p) AFTER normalizeContract: ' . print_r($p, true));
+		//Logger::debug( 'params AFTER normalizeContract:'.print_r($p, true) );
 
         // Allow the active CPT handler to refine args -- ???
         $ptype = $p['post_type'];
@@ -69,16 +69,12 @@ final class PostQuery
         
         // 2) Build combined meta_query spec
         $metaSpec  = $p['meta'] ?? [];
-        //error_log('[PostQuery::find] metaSpec BEFORE mergeSpecs: ' . print_r($metaSpec, true));
         
-        $combinedMetaSpec  = MetaQueryBuilder::mergeSpecs([$dateMetaSpec, $metaSpec], 'AND'); // $combinedMetaSpec = MetaQueryBuilder::mergeSpecs([$dateMetaSpec, $p['meta']], 'AND');
+        $combinedMetaSpec  = MetaQueryBuilder::mergeSpecs([$dateMetaSpec, $metaSpec], 'AND');
         Logger::debug( 'combinedMetaSpec:'.print_r($combinedMetaSpec, true) );
         
-        $metaQuery = $combinedMetaSpec ? MetaQueryBuilder::build($combinedMetaSpec) : []; // $metaQuery = MetaQueryBuilder::build($combinedMetaSpec);
-        //error_log('[PostQuery::find] metaQuery: ' . print_r($metaQuery, true));
-        /*if (!empty($p['meta'])) {
-            $args['meta_query'] = MetaQueryBuilder::fromSpec($p['meta'])->toWp();
-        }*/
+        $metaQuery = $combinedMetaSpec ? MetaQueryBuilder::build($combinedMetaSpec) : [];
+        //Logger::debug( 'metaQuery:'.print_r($metaQuery, true) );
 		
 		// 3) Build tax_query from either a simple map or a full spec
 		$taxSpec = $p['tax'] ?? [];
@@ -137,8 +133,6 @@ final class PostQuery
             $args['tax_query'] = $taxQuery;
         }
         
-        //error_log('[PostQuery::find] args BEFORE adjustQueryArgs: ' . json_encode($args, JSON_UNESCAPED_SLASHES));
-        
         // 5) Allow the active CPT handler to refine args (AFTER base args are built)
         $handlerClass = App::ctx()->getActivePostTypes()[$ptype] ?? null;
         if ($handlerClass && is_a($handlerClass, QueryContributor::class, true)) {
@@ -146,8 +140,6 @@ final class PostQuery
             $contrib = new $handlerClass();
             $args = $contrib->adjustQueryArgs($args, $p);
         }
-        
-        //error_log('[PostQuery::find] args AFTER adjustQueryArgs: ' . json_encode($args, JSON_UNESCAPED_SLASHES));
 
         // 6) Final site-level filters
         /**
@@ -442,10 +434,7 @@ final class PostQuery
 	 */
 	private static function dateMetaSpecFromBounds(array $dateMeta, ?array $dateBounds): array
 	{
-		if (defined('WXC_DEBUG') && WXC_DEBUG) {
-		    error_log('[PostQuery::dateMetaSpecFromBounds] dateMeta: ' . print_r($dateMeta, true));
-		    //error_log('[PostQuery::dateMetaSpecFromBounds] dateBounds: ' . print_r($dateBounds, true));
-		}
+		Logger::debug( 'dateMeta:'.print_r($dateMeta, true) );
 		
 		// No scope -> no date filtering requested
 		if ( empty($dateBounds) || ($dateBounds['start'] ?? null) === null && ($dateBounds['end'] ?? null) === null) {
@@ -460,7 +449,6 @@ final class PostQuery
 		$key      = isset($dateMeta['key']) ? (string)$dateMeta['key'] : null;
 		$startKey = isset($dateMeta['start_key']) ? (string)$dateMeta['start_key'] : null;
 		$endKey   = isset($dateMeta['end_key']) ? (string)$dateMeta['end_key'] : null;
-		//error_log('[PostQuery::dateMetaSpecFromBounds] dateMeta[key] keyType: ' . $keyType);
 		
 		// NUMERIC (year-based) storage (single/rows/serialized)
 		// Treat scope bounds as a years window and delegate to MetaQueryBuilder.
@@ -469,7 +457,7 @@ final class PostQuery
 		// (A) years-only storage  → numeric_years=true (delegates to yearsWindow helper), OR
 		// (B) ACF date_picker (Ymd) → numeric_years=false|unset (handled below as a normal range with cast=NUMERIC).
 		if ($metaType === 'NUMERIC' && !empty($numericYears)) {
-		    error_log('[PostQuery::dateMetaSpecFromBounds] numericYears is TRUE.');
+		    Logger::debug( 'numericYears is TRUE' );
 		    // Expect a single meta key that stores a year (single/rows/serialized)
 		    if (!is_string($key) || $key === '') {
 		        // No usable key → noop
@@ -479,12 +467,12 @@ final class PostQuery
 		    $window = DateHelper::yearsWindow($dateBounds);
 		    return MetaQueryBuilder::fromYearsWindow($key, $keyType, $window, 'NUMERIC');
 		} else if ($metaType === 'NUMERIC') {
-		    error_log('[PostQuery::dateMetaSpecFromBounds] metaType is NUMERIC => need to format for ACF: ' . print_r($dateBounds, true));
+		    Logger::debug( 'metaType is NUMERIC => need to format for ACF: ' . print_r($dateBounds, true) );
 		}
 	
 		// Single point-in-time meta (e.g., event_date, transaction_date)
-		if (is_string($key) && $key !== '' && !$startKey && !$endKey) { //if (!empty($key)) {
-		    error_log('[PostQuery::dateMetaSpecFromBounds] Single point-in-time meta with key: ' . $key);
+		if (is_string($key) && $key !== '' && !$startKey && !$endKey) {
+		    Logger::debug( 'Single point-in-time meta with key: ' . $key );
 			// Build a BETWEEN (date or datetime) using $bounds['start']..$bounds['end']
 			return [
 				'relation' => 'AND',
@@ -500,7 +488,7 @@ final class PostQuery
 	
 		// Span storage (e.g., events with start_key/end_key) -- build overlap over start/end keys.
 		if (!empty($startKey) && !empty($endKey)) { //if (is_string($startKey) && $startKey !== '' && is_string($endKey) && $endKey !== '') {
-		    error_log('[PostQuery::dateMetaSpecFromBounds] startKey: ' . $startKey . '; endKey: ' . $endKey);
+		    Logger::debug( 'startKey: ' . $startKey . '; endKey: ' . $endKey );
 			return [
 				'relation' => 'AND',
 				'clauses'  => [[
