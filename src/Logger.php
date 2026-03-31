@@ -23,9 +23,9 @@ class Logger
 
     public static function log( string $message, string $level = self::DEBUG, mixed $data = null, ?string $context = null ): void
     {
-        if ( ! self::shouldLog( $level ) ) {
-            return;
-        }
+        if ( ! self::shouldLog( $level, $context ) ) {
+			return;
+		}
 
         $caller = self::resolveCaller( debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 5 ) );
 
