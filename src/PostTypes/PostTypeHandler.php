@@ -600,7 +600,7 @@ abstract class PostTypeHandler extends BaseHandler
 	{
 		$post = get_post();
 		$postType = get_post_type();
-		Logger::debug( 'PostTypeHandler -> postType: ' . $postType, 'wxc' );
+		Logger::debug( 'PostTypeHandler -> postType', $postType, 'wxc' );
 	
 		if ( ! is_singular( $postType ) || ! in_the_loop() || ! is_main_query()  || !$post instanceof \WP_Post) {
 			return $content;
