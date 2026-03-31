@@ -50,7 +50,7 @@ final class SettingsManager
             //&& get_option('wxc_initialized', 0) !== 1;
 
         if (!$needsSeeding) {
-            //error_log( 'NOT needsSeeding' );
+            //Logger::debug( 'NOT needsSeeding', 'wxc' );
             return;
         }
 
@@ -59,8 +59,8 @@ final class SettingsManager
         //$defaultModules = $this->getDefaultActiveModules(array_keys($availableModules));
         $defaultModules = $availableModules;
         $defaultSlugs = array_keys($availableModules);
-        //error_log( 'defaultModules:' . print_r($defaultModules, true) );
-        //error_log( 'defaultSlugs:' . print_r($defaultSlugs, true) );
+        //Logger::debug( 'defaultModules:' . print_r($defaultModules, true), 'wxc' );
+        //Logger::debug( 'defaultSlugs:' . print_r($defaultSlugs, true), 'wxc' );
 
         // Enable all known post types for each active module
         $enabled = [];
@@ -68,7 +68,7 @@ final class SettingsManager
         foreach( $defaultModules as $moduleSlug => $moduleClass ) {
             $module = class_exists( $moduleClass ) ? new $moduleClass() : null;
             $postTypes = $module ? $module->getPostTypes() : [];
-            //error_log( 'postTypes for moduleSlug: ' . $moduleSlug . ':' . print_r($postTypes, true) );
+            //Logger::debug( 'postTypes for moduleSlug: ' . $moduleSlug . ':' . print_r($postTypes, true), 'wxc' );
             //foreach ( $postTypes as $slug => $label ) :
             $enabled[$moduleSlug] = array_keys($postTypes);
             //$enabled[$moduleSlug] = array_values($allPostTypesByModule[$moduleSlug] ?? []);

@@ -110,7 +110,7 @@ final class Plugin implements PluginContext
         
         // Run as early as possible on init so modules are ready before init:10 work.
 		if ( did_action('init') ) {
-		    Logger::debug( 'Already did init; finishBoot now.' );
+		    Logger::debug( 'Already did init; finishBoot now.', 'wxc' );
 			$this->finishBoot(); // if we're already past init (rare), just run now
 		} else {
 			add_action('init', [$this, 'finishBoot'], 0);
@@ -166,7 +166,7 @@ final class Plugin implements PluginContext
 
         // Discover all modules registered by core + add‑ons
         $modules = apply_filters( 'wxc_register_modules', [] );
-        //Logger::debug( 'modules discovered via wxc_register_modules:'.print_r($modules, true) );
+        //Logger::debug( 'modules discovered via wxc_register_modules:'.print_r($modules, true), 'wxc' );
         $this->setAvailableModules( $modules );
 
         // Settings
@@ -281,18 +281,18 @@ final class Plugin implements PluginContext
 
 	public function setAvailableModules( array $modules ): void
 	{
-		Logger::debug( 'modules:'.print_r($modules, true) );
+		Logger::debug( 'modules:'.print_r($modules, true), 'wxc' );
 
 		// Validate classes -- make sure they implement ModuleInterface
 		foreach( $modules as $slug => $class ) {
 			if ( !class_exists( $class ) ) {
-			    Logger::warn( 'The class:'.$class . ' does not exist.' );
+			    Logger::warn( 'The class:'.$class . ' does not exist.', 'wxc' );
 			}
 			if ( is_subclass_of( $class, ModuleInterface::class ) ) {
 				$this->availableModules[$slug] = $class;
-			    //Logger::debug( 'Module with slug: ' .$slug . ' and class: ' .$class . ' has been added to availableModules.' );
+			    //Logger::debug( 'Module with slug: ' .$slug . ' and class: ' .$class . ' has been added to availableModules.', 'wxc' );
 			} else {
-			    error_log( 'Module with slug: ' .$slug . ' and class: ' .$class . ' is not a subclass of ModuleInterface.' );
+			    Logger::debug( 'Module with slug: ' .$slug . ' and class: ' .$class . ' is not a subclass of ModuleInterface.', 'wxc' );
 			}
 		}
 	}
@@ -356,29 +356,29 @@ final class Plugin implements PluginContext
     {
         $this->bootedModules = [];
         foreach ( $this->getActiveModules() as $moduleClass ) {
-            //error_log( 'About to attempt instantiation for moduleClass: ' . $moduleClass );
+            //Logger::debug( 'About to attempt instantiation for moduleClass: ' . $moduleClass, 'wxc' );
         	$module = new $moduleClass();
         	if (!$module instanceof ModuleInterface) {
-				error_log('Module does not implement ModuleInterface: '.$moduleClass);
+				Logger::debug( 'Module does not implement ModuleInterface: '.$moduleClass, 'wxc' );
 				continue;
 			}
 
-        	//error_log( 'About to attempt module boot() for moduleClass: ' . $moduleClass );
+        	//Logger::debug( 'About to attempt module boot() for moduleClass: ' . $moduleClass, 'wxc' );
         	try {
 				if (method_exists($module, 'boot')) {
 					$module->boot();
 					$this->bootedModules[] = $moduleClass;
-					//error_log('Module booted! moduleClass: '.$moduleClass);
+					//Logger::debug( 'Module booted! moduleClass: '.$moduleClass, 'wxc' );
 				} else {
-					error_log('boot() method missing for moduleClass: '.$moduleClass);
+					Logger::debug( 'boot() method missing for moduleClass: '.$moduleClass, 'wxc' );
 				}
 			} catch (\Throwable $e) {
-				error_log('Error booting module '.$moduleClass.': '.$e->getMessage());
+				Logger::debug( 'Error booting module '.$moduleClass.': '.$e->getMessage(), 'wxc' );
 			}
         }
         $count = count($this->bootedModules);
 		$this->modulesBooted = $count > 0;
-		//error_log($count . ' Modules booted');
+		//Logger::debug( $count . ' Modules booted', 'wxc' );
 
 		/**
 		 * Fires after modules have attempted to boot.
@@ -405,27 +405,27 @@ final class Plugin implements PluginContext
 	{
     	// Don't reload activePostTypes if we've cached them already
 		if ( ! empty( $this->activePostTypes ) ) {
-		    //error_log( 'activePostTypes already cached' );
+		    //Logger::debug( 'activePostTypes already cached', 'wxc' );
 			return $this->activePostTypes;
 		}
 
     	$this->loadActiveModules();
 		$enabledPostTypesByModule = $this->getSettingsManager()->getEnabledPostTypeSlugsByModule();
 		//$activeSlugsByModule = $this->settingsManager->getEnabledPostTypeSlugsByModule();
-		//error_log("enabledPostTypesByModule: " . print_r($enabledPostTypesByModule, true));
+		//Logger::debug( 'enabledPostTypesByModule: ' . print_r($enabledPostTypesByModule, true), 'wxc' );
 
 		$postTypeClasses = [];
 
 		foreach( $this->activeModules as $moduleSlug => $moduleClass ) {
-			//error_log("About to look for activePostTypes for moduleSlug: " . print_r($moduleSlug, true));
+			//Logger::debug( 'About to look for activePostTypes for moduleSlug: ' . print_r($moduleSlug, true), 'wxc' );
 			try {
 				if( !class_exists($moduleClass) ) {
-					error_log("Class $moduleClass does not exist.");
+					Logger::debug( 'Class $moduleClass does not exist.', 'wxc' );
 					continue;
 				}
 
 				if( !is_subclass_of($moduleClass, Contracts\ModuleInterface::class) ) {
-					error_log("Class $moduleClass is not a ModuleInterface.");
+					Logger::debug( 'Class $moduleClass is not a ModuleInterface.', 'wxc' );
 					continue;
 				}
 
@@ -434,17 +434,17 @@ final class Plugin implements PluginContext
 				$moduleSlug = strtolower($moduleInstance->getSlug()); //$moduleSlug = strtolower($moduleInstance->getName());
 
 				if( !method_exists($moduleClass, 'getPostTypes') ) {
-					error_log("Module $moduleClass does not implement getPostTypes().");
+					Logger::debug( 'Module $moduleClass does not implement getPostTypes().', 'wxc' );
 					continue;
 				}
 
 				//$definedPostTypes = $moduleClass::getPostTypes();
 				$definedPostTypes = $moduleInstance->getPostTypeHandlerClasses();
 				//$handlers = $module->getPostTypeHandlers();
-				//error_log("definedPostTypes: " . print_r($definedPostTypes, true));
+				//Logger::debug( 'definedPostTypes: ' . print_r($definedPostTypes, true), 'wxc' );
 
 				$enabled = $enabledPostTypesByModule[ $moduleSlug ] ?? $definedPostTypes;
-				//error_log("Module $moduleSlug: defined=" . implode(',', $definedPostTypes) . "; enabled=" . implode(',', $enabled));
+				//Logger::debug( 'Module $moduleSlug: defined=' . implode(',', $definedPostTypes) . '; enabled=' . implode(',', $enabled), 'wxc' );
 
 				//foreach ($definedPostTypes as $postTypeSlug => $name) {
 				//foreach ( $handlers as $handlerClass ) {
@@ -452,17 +452,17 @@ final class Plugin implements PluginContext
 				    if ( ! class_exists( $postTypeHandlerClass ) ) {
 						continue;
 					}
-					//error_log("postTypeHandlerClass: " . $postTypeHandlerClass );
+					//Logger::debug( 'postTypeHandlerClass: ' . $postTypeHandlerClass, 'wxc' );
 					$handler = new $postTypeHandlerClass(); //$postTypeHandler = new $postTypeHandlerClass();
 					$postTypeSlug = $handler->getSlug();
 					//$slug = ( new $handlerClass( null ) )->getSlug();
 					//$className = $handler->getLabels()['singular_name'];
 					if  (in_array( $postTypeSlug, $enabled, true )) {
-					    //error_log("Post type '$postTypeSlug' from module '$moduleSlug' is now enabled (class: '$postTypeHandlerClass' ).");
+					    //Logger::debug("Post type '$postTypeSlug' from module '$moduleSlug' is now enabled (class: '$postTypeHandlerClass' ).", 'wxc' );
 						//$postTypeClasses[ $postTypeSlug ] = $postTypeHandlerClass; //$className;
 						$this->activePostTypes[ $postTypeSlug ] = $postTypeHandlerClass;
 					} else {
-						//error_log("Post type '$postTypeSlug' from module '$moduleSlug' is not enabled.");
+						//Logger::debug( "Post type '$postTypeSlug' from module '$moduleSlug' is not enabled.", 'wxc' );
 					}
 					/*
 					if (
@@ -474,11 +474,11 @@ final class Plugin implements PluginContext
 					*/
 				}
 			} catch( \Throwable $e ) {
-				error_log("Exception in getActivePostTypes for module $moduleSlug: " . $e->getMessage());
+				Logger::error( 'Exception in getActivePostTypes for module $moduleSlug: ' . $e->getMessage());
 			}
 		}
 
-		//error_log("active postTypeClasses: " . print_r($postTypeClasses, true));
+		//Logger::debug( 'active postTypeClasses: ' . print_r($postTypeClasses, true), 'wxc' );
 
 		// Make sure WP default Post Types are also accounted for so that Subtypes will work -- e.g. subtype of Post
 		// TODO: make this more robust to ensure that these default types haven't for some reason been deactivated/removed?
@@ -502,30 +502,26 @@ final class Plugin implements PluginContext
 
         try {
             if (!$bootedModules) {
-                error_log( 'No modules were booted; skipping.' );
-                //self::log('No modules were booted; skipping.');
+                Logger::debug( 'No modules were booted; skipping.', 'wxc' );
                 return;
             }
 
             $handlers = $this->getActivePostTypes();
-            //error_log( 'handlers: ' . print_r( $handlers, true ) );
+            //Logger::debug( 'handlers: ' . print_r( $handlers, true ), 'wxc' );
 
             if (empty($handlers)) {
-                error_log('No active post type handlers found; skipping.');
-                //self::log('No active post type handlers found; skipping.');
+                Logger::debug( 'No active post type handlers found; skipping.', 'wxc' );
                 return;
             }
 
             if (!$this->postTypeRegistrar) {
-                error_log('postTypeRegistrar is null; cannot assign capabilities.');
-                //self::log('postTypeRegistrar is null; cannot assign capabilities.');
+                Logger::debug( 'postTypeRegistrar is null; cannot assign capabilities.', 'wxc' );
                 return;
             }
 
             $count = is_countable($handlers) ? count($handlers) : 0;
-            error_log("Assigning capabilities for {$count} handler(s).");
-            //self::log("Assigning capabilities for {$count} handler(s).");
-            //error_log( 'handlers: ' . print_r( $handlers, true ) );
+            Logger::debug( "Assigning capabilities for {$count} handler(s).", 'wxc' );
+            //Logger::debug( 'handlers: ' . print_r( $handlers, true ), 'wxc' );
 
             /*
             // Optional: short-circuit if nothing changed since last run
@@ -540,31 +536,13 @@ final class Plugin implements PluginContext
 
             $this->postTypeRegistrar->assignPostTypeCapabilities($handlers);
 
-            //error_log('Capabilities assigned successfully.');
-            //self::log('Capabilities assigned successfully.');
+            //Logger::debug( 'Capabilities assigned successfully.', 'wxc' );
 
             //update_option('wxc_caps_hash', $hash);
         } catch (\Throwable $e) {
-            error_log('Error in assignPostTypeCaps: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine() );
-            /*self::log(
-                'Error in assignPostTypeCaps: ' . $e->getMessage() .
-                ' @ ' . $e->getFile() . ':' . $e->getLine()
-            );*/
+            Logger::error('Error in assignPostTypeCaps: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine() );
         }
     }
-    
-    // WIP 08/18/25
-    /*private static function log(string $msg): void
-    {
-        // Prefer CLI output when available
-        if (defined('WP_CLI') && \WP_CLI) {
-            \WP_CLI::debug($msg, 'wxc');
-            return;
-        }
-
-        // Otherwise log to php/wp debug.log
-        error_log($msg);
-    }*/
 
 	//
     protected function use_custom_caps() {
@@ -574,7 +552,6 @@ final class Plugin implements PluginContext
 		}
 		return $use_custom_caps;
 	}
-
 
     protected static function activate(): void {
        flush_rewrite_rules();

@@ -4,6 +4,7 @@ namespace atc\WXC\PostTypes;
 // TODO: move this and BaseHandler to WXC\Handlers\ ?
 
 use atc\WXC\App;
+use atc\WXC\Logger;
 use atc\WXC\BaseHandler;
 use atc\WXC\Traits\AppliesTitleArgs;
 use atc\WXC\Query\PostQuery;
@@ -80,9 +81,9 @@ abstract class PostTypeHandler extends BaseHandler
     public static function queryDefaults(): array
     {
         $spec = static::getQuerySpec();
-        //if ( isset($spec['cpt']) ) { error_log( "spec['cpt']: " . $spec['cpt'] ); } else { error_log( "spec['cpt'] not set" ); }
+        //if ( isset($spec['cpt']) ) { Logger::debug( 'spec['cpt']: ' . $spec['cpt'], 'wxc' ); } else { Logger::debug( 'spec['cpt'] not set', 'wxc' ); }
         $ptype = $spec['cpt'] ?? (static::resolvePostTypeFromContext() ?? '');
-        //error_log( "ptype: " . $ptype );
+        //Logger::debug( 'ptype: ' . $ptype, 'wxc' );
 
         $defaults = array_merge([
             'post_type'      => $ptype,
@@ -111,7 +112,7 @@ abstract class PostTypeHandler extends BaseHandler
 	 */
 	public static function sanitizeScopeParam(mixed $value): ?string
 	{
-	    error_log('value (as received): ' . $value);
+	    Logger::debug( 'value (as received): ' . $value, 'scope' );
 
 		if ($value === null) { return null; }
 		if (is_array($value)) { $value = reset($value); }
@@ -149,7 +150,6 @@ abstract class PostTypeHandler extends BaseHandler
 			$map = is_array($ctx->getActivePostTypes()) ? $ctx->getActivePostTypes() : [];
 			foreach ($map as $ptype => $class) {
 				if ($class === static::class) {
-					//error_log( "resolvePostTypeFromContext returning ptype: " . $ptype );
 					return (string) $ptype;
 				}
 			}
@@ -224,10 +224,8 @@ abstract class PostTypeHandler extends BaseHandler
 
     public static function buildQueryParams(array $normalized): array
     {
-        //error_log('normalized: ' . print_r($normalized, true)); // ok
-        
         $spec = static::getQuerySpec();
-        //error_log('spec: ' . print_r($spec, true));
+        //Logger::debug('spec: ' . print_r($spec, true), 'wxc');
         
         $tax = [];
         foreach (($normalized['tax_inputs'] ?? []) as $taxonomy => $slugs) {
@@ -280,33 +278,31 @@ abstract class PostTypeHandler extends BaseHandler
 			$params['tax'] = $tax;
 		}
 		
-		//error_log('params: ' . print_r($params, true));
+		//Logger::debug('params: ' . print_r($params, true), 'wxc');
 		
 		// Trim nulls while preserving 0/false
 		$params = array_filter(
 			$params,
 			static fn($v) => $v !== null && ($v !== [] || is_array($v) === false)
 		);
-		//error_log('params after trim: ' . print_r($params, true));
+		//Logger::debug('params after trim: ' . print_r($params, true), 'wxc');
 
         /** @var array $filtered */
         //$filtered = apply_filters('wxc_generic_query_params', $params, $normalized, $spec);
         $filtered = $params; // tft
         
-        //error_log('filtered: ' . print_r($filtered, true));
+        //Logger::debug('filtered: ' . print_r($filtered, true), 'wxc');
         return $filtered;
     }
     
     // TODO: standardize terminology for "find" methods -- filters? params?
     public static function find(array $filters): array
     {
-        error_log('filters: ' . print_r($filters, true));
+        Logger::debug('filters: ' . print_r($filters, true), 'wxc');
         
         $normalized = static::normalizeFilters($filters);
-        //error_log('normalized filters: ' . print_r($normalized, true));
         
         $params = static::buildQueryParams($normalized);
-        //error_log('params: ' . print_r($params, true));
 
         $query  = new PostQuery();
         $result = $query->find($params);
@@ -413,10 +409,10 @@ abstract class PostTypeHandler extends BaseHandler
         $activePostTypeSlugs = (array) apply_filters('wxc_active_post_types', []);
 
         if ( !in_array($postType, $activePostTypeSlugs, true) ) {
-            //error_log( 'postType '.$postType.' is NOT a WXC-managed post type' );
+            Logger::debug( 'postType '.$postType.' is NOT a WXC-managed post type', 'wxc' );
             return null;
         }
-        //error_log( 'postType '.$postType.' is a WXC-managed post type' );
+        //Logger::debug( 'postType '.$postType.' is a WXC-managed post type', 'wxc' );
 
         $activePostTypes = App::ctx()->getActivePostTypes(); // ['person' => \...Person::class]
         if ( empty( $activePostTypes ) ) {
@@ -604,7 +600,7 @@ abstract class PostTypeHandler extends BaseHandler
 	{
 		$post = get_post();
 		$postType = get_post_type();
-		error_log( 'PostTypeHandler -> postType: ' . $postType . '' );
+		Logger::debug( 'PostTypeHandler -> postType: ' . $postType, 'wxc' );
 	
 		if ( ! is_singular( $postType ) || ! in_the_loop() || ! is_main_query()  || !$post instanceof \WP_Post) {
 			return $content;
@@ -626,7 +622,7 @@ abstract class PostTypeHandler extends BaseHandler
 			$preparedData = $handler->prepareViewData();
 			$vars = array_merge($vars, $preparedData);
 		}
-		if ( $postType == "whx4_event" ) { $postType = "event"; error_log( '[PostTypeHandler] postType corrected to: ' . $postType . '' ); } // Tmp WIP
+		if ( $postType == "whx4_event" ) { $postType = "event"; Logger::debug( '[PostTypeHandler] postType corrected to: ' . $postType, 'wxc' ); } // Tmp WIP
 	
 		$extra = ViewLoader::renderToString( 'content',
 			// vars
@@ -703,7 +699,7 @@ abstract class PostTypeHandler extends BaseHandler
 	 */
 	public static function getScopeFromRequest(array $atts = [], string $default = 'this_year')
 	{
-		error_log('atts: ' . print_r($atts, true));
+		Logger::debug('atts: ' . print_r($atts, true), 'wxc');
 		
 		$scope = $atts['scope'] ?? $default;
 	
@@ -718,7 +714,7 @@ abstract class PostTypeHandler extends BaseHandler
 		    if ($sanitized !== null) { $scope = $sanitized; }
 		}
 		
-		error_log('returning scope: ' . $scope);
+		Logger::debug('returning scope: ' . $scope, 'scope');
 	
 		return $scope;
 	}

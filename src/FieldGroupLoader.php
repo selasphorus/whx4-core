@@ -3,6 +3,7 @@
 namespace atc\WXC;
 
 use atc\WXC\App;
+use atc\WXC\Logger;
 //use atc\WXC\Util\NamespaceUtil;
 use ReflectionClass;
 use RecursiveDirectoryIterator;
@@ -27,7 +28,7 @@ class FieldGroupLoader
     {
         // Abort if no modules have been booted
         if ( !App::ctx()->modulesBooted() ) {
-            //error_log( '=== no modules booted yet => abort ===' );
+            //Logger::debug( '=== no modules booted yet => abort ===', 'wxc' );
             return;
         }
 
@@ -43,19 +44,19 @@ class FieldGroupLoader
 
     protected function registerFieldsForModule( string $moduleClass ): void
     {
-        //error_log( '=== registerFieldsForModule for moduleClass: ' . $moduleClass . ' ===' );
+        //Logger::debug( '=== registerFieldsForModule for moduleClass: ' . $moduleClass . ' ===', 'wxc' );
         $ref = new \ReflectionClass( $moduleClass );
         $moduleDir = dirname( $ref->getFileName() );
         $fieldsDir = $moduleDir . '/Fields';
         $subtypesDir  = $fieldsDir . '/Subtypes'; // maybe don't need this -- just put everything in fieldsDir, clearly named
 
         if ( !is_dir( $fieldsDir ) ) {
-            error_log( '*** fieldsDir: ' . $fieldsDir . ' not found. Aborting registration.' );
+            Logger::debug( '*** fieldsDir: ' . $fieldsDir . ' not found. Aborting registration.', 'wxc' );
             return;
         }
 
         $activePostTypes = App::ctx()->getActivePostTypes();
-        //error_log( 'activePostTypes: ' . print_r($activePostTypes, true) );
+        //Logger::debug( 'activePostTypes: ' . print_r($activePostTypes, true), 'wxc' );
 
         // === Build a map of postType slug => short class name (e.g. rex_event => Event)
         $slugMap = [];
@@ -96,7 +97,7 @@ class FieldGroupLoader
                 if ( $handlerSlug ) {
                     $shortName = basename( str_replace( '\\', '/', $handlerClass ) );
                     $slugMap[ $handlerSlug ] = $shortName;
-                    //error_log( 'handlerSlug: ' . $handlerSlug . '; shortName: ' . $shortName );
+                    //Logger::debug( 'handlerSlug: ' . $handlerSlug . '; shortName: ' . $shortName, 'wxc' );
                 }
             }
         }
@@ -110,10 +111,10 @@ class FieldGroupLoader
         //foreach ( glob( $fieldsDir . '/*Fields.php' ) as $file ) {
         foreach ( $fieldFiles as $file ) {
             require_once $file;
-            //error_log( 'Fields file filename: ' . $file );
+            //Logger::debug( 'Fields file filename: ' . $file );
 
             $className = $this->getFQCNFromFilename( $file );
-            //error_log( 'Fields file className: ' . $className );
+            //Logger::debug( 'Fields file className: ' . $className );
 
             if (
                 class_exists( $className ) &&
@@ -121,7 +122,7 @@ class FieldGroupLoader
             ) {
                 // First, handle global post-type scoped field groups
                 if (is_subclass_of($className, PostTypeFieldGroupInterface::class)) {
-                    //error_log( 'className: ' . $className . ' is_subclass_of PostTypeFieldGroupInterface');
+                    //Logger::debug( 'className: ' . $className . ' is_subclass_of PostTypeFieldGroupInterface', 'wxc' );
                     try {
                         $instance = new $className();
                         $pt = $instance->getPostType();
@@ -134,7 +135,7 @@ class FieldGroupLoader
 
                 // Handle Subtype-scoped field groups
                 if ( is_subclass_of( $className, SubtypeFieldGroupInterface::class ) ) {
-                    //error_log( 'className: ' . $className . ' is_subclass_of SubtypeFieldGroupInterface');
+                    //Logger::debug( 'className: ' . $className . ' is_subclass_of SubtypeFieldGroupInterface', 'wxc' );
                     try {
                         $instance = new $className();
                         $pt = $instance->getPostType();
@@ -147,14 +148,14 @@ class FieldGroupLoader
 
                 $basename = basename( $file, '.php' ); // e.g. "MonsterFields"
                 $shortName = str_replace( 'Fields', '', $basename ); // e.g. "Monster"
-                //error_log( 'basename: ' . $basename . '; shortName: ' . $shortName );
+                //Logger::debug( 'basename: ' . $basename . '; shortName: ' . $shortName, 'wxc' );
 
                 $matched = false;
 
                 foreach ( $slugMap as $slug => $expectedName ) {
                     if ( strtolower( $shortName ) === strtolower( $expectedName ) ) {
                         if ( array_key_exists( $slug, $activePostTypes ) ) {
-                            //error_log( 'about to register (via slugMap): ' . $className );
+                            //Logger::debug( 'about to register (via slugMap): ' . $className, 'wxc' );
                             $className::register();
                             $matched = true;
                             break;
@@ -163,12 +164,12 @@ class FieldGroupLoader
                 }
 
                 if ( !$matched && $this->isModuleFieldGroup( $basename, $moduleClass ) ) {
-                    //error_log( 'about to register (via slugMap): ' . $className );
+                    //Logger::debug( 'about to register (via slugMap): ' . $className, 'wxc' );
                     $className::register();
                 }
             } else {
                 // Something's wrong. Do some logging.
-                if ( !class_exists( $className ) ) { error_log( '*** class: ' . $className . ' DNE' ); } else if ( !is_subclass_of( $className, FieldGroupInterface::class ) ) { error_log( '*** class: ' . $className . ' is not subclass of FieldGroupInterface' ); }
+                if ( !class_exists( $className ) ) { Logger::debug( '*** class: ' . $className . ' DNE' ); } else if ( !is_subclass_of( $className, FieldGroupInterface::class ) ) { Logger::debug( '*** class: ' . $className . ' is not subclass of FieldGroupInterface' ); }
             }
         }
     }
@@ -272,7 +273,6 @@ class FieldGroupLoader
 
         return null;
     }
-
 
     /*
     public static function registerAll(): void {
