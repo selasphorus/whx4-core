@@ -47,7 +47,8 @@ final class PostQuery
     // TODO: consider pros/cons of making this a static function
     public function find(array $params): array
     {
-        error_log('[PostQuery::find] params: ' . print_r($params, true));
+        Logger::debug( 'params:'.print_r($params, true) );
+        
         // First, ensure normalized contract
         $p = $this->normalizeContract($params); //$p = self::normalizeContract($params);
 		
@@ -61,20 +62,17 @@ final class PostQuery
         $dateMeta = $p['date_meta'] ?? [];
         $dateBounds = self::resolveScope($p['scope'] ?? null, $dateMeta['meta_type'] ?? null);
         $dateMetaSpec  = self::dateMetaSpecFromBounds($dateMeta, $dateBounds);
-        error_log('[PostQuery::find] scope: ' . print_r($scope, true));
-        error_log('[PostQuery::find] dateMeta: ' . print_r($dateMeta, true));
-        error_log('[PostQuery::find] dateBounds: ' . print_r($dateBounds, true));
-        error_log('[PostQuery::find] dateMetaSpec: ' . print_r($dateMetaSpec, true));
-        Logger::debug( 'logger test' );
-        Logger::error('test');
-        // WIP...
+        Logger::debug( 'scope:'.print_r($scope, true) );
+        Logger::debug( 'dateMeta:'.print_r($dateMeta, true) );
+        Logger::debug( 'dateBounds:'.print_r($dateBounds, true) );
+        Logger::debug( 'dateMetaSpec:'.print_r($dateMetaSpec, true) );
         
         // 2) Build combined meta_query spec
         $metaSpec  = $p['meta'] ?? [];
         //error_log('[PostQuery::find] metaSpec BEFORE mergeSpecs: ' . print_r($metaSpec, true));
         
         $combinedMetaSpec  = MetaQueryBuilder::mergeSpecs([$dateMetaSpec, $metaSpec], 'AND'); // $combinedMetaSpec = MetaQueryBuilder::mergeSpecs([$dateMetaSpec, $p['meta']], 'AND');
-        error_log('[PostQuery::find] combinedMetaSpec: ' . print_r($combinedMetaSpec, true));
+        Logger::debug( 'combinedMetaSpec:'.print_r(combinedMetaSpec, true) );
         
         $metaQuery = $combinedMetaSpec ? MetaQueryBuilder::build($combinedMetaSpec) : []; // $metaQuery = MetaQueryBuilder::build($combinedMetaSpec);
         //error_log('[PostQuery::find] metaQuery: ' . print_r($metaQuery, true));
