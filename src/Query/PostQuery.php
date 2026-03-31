@@ -6,6 +6,7 @@ namespace atc\WXC\Query;
 
 use WP_Query;
 use atc\WXC\App;
+use atc\WXC\Logger;
 use atc\WXC\Utils\DateHelper;
 use atc\WXC\Query\QueryHelpers;
 use atc\WXC\Query\MetaQueryBuilder;
@@ -64,6 +65,7 @@ final class PostQuery
         error_log('[PostQuery::find] dateMeta: ' . print_r($dateMeta, true));
         error_log('[PostQuery::find] dateBounds: ' . print_r($dateBounds, true));
         error_log('[PostQuery::find] dateMetaSpec: ' . print_r($dateMetaSpec, true));
+        Logger::debug( 'logger test' );
         // WIP...
         
         // 2) Build combined meta_query spec
