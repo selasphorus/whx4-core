@@ -66,7 +66,7 @@ final class PostQuery
         error_log('[PostQuery::find] dateBounds: ' . print_r($dateBounds, true));
         error_log('[PostQuery::find] dateMetaSpec: ' . print_r($dateMetaSpec, true));
         Logger::debug( 'logger test' );
-        Logger::error('test')
+        Logger::error('test');
         // WIP...
         
         // 2) Build combined meta_query spec
