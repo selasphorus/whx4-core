@@ -9,6 +9,8 @@ use atc\WXC\Templates\ViewLoader;
 use atc\WXC\PostTypes\PostTypeHandler;
 use atc\WXC\Shortcodes\ShortcodeManager;
 
+use WP_Post;
+
 // TODO: make this final class?
 abstract class Module implements ModuleInterface
 {
@@ -164,7 +166,7 @@ abstract class Module implements ModuleInterface
 		$order   = strtoupper($filters['order'] ?? 'ASC');
 	
 		if ($orderby === 'title') {
-			usort($allPosts, function (\WP_Post $a, \WP_Post $b) use ($order) {
+			usort($allPosts, function (WP_Post $a, WP_Post $b) use ($order) {
 				$cmp = strcasecmp($a->post_title, $b->post_title);
 				return $order === 'DESC' ? -$cmp : $cmp;
 			});
