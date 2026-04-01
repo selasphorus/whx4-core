@@ -165,12 +165,13 @@ abstract class Module implements ModuleInterface
 		$orderby = $filters['orderby'] ?? null;
 		$order   = strtoupper($filters['order'] ?? 'ASC');
 	
-		if ($orderby === 'title') {
+		/*if ($orderby === 'title') {
+		    Logger::debug( 'About to attempt usort by WP Post title' );
 			usort($allPosts, function (WP_Post $a, WP_Post $b) use ($order) {
 				$cmp = strcasecmp($a->post_title, $b->post_title);
 				return $order === 'DESC' ? -$cmp : $cmp;
 			});
-		}
+		}*/
 	
 		// Apply limit after merge+sort if one was requested
 		$limit = (int) ($filters['limit'] ?? -1);
