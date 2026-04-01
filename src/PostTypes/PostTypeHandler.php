@@ -298,7 +298,7 @@ abstract class PostTypeHandler extends BaseHandler
     // TODO: standardize terminology for "find" methods -- filters? params?
     public static function find(array $filters): array
     {
-        Logger::debug('filters: ' . print_r($filters, true), 'wxc');
+        Logger::debug( 'filters', $filters, 'wxc' );
         
         $normalized = static::normalizeFilters($filters);
         
