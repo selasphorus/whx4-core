@@ -52,7 +52,7 @@ abstract class Module implements ModuleInterface
 			$handler = new $handlerClass();
 
 			if ( ! method_exists( $handler, 'getSlug' ) ) {
-				Logger::warn( "Handler class $handlerClass missing getSlug()" );
+				Logger::error( "Handler class $handlerClass missing getSlug()" );
 				continue;
 			}
 
@@ -63,7 +63,7 @@ abstract class Module implements ModuleInterface
 
 			//Logger::debug( 'About to attempt handler boot() for PostType handlerClass: ' . $handlerClass . '===' );
 			if ( ! method_exists( $handler, 'boot' ) ) {
-				Logger::warn( "Handler class $handlerClass missing boot()" );
+				Logger::error( "Handler class $handlerClass missing boot()" );
 				continue;
 			}
 			$handler->boot();
