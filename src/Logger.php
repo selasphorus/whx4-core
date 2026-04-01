@@ -20,20 +20,17 @@ class Logger
     public const INFO  = 'info';
     public const WARN  = 'warn';
     public const ERROR = 'error';
-
+    
+    // Create a nicely-formatted entry to send to the standard error_log function, including the class and method from which Logger was called
     public static function log( string $message, string $level = self::DEBUG, mixed $data = null, ?string $context = null ): void
     {
         if ( ! self::shouldLog( $level, $context ) ) {
 			return;
 		}
 
-        $caller = self::resolveCaller( debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 5 ) );
-
-        $entry = sprintf( '(%s::%s) [%s] %s', $caller['class'], $caller['function'], strtoupper( $level ), $message );
-
-        /*if ( $data !== null ) {
-            $entry .= ' | ' . ( is_string( $data ) ? $data : print_r( $data, true ) );
-        }*/
+        $caller = self::resolveCaller( debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 5 ) );        
+        $logType = $level !== self::DEBUG ? '[' . strtoupper( $level ) . '] ' : '';
+        $entry = sprintf( '(%s::%s) %s%s', $caller['class'], $caller['function'], $logType, $message );
         
         if ( $data !== null ) {
 			$dump = is_string( $data ) ? $data : print_r( $data, true );
