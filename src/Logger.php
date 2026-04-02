@@ -40,10 +40,10 @@ class Logger
         error_log( $entry );
     }
     
-    public static function debug( string $message, mixed $data = null, ?string $context = null ): void { self::log( $message, self::DEBUG, $data, $context ); }
-	public static function info(  string $message, mixed $data = null, ?string $context = null ): void { self::log( $message, self::INFO,  $data, $context ); }
-	public static function warn(  string $message, mixed $data = null, ?string $context = null ): void { self::log( $message, self::WARN,  $data, $context ); }
-	public static function error( string $message, mixed $data = null, ?string $context = null ): void { self::log( $message, self::ERROR, $data, $context ); }
+    public static function debug( string $message, mixed $data = null, string|array|null $context = null ): void { self::log( $message, self::DEBUG, $data, $context ); }
+	public static function info(  string $message, mixed $data = null, string|array|null $context = null ): void { self::log( $message, self::INFO,  $data, $context ); }
+	public static function warn(  string $message, mixed $data = null, string|array|null $context = null ): void { self::log( $message, self::WARN,  $data, $context ); }
+	public static function error( string $message, mixed $data = null, string|array|null $context = null ): void { self::log( $message, self::ERROR, $data, $context ); }
 
     // -------------------------------------------------------------------------
 
