@@ -86,8 +86,11 @@ class Logger
 		}
 	
 		//return $context !== null && $devParam === $context; // single tag version
+		//$activeContexts = array_map( 'trim', explode( ',', $devParam ) );
+		
 		$activeContexts = array_map( 'trim', explode( ',', $devParam ) );
-		return $context !== null && in_array( $context, $activeContexts, true );
+		$callContexts = is_array( $context ) ? $context : [ $context ];
+		return $context !== null && ! empty( array_intersect( $callContexts, $activeContexts ) );
 	}
 
     /** Return the first backtrace frame that isn't Logger itself. */
