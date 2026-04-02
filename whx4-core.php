@@ -125,7 +125,7 @@ function wxc_devsite(): bool {
     return atc\WXC\Environment::devsite();
 }
 
-function wxc_log( string $message, mixed $data = null, ?string $context = null, string $level = 'debug' ): void {
+function wxc_log( string $message, mixed $data = null, string|array|null $context = null, string $level = 'debug' ): void {
     atc\WXC\Logger::log( $message, $level, $data, $context );
 }
 

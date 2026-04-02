@@ -22,7 +22,7 @@ class Logger
     public const ERROR = 'error';
     
     // Create a nicely-formatted entry to send to the standard error_log function, including the class and method from which Logger was called
-    public static function log( string $message, string $level = self::DEBUG, mixed $data = null, ?string $context = null ): void
+    public static function log( string $message, string $level = self::DEBUG, mixed $data = null, string|array|null $context = null ): void
     {
         if ( ! self::shouldLog( $level, $context ) ) {
 			return;
@@ -59,7 +59,7 @@ class Logger
 	 *       - ?dev=<context>  → log only calls whose $context matches
 	 *     Untagged non-error calls are suppressed when a specific context is set.
 	 */
-	private static function shouldLog( string $level, ?string $context = null ): bool
+	private static function shouldLog( string $level, string|array|null $context = null ): bool
 	{
 		if ( $level === self::ERROR ) {
 			return true;
