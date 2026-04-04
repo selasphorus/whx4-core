@@ -127,7 +127,7 @@ abstract class Module implements ModuleInterface
 	{
 		$postTypes = (array) $postType;
 		//Logger::debug( 'postTypes', $postTypes, ['wxc', 'query'] );
-		Logger::debug( 'filters', $filters, ['wxc', 'query'] );
+		//Logger::debug( 'filters', $filters, ['wxc', 'query'] );
 	
 		if (count($postTypes) === 1) {
 			return $this->findSingleType($postTypes[0], $filters);
@@ -139,7 +139,7 @@ abstract class Module implements ModuleInterface
 	private function findSingleType(string $postType, array $filters): array
 	{
 		$logCtx = ['wxc', 'query'];
-		Logger::debug( 'postType: '.$postType, null, $logCtx );
+		//Logger::debug( 'postType: '.$postType, null, $logCtx );
 		//Logger::debug( 'filters', $filters, $logCtx );
 		
 		$map   = App::ctx()->getActivePostTypes();
@@ -173,14 +173,14 @@ abstract class Module implements ModuleInterface
 			$allPosts   = array_merge($allPosts, $result['posts'] ?? []);
 			$totalFound += $result['pagination']['found'] ?? 0;
 		}
-		Logger::debug( count($allPosts).' posts found', null, $logCtx );
+		//Logger::debug( count($allPosts).' posts found', null, $logCtx );
 	
 		// Re-sort if requested — title sort is the common case
 		$orderby = $filters['orderby'] ?? null;
 		$order   = strtoupper($filters['order'] ?? 'ASC');
 	
 		if ($orderby === 'title') {
-		    Logger::debug( 'About to attempt usort by WP Post title', null, $logCtx );
+		    //Logger::debug( 'About to attempt usort by WP Post title', null, $logCtx );
 			usort($allPosts, function (WP_Post $a, WP_Post $b) use ($order) {
 				$cmp = strcasecmp($a->post_title, $b->post_title);
 				return $order === 'DESC' ? -$cmp : $cmp;
@@ -192,7 +192,7 @@ abstract class Module implements ModuleInterface
 		if ($limit > 0) {
 			$allPosts = array_slice($allPosts, 0, $limit);
 		}
-		Logger::debug( count($allPosts).' posts found after limit applied', null, $logCtx );
+		//Logger::debug( count($allPosts).' posts found after limit applied', null, $logCtx );
 	
 		return [
 			'posts'      => $allPosts,
