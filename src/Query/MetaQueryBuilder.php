@@ -77,7 +77,7 @@ final class MetaQueryBuilder
     {
         // TEMP debug
 		if (!isset($spec['key'])) {
-			Logger::debug( 'missing key', $spec, 'query' );
+			Logger::warn( 'missing key', $spec, 'query' );
 			return null;
 		}
 	
@@ -85,7 +85,7 @@ final class MetaQueryBuilder
 		if (array_key_exists('equals', $spec)) {
 			$value = $spec['equals'];
 			if ($value === '' || $value === null) {
-				Logger::debug( 'equals empty for key=', $spec['key'], 'query' );
+				//Logger::debug( 'equals empty for key=', $spec['key'], 'query' );
 				return null;
 			}
 			$clause = [
@@ -109,7 +109,7 @@ final class MetaQueryBuilder
         }*/
         $metaType = self::normalizeMetaType($spec['meta_type'] ?? $spec['cast'] ?? null);
         
-        Logger::debug( 'metaType: '.$metaType );
+        //Logger::debug( 'metaType: '.$metaType );
 
         //Logger::debug( 'spec', $spec, 'query' );
         //Logger::debug( 'clauseType: ' . $clauseType . '; metaType: ' . $metaType );
@@ -157,10 +157,10 @@ final class MetaQueryBuilder
                 if (!QueryHelpers::requireFields($spec, ['key']) || !array_key_exists('min', $spec) || !array_key_exists('max', $spec)) {
                     return null;
                 }
-                Logger::debug('spec[min]: ' . $spec['min']);
+                //Logger::debug('spec[min]: ' . $spec['min']);
                 $min = self::formatValue($spec['min'], $metaType);
                 $max = self::formatValue($spec['max'], $metaType);
-                Logger::debug('formatted min: ' . $min);
+                //Logger::debug('formatted min: ' . $min, null, 'query');
                 return self::assembleClause(
                     (string)$spec['key'],
                     'BETWEEN',
@@ -377,7 +377,7 @@ final class MetaQueryBuilder
     // Format values for use in WP_Query
     private static function formatValue($value, ?string $metaType)
 	{
-		Logger::debug('value: ' . $value . '; metaType: ' . $metaType);
+		//Logger::debug('value: ' . $value . '; metaType: ' . $metaType);
 		return self::normalizeValueForMetaType($value, $metaType);
 	}
 	
@@ -392,7 +392,7 @@ final class MetaQueryBuilder
 	 */
 	private static function normalizeValueForMetaType(mixed $value, ?string $metaType): mixed
 	{
-	    Logger::debug('value: ' . $value . '; metaType: ' . $metaType);
+	    //Logger::debug('value: ' . $value . '; metaType: ' . $metaType);
 	    $type = is_string($metaType) ? strtoupper(trim($metaType)) : null;
 	    
 	    if (is_array($value)) {
@@ -421,7 +421,7 @@ final class MetaQueryBuilder
 	 */
 	public static function fromYearsWindow(string $key, string $keyType, array $win, string $metaType = 'NUMERIC'): array
 	{
-		Logger::debug('key: ' . $key . '; keyType: ' . $keyType  . '; metaType: ' . $metaType . '');
+		//Logger::debug('key: ' . $key . '; keyType: ' . $keyType  . '; metaType: ' . $metaType . '');
 		
 		// Empty window → no-op spec
 		if (empty($win['years'])) {
