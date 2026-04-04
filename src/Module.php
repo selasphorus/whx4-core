@@ -127,6 +127,7 @@ abstract class Module implements ModuleInterface
 	{
 		$postTypes = (array) $postType;
 		Logger::debug( 'postTypes', $postTypes, ['wxc', 'query'] );
+		Logger::debug( 'filters', $filters, ['wxc', 'query'] );
 	
 		if (count($postTypes) === 1) {
 			return $this->findSingleType($postTypes[0], $filters);
