@@ -135,6 +135,10 @@ abstract class Module implements ModuleInterface
 	
 	private function findSingleType(string $postType, array $filters): array
 	{
+		$logCtx = ['wxc', 'query'];
+		Logger::debug( 'postType: $postType', null, $logCtx );
+		Logger::debug( 'filters', $filters, $logCtx );
+		
 		$map   = App::ctx()->getActivePostTypes();
 		$class = $map[$postType] ?? null;
 	
@@ -148,16 +152,18 @@ abstract class Module implements ModuleInterface
 	
 	private function findAcrossTypes(array $postTypes, array $filters): array
 	{
+		$logCtx = ['wxc', 'query'];
+		
 		// Pagination is not well-defined across merged result sets.
 		// Fetch all matching posts from each type and merge.
 		$mergedFilters = array_merge($filters, ['limit' => -1, 'paged' => 1]);
-		Logger::debug( 'mergedFilters', $mergedFilters, ['wxc', 'query'] );
+		Logger::debug( 'mergedFilters', $mergedFilters, $logCtx );
 	
 		$allPosts = [];
 		$totalFound = 0;
 	
 		foreach ($postTypes as $type) {
-		    Logger::debug( 'About to run find for postType [' . $type .']' );
+		    Logger::debug( 'About to run find for postType [' . $type .']', null, $logCtx );
 			$result = $this->findSingleType($type, array_merge($mergedFilters, ['post_type' => $type]));
 			$allPosts   = array_merge($allPosts, $result['posts'] ?? []);
 			$totalFound += $result['pagination']['found'] ?? 0;
@@ -168,7 +174,7 @@ abstract class Module implements ModuleInterface
 		$order   = strtoupper($filters['order'] ?? 'ASC');
 	
 		if ($orderby === 'title') {
-		    Logger::debug( 'About to attempt usort by WP Post title' );
+		    Logger::debug( 'About to attempt usort by WP Post title', null, $logCtx );
 			usort($allPosts, function (WP_Post $a, WP_Post $b) use ($order) {
 				$cmp = strcasecmp($a->post_title, $b->post_title);
 				return $order === 'DESC' ? -$cmp : $cmp;
@@ -181,7 +187,7 @@ abstract class Module implements ModuleInterface
 			$allPosts = array_slice($allPosts, 0, $limit);
 		}
 		
-		Logger::debug( count($allPosts).' posts found', null, ['query'] );
+		Logger::debug( count($allPosts).' posts found', null, $logCtx );
 	
 		return [
 			'posts'      => $allPosts,
