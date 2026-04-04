@@ -151,11 +151,13 @@ abstract class Module implements ModuleInterface
 		// Pagination is not well-defined across merged result sets.
 		// Fetch all matching posts from each type and merge.
 		$mergedFilters = array_merge($filters, ['limit' => -1, 'paged' => 1]);
+		Logger::debug( 'mergedFilters', $mergedFilters, ['wxc', 'query'] );
 	
 		$allPosts = [];
 		$totalFound = 0;
 	
 		foreach ($postTypes as $type) {
+		    Logger::debug( 'About to run find for postType [' . $type .']' );
 			$result = $this->findSingleType($type, array_merge($mergedFilters, ['post_type' => $type]));
 			$allPosts   = array_merge($allPosts, $result['posts'] ?? []);
 			$totalFound += $result['pagination']['found'] ?? 0;
@@ -165,19 +167,21 @@ abstract class Module implements ModuleInterface
 		$orderby = $filters['orderby'] ?? null;
 		$order   = strtoupper($filters['order'] ?? 'ASC');
 	
-		/*if ($orderby === 'title') {
+		if ($orderby === 'title') {
 		    Logger::debug( 'About to attempt usort by WP Post title' );
 			usort($allPosts, function (WP_Post $a, WP_Post $b) use ($order) {
 				$cmp = strcasecmp($a->post_title, $b->post_title);
 				return $order === 'DESC' ? -$cmp : $cmp;
 			});
-		}*/
+		}
 	
 		// Apply limit after merge+sort if one was requested
 		$limit = (int) ($filters['limit'] ?? -1);
 		if ($limit > 0) {
 			$allPosts = array_slice($allPosts, 0, $limit);
 		}
+		
+		Logger::debug( 'About to run find for postType [' . $type .']' );
 	
 		return [
 			'posts'      => $allPosts,
