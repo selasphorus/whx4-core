@@ -47,7 +47,8 @@ final class PostQuery
     // TODO: consider pros/cons of making this a static function
     public function find(array $params): array
     {
-        Logger::debug( 'params:'.print_r($params, true) );
+        $logCtx = ['wxc', 'query'];
+        //Logger::debug( 'params', $params, $logCtx );
         
         // First, ensure normalized contract
         $p = $this->normalizeContract($params); //$p = self::normalizeContract($params);
@@ -62,16 +63,16 @@ final class PostQuery
         $dateMeta = $p['date_meta'] ?? [];
         $dateBounds = self::resolveScope($p['scope'] ?? null, $dateMeta['meta_type'] ?? null);
         $dateMetaSpec  = self::dateMetaSpecFromBounds($dateMeta, $dateBounds);
-        Logger::debug( 'scope:'.print_r($scope, true) );
-        Logger::debug( 'dateMeta:'.print_r($dateMeta, true) );
-        Logger::debug( 'dateBounds:'.print_r($dateBounds, true) );
-        Logger::debug( 'dateMetaSpec:'.print_r($dateMetaSpec, true) );
+        Logger::debug( 'scope:'.print_r($scope, true), null, $logCtx );
+        Logger::debug( 'dateMeta:'.print_r($dateMeta, true), null, $logCtx );
+        Logger::debug( 'dateBounds:'.print_r($dateBounds, true), null, $logCtx );
+        Logger::debug( 'dateMetaSpec:'.print_r($dateMetaSpec, true), null, $logCtx );
         
         // 2) Build combined meta_query spec
         $metaSpec  = $p['meta'] ?? [];
         
         $combinedMetaSpec  = MetaQueryBuilder::mergeSpecs([$dateMetaSpec, $metaSpec], 'AND');
-        Logger::debug( 'combinedMetaSpec:'.print_r($combinedMetaSpec, true) );
+        //Logger::debug( 'combinedMetaSpec:'.print_r($combinedMetaSpec, true), null, $logCtx );
         
         $metaQuery = $combinedMetaSpec ? MetaQueryBuilder::build($combinedMetaSpec) : [];
         //Logger::debug( 'metaQuery:'.print_r($metaQuery, true) );

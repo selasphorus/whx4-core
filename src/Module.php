@@ -35,6 +35,7 @@ abstract class Module implements ModuleInterface
 
     public function boot(): void
     {
+		$logCtx = ['wxc'];
 		//Logger::debug( 'module: ' . $this->getSlug() );
         $this->registerDefaultViewRoot();
 
@@ -136,7 +137,7 @@ abstract class Module implements ModuleInterface
 	private function findSingleType(string $postType, array $filters): array
 	{
 		$logCtx = ['wxc', 'query'];
-		Logger::debug( 'postType: $postType', null, $logCtx );
+		Logger::debug( 'postType: '.$postType, null, $logCtx );
 		Logger::debug( 'filters', $filters, $logCtx );
 		
 		$map   = App::ctx()->getActivePostTypes();
@@ -157,7 +158,7 @@ abstract class Module implements ModuleInterface
 		// Pagination is not well-defined across merged result sets.
 		// Fetch all matching posts from each type and merge.
 		$mergedFilters = array_merge($filters, ['limit' => -1, 'paged' => 1]);
-		Logger::debug( 'mergedFilters', $mergedFilters, $logCtx );
+		//Logger::debug( 'mergedFilters', $mergedFilters, $logCtx );
 	
 		$allPosts = [];
 		$totalFound = 0;
