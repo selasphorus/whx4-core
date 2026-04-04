@@ -156,7 +156,7 @@ abstract class Module implements ModuleInterface
 	private function findAcrossTypes(array $postTypes, array $filters): array
 	{
 		$logCtx = ['wxc', 'query'];
-		Logger::debug( 'postTypes', $postTypes, $logCtx );
+		//Logger::debug( 'postTypes', $postTypes, $logCtx );
 		
 		// Pagination is not well-defined across merged result sets.
 		// Fetch all matching posts from each type and merge.
