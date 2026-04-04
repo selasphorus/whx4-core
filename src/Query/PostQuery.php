@@ -470,12 +470,13 @@ final class PostQuery
 		    $window = DateHelper::yearsWindow($dateBounds);
 		    return MetaQueryBuilder::fromYearsWindow($key, $keyType, $window, 'NUMERIC');
 		} else if ($metaType === 'NUMERIC') {
-		    Logger::debug( 'metaType is NUMERIC => need to format for ACF', $dateBounds, $logCtx );
+		    //Logger::debug( 'metaType is NUMERIC => need to format for ACF', $dateBounds, $logCtx );
 		}
 	
 		// Single point-in-time meta (e.g., event_date, transaction_date)
 		if (is_string($key) && $key !== '' && !$startKey && !$endKey) {
-		    Logger::debug( 'Single point-in-time meta with key: ' . $key, null, $logCtx );
+		    //Logger::debug( 'Single point-in-time meta with key: ' . $key, null, $logCtx );
+			
 			// Build a BETWEEN (date or datetime) using $bounds['start']..$bounds['end']
 			return [
 				'relation' => 'AND',
@@ -491,7 +492,7 @@ final class PostQuery
 	
 		// Span storage (e.g., events with start_key/end_key) -- build overlap over start/end keys.
 		if (!empty($startKey) && !empty($endKey)) { //if (is_string($startKey) && $startKey !== '' && is_string($endKey) && $endKey !== '') {
-		    Logger::debug( 'startKey: ' . $startKey . '; endKey: ' . $endKey, null, $logCtx );
+		    //Logger::debug( 'startKey: ' . $startKey . '; endKey: ' . $endKey, null, $logCtx );
 			return [
 				'relation' => 'AND',
 				'clauses'  => [[
