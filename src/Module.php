@@ -168,9 +168,11 @@ abstract class Module implements ModuleInterface
 		foreach ($postTypes as $type) {
 		    //Logger::debug( 'About to run find for postType [' . $type .']', null, $logCtx );
 			$result = $this->findSingleType($type, array_merge($mergedFilters, ['post_type' => $type]));
+			Logger::debug( count($result['posts']).' found for postType: '.$type, null, $logCtx );
 			$allPosts   = array_merge($allPosts, $result['posts'] ?? []);
 			$totalFound += $result['pagination']['found'] ?? 0;
 		}
+		Logger::debug( count($allPosts).' posts found', null, $logCtx );
 	
 		// Re-sort if requested — title sort is the common case
 		$orderby = $filters['orderby'] ?? null;
@@ -189,8 +191,7 @@ abstract class Module implements ModuleInterface
 		if ($limit > 0) {
 			$allPosts = array_slice($allPosts, 0, $limit);
 		}
-		
-		Logger::debug( count($allPosts).' posts found', null, $logCtx );
+		Logger::debug( count($allPosts).' posts found after limit applied', null, $logCtx );
 	
 		return [
 			'posts'      => $allPosts,
