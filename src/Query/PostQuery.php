@@ -64,9 +64,9 @@ final class PostQuery
         $dateBounds = self::resolveScope($p['scope'] ?? null, $dateMeta['meta_type'] ?? null);
         $dateMetaSpec  = self::dateMetaSpecFromBounds($dateMeta, $dateBounds);
         Logger::debug( 'scope:'.print_r($scope, true), null, $logCtx );
-        Logger::debug( 'dateMeta:'.print_r($dateMeta, true), null, $logCtx );
-        Logger::debug( 'dateBounds:'.print_r($dateBounds, true), null, $logCtx );
-        Logger::debug( 'dateMetaSpec:'.print_r($dateMetaSpec, true), null, $logCtx );
+        //Logger::debug( 'dateMeta:'.print_r($dateMeta, true), null, $logCtx );
+        //Logger::debug( 'dateBounds:'.print_r($dateBounds, true), null, $logCtx );
+        //Logger::debug( 'dateMetaSpec:'.print_r($dateMetaSpec, true), null, $logCtx );
         
         // 2) Build combined meta_query spec
         $metaSpec  = $p['meta'] ?? [];
@@ -435,7 +435,9 @@ final class PostQuery
 	 */
 	private static function dateMetaSpecFromBounds(array $dateMeta, ?array $dateBounds): array
 	{
-		Logger::debug( 'dateMeta:'.print_r($dateMeta, true) );
+		$logCtx =['wxc', 'query'];
+		
+		//Logger::debug( 'dateMeta', $dateMeta, $logCtx );
 		
 		// No scope -> no date filtering requested
 		if ( empty($dateBounds) || ($dateBounds['start'] ?? null) === null && ($dateBounds['end'] ?? null) === null) {
@@ -458,7 +460,7 @@ final class PostQuery
 		// (A) years-only storage  → numeric_years=true (delegates to yearsWindow helper), OR
 		// (B) ACF date_picker (Ymd) → numeric_years=false|unset (handled below as a normal range with cast=NUMERIC).
 		if ($metaType === 'NUMERIC' && !empty($numericYears)) {
-		    Logger::debug( 'numericYears is TRUE' );
+		    Logger::debug( 'numericYears is TRUE', null, $logCtx );
 		    // Expect a single meta key that stores a year (single/rows/serialized)
 		    if (!is_string($key) || $key === '') {
 		        // No usable key → noop
@@ -468,12 +470,12 @@ final class PostQuery
 		    $window = DateHelper::yearsWindow($dateBounds);
 		    return MetaQueryBuilder::fromYearsWindow($key, $keyType, $window, 'NUMERIC');
 		} else if ($metaType === 'NUMERIC') {
-		    Logger::debug( 'metaType is NUMERIC => need to format for ACF: ' . print_r($dateBounds, true) );
+		    Logger::debug( 'metaType is NUMERIC => need to format for ACF', $dateBounds, $logCtx );
 		}
 	
 		// Single point-in-time meta (e.g., event_date, transaction_date)
 		if (is_string($key) && $key !== '' && !$startKey && !$endKey) {
-		    Logger::debug( 'Single point-in-time meta with key: ' . $key );
+		    Logger::debug( 'Single point-in-time meta with key: ' . $key, null, $logCtx );
 			// Build a BETWEEN (date or datetime) using $bounds['start']..$bounds['end']
 			return [
 				'relation' => 'AND',
@@ -489,7 +491,7 @@ final class PostQuery
 	
 		// Span storage (e.g., events with start_key/end_key) -- build overlap over start/end keys.
 		if (!empty($startKey) && !empty($endKey)) { //if (is_string($startKey) && $startKey !== '' && is_string($endKey) && $endKey !== '') {
-		    Logger::debug( 'startKey: ' . $startKey . '; endKey: ' . $endKey );
+		    Logger::debug( 'startKey: ' . $startKey . '; endKey: ' . $endKey, null, $logCtx );
 			return [
 				'relation' => 'AND',
 				'clauses'  => [[

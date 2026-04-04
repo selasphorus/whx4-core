@@ -126,6 +126,7 @@ abstract class Module implements ModuleInterface
 	protected function findViaHandler(string|array $postType, array $filters): array
 	{
 		$postTypes = (array) $postType;
+		Logger::debug( 'postTypes', $postTypes, ['wxc', 'query'] );
 	
 		if (count($postTypes) === 1) {
 			return $this->findSingleType($postTypes[0], $filters);
@@ -138,7 +139,7 @@ abstract class Module implements ModuleInterface
 	{
 		$logCtx = ['wxc', 'query'];
 		Logger::debug( 'postType: '.$postType, null, $logCtx );
-		Logger::debug( 'filters', $filters, $logCtx );
+		//Logger::debug( 'filters', $filters, $logCtx );
 		
 		$map   = App::ctx()->getActivePostTypes();
 		$class = $map[$postType] ?? null;
@@ -154,6 +155,7 @@ abstract class Module implements ModuleInterface
 	private function findAcrossTypes(array $postTypes, array $filters): array
 	{
 		$logCtx = ['wxc', 'query'];
+		Logger::debug( 'postTypes', $postTypes, $logCtx );
 		
 		// Pagination is not well-defined across merged result sets.
 		// Fetch all matching posts from each type and merge.
@@ -164,7 +166,7 @@ abstract class Module implements ModuleInterface
 		$totalFound = 0;
 	
 		foreach ($postTypes as $type) {
-		    Logger::debug( 'About to run find for postType [' . $type .']', null, $logCtx );
+		    //Logger::debug( 'About to run find for postType [' . $type .']', null, $logCtx );
 			$result = $this->findSingleType($type, array_merge($mergedFilters, ['post_type' => $type]));
 			$allPosts   = array_merge($allPosts, $result['posts'] ?? []);
 			$totalFound += $result['pagination']['found'] ?? 0;
