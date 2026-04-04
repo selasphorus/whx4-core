@@ -126,7 +126,7 @@ abstract class Module implements ModuleInterface
 	protected function findViaHandler(string|array $postType, array $filters): array
 	{
 		$postTypes = (array) $postType;
-		Logger::debug( 'postTypes', $postTypes, ['wxc', 'query'] );
+		//Logger::debug( 'postTypes', $postTypes, ['wxc', 'query'] );
 		Logger::debug( 'filters', $filters, ['wxc', 'query'] );
 	
 		if (count($postTypes) === 1) {
