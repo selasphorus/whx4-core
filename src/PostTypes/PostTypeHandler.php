@@ -207,7 +207,7 @@ abstract class PostTypeHandler extends BaseHandler
             'post_type'   => (string) $in['post_type'],
             'post_status' => (string) $in['post_status'],
             'view'        => in_array($in['view'], ['list','grid','table'], true) ? $in['view'] : ($spec['default_view'] ?? 'list'),
-            'limit'       => max(1, (int) $limit), //max(1, (int) $in['limit']),
+            'limit'       => $limit === -1 ? -1 : max(1, $limit),
             'order'       => $order,
             'orderby'     => $orderby,
             'scope'       => $scope,
