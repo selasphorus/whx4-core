@@ -181,7 +181,7 @@ abstract class Module implements ModuleInterface
 			$allPosts = array_slice($allPosts, 0, $limit);
 		}
 		
-		Logger::debug( 'About to run find for postType [' . $type .']' );
+		Logger::debug( count($allPosts).' posts found', null, ['query'] );
 	
 		return [
 			'posts'      => $allPosts,
