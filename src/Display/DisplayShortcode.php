@@ -35,11 +35,12 @@ final class DisplayShortcode implements ShortcodeInterface
         Logger::debug( 'shortcode atts', $atts, 'shortcodes' );
         
         $atts = shortcode_atts(self::defaults(), $atts, $tag);
-
         $postType = (string) $atts['post_type'];
         $display  = (string) $atts['display_format'];
+        
+        Logger::debug( 'atts merged with defaults', $atts, 'shortcodes' );
 
-        // Run query
+        // Run posts query
         $posts = $this->query($atts);
 
         if (empty($posts)) {
@@ -48,9 +49,11 @@ final class DisplayShortcode implements ShortcodeInterface
 
         // Resolve renderer and dispatch
         $renderer = ContentRenderer::resolve($postType);
+        Logger::debug( 'renderer', $renderer, 'shortcodes' );
 
         // Group_by requires a different rendering path
         if (!empty($atts['group_by'])) {
+            Logger::debug( 'renderGrouped', null, 'shortcodes' );
             return $this->renderGrouped($posts, $atts, $renderer, $display);
         }
 
