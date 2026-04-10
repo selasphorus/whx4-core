@@ -36,11 +36,8 @@ abstract class BaseHandler
     public function getType(): string {
 		return static::TYPE;
 	}
-
-
-    public function getConfig(): array {
-        return $this->config;
-    }
+	
+	///
 
     public function getObject(): \WP_Post|\WP_Term|null {
         return $this->object;
