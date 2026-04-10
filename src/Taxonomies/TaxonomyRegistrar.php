@@ -82,7 +82,7 @@ final class TaxonomyRegistrar
                         // clone base config but swap object_types
                         $cfg = $this->base->getConfig();
                         $cfg['object_types'] = $this->targets;
-                        parent::__construct($cfg, 'taxonomy', null);
+                        parent::__construct($cfg, null); //parent::__construct($cfg, 'taxonomy', null);
                     }
                 };
             }

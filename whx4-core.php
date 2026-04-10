@@ -145,8 +145,6 @@ function wxc_queenbee()
     }
 }
 
-
-
 /* +~+~+ Misc Functions WIP +~+~+ */
 
 //add_action( 'init', 'wxc_redirect');
