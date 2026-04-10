@@ -538,7 +538,7 @@ abstract class PostTypeHandler extends BaseHandler
 	 * @param  array|string $taxonomies Short names, FQCNs, or 'Module:name' strings.
 	 * @return string[]
 	 */
-	protected function resolveTaxonomyClasses(array|string $taxonomies): array
+	public function resolveTaxonomyClasses(array|string $taxonomies): array
 	{
 		$taxonomies = is_array($taxonomies) ? $taxonomies : [$taxonomies];
 		$resolved   = [];
