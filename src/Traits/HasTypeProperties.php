@@ -93,11 +93,11 @@ trait HasTypeProperties
 		    "edit_published_{$plural}",
 		];
     }
-
-	public function isHierarchical(): bool
+	
+	public static function isHierarchical(): bool
 	{
-		$default = $this->getType() === 'taxonomy';
-        return static::getConfig()['hierarchical'] ?? $default;
+		$default = static::getType() === 'taxonomy';
+		return static::getConfig()['hierarchical'] ?? $default;
 	}
 
 }
