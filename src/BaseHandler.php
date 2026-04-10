@@ -9,28 +9,34 @@ abstract class BaseHandler
 {
     use HasTypeProperties;
 
-    protected array $config = [];
-    protected const TYPE = 'post_type'; //protected string $type = 'post_type';
+    protected const TYPE = 'post_type';
     protected \WP_Post|\WP_Term|null $object = null;
+    
+    /**
+     * Define the handler's static configuration.
+     *
+     * Concrete handlers implement this to declare type-level properties:
+     * slug, labels, supports, taxonomies, capabilities, etc.
+     */
+    abstract protected static function defineConfig(): array;
 
-    public function __construct(array $config = [], \WP_Post|\WP_Term|null $object = null)
-	{
-		$this->config = $config;
-		$this->object = $object;
-	}
+    /**
+     * Return the handler's static configuration.
+     */
+    public static function getConfig(): array
+    {
+        return static::defineConfig();
+    }
+
+    public function __construct(\WP_Post|\WP_Term|null $object = null)
+    {
+        $this->object = $object;
+    }
 
     public function getType(): string {
 		return static::TYPE;
 	}
-    /*public function getType(): string {
-        return $this->type;
-    }*/
-    /*protected function defineType(): string {
-		// Override in TaxonomyHandler to return 'taxonomy'
-		return 'post_type';
-	}*/
 
-    //abstract protected function defineConfig(): array;
 
     public function getConfig(): array {
         return $this->config;
@@ -109,6 +115,41 @@ abstract class BaseHandler
 		}
 
 		return false;
+	}
+	
+	///
+	
+	/**
+	 * Resolve a short class name or 'Module:name' string to a FQCN under a
+	 * given sub-namespace of the handler's module.
+	 *
+	 * Already-qualified names (containing '\') are returned as-is.
+	 *
+	 * @param  string $name        Short name, 'Module:name', or FQCN.
+	 * @param  string $subNamespace Sub-namespace segment, e.g. 'Taxonomies', 'Shortcodes'.
+	 * @return string
+	 */
+	protected function resolveFqcn(string $name, string $subNamespace): string
+	{
+		if (str_contains($name, '\\')) {
+			return ltrim($name, '\\');
+		}
+	
+		if (!preg_match('/^(.*\\\\Modules\\\\)([^\\\\]+)/', static::class, $m)) {
+			return Text::studly($name);
+		}
+	
+		$targetModule = $m[2];
+		$basename     = $name;
+	
+		if (str_contains($name, ':')) {
+			[$targetModule, $basename] = array_map('trim', explode(':', $name, 2));
+			if ($targetModule === '') {
+				$targetModule = $m[2];
+			}
+		}
+	
+		return $m[1] . $targetModule . '\\' . $subNamespace . '\\' . Text::studly($basename);
 	}
 
 }

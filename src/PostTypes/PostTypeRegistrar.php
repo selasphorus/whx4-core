@@ -6,7 +6,6 @@ use atc\WXC\App;
 use atc\WXC\Logger;
 use atc\WXC\BootOrder;
 use atc\WXC\PostTypes\PostTypeHandler;
-use atc\WXC\Utils\Text;
 
 class PostTypeRegistrar
 {
@@ -50,14 +49,11 @@ class PostTypeRegistrar
 
 		// Contribute CPT-specific taxonomy handlers (e.g., Habitat) to the unified registrar
 		if (!empty($activePostTypes)) {
-			add_filter('wxc_register_taxonomy_handlers', function(array $taxArray) use ($activePostTypes): array {
+		    add_filter('wxc_register_taxonomy_handlers', function (array $taxArray) use ($activePostTypes): array {
 				foreach ($activePostTypes as $slug => $handlerClass) {
-				    $handler = new $handlerClass();
-				    // Wherever you attach/ensure taxonomies, resolve them:
-				    $taxonomyClasses = $this->resolveTaxonomyClasses($handlerClass, $handler->getTaxonomies() ?? []);
-				    // Example: hand them to your registrar, or call static register() if you use handlers.
-				    // $this->taxonomyRegistrar->ensureRegistered($taxonomyClasses);
-					$taxArray = array_merge($taxArray, (array) $taxonomyClasses);
+					$handler        = new $handlerClass();
+					$taxonomyClasses = $handler->resolveTaxonomyClasses($handler->getTaxonomies());
+					$taxArray        = array_merge($taxArray, $taxonomyClasses);
 				}
 				return $taxArray;
 			}, 10, 1);
@@ -191,78 +187,5 @@ class PostTypeRegistrar
 			}
 		}
 	}
-
-
-    // WIP 08/27/25 -- the following three functions may be better placed in some other class, TBD
-
-    /**
-     * @param array|string $taxonomies Short names like 'habitat', or FQCNs, or 'Module:habitat'.
-     * @return string[] FQCNs
-     */
-    protected function resolveTaxonomyClasses(string $handlerClass, array|string $taxonomies): array
-    {
-        $taxonomies = is_array($taxonomies) ? $taxonomies : [ $taxonomies ];
-        
-        //Logger::debug( 'taxonomies', $taxonomies, 'wxc' );
-        $resolved   = [];
-
-        // WIP: modify to return associative array of slug => fqcn instead of ONLY the class names
-        foreach ($taxonomies as $t) {
-            $t = trim((string) $t);
-            if ($t === '') {
-                continue;
-            }
-            $resolved[] = $this->resolveTaxonomyFqcn($handlerClass, $t);
-        }
-        //Logger::debug( 'resolved', $resolved, 'wxc' );
-
-        return array_values(array_unique($resolved));
-    }
-
-    // TODO: generalize
-    protected function resolveTaxonomyFqcn(string $handlerClass, string $name): string
-    {
-		//Logger::debug( 'name to resolve: ' . $name );
-
-        // Already a FQCN?
-        if (str_contains($name, '\\')) {
-            //Logger::debug( 'already a fqcn' );
-            return ltrim($name, '\\');
-        }
-
-        // Extract root prefix up to "Modules\"
-        // e.g. WXC\Modules\Supernatural\PostTypes\Monster
-        // -> prefix: WXC\Modules\, currentModule: Supernatural
-        /*$class = static::class;
-        if (!preg_match('/^(.*\\\\Modules\\\\)([^\\\\]+)/', $class, $m)) {
-            Logger::debug( 'class: ' . $class );
-            // Fallback: just StudlyCase in current namespace root (unlikely)
-            return $this->studly($name);
-        }*/
-        if (!preg_match('/^(.*\\\\Modules\\\\)([^\\\\]+)/', $handlerClass, $m)) {
-            //Logger::debug( 'handlerClass: ' . $handlerClass );
-            // Fallback: just StudlyCase in current namespace root (unlikely)
-            //return $this->studly($name);
-        }
-        //Logger::debug( 'm: ' . print_r($m, true) );
-        $modulesPrefix = $m[1]; // "WXC\Modules\"
-        $currentModule = $m[2]; // "Supernatural"
-
-        // Optional "Module:basename" syntax
-        $targetModule = $currentModule;
-        $basename     = $name;
-        if (str_contains($name, ':')) {
-            [ $targetModule, $basename ] = array_map('trim', explode(':', $name, 2));
-            if ($targetModule === '') {
-                $targetModule = $currentModule;
-            }
-        }
-
-        // Build FQCN: <prefix><Module>\Taxonomies\<Studly>
-        // TODO: generalize for classes other than Taxonomies by replacing hardcoded '\\Taxonomies\\' with another var
-        $fqcn = $modulesPrefix . $targetModule . '\\Taxonomies\\' . Text::studly($basename);
-        //Logger::debug( 'fqcn: ' . $fqcn );
-        return $fqcn;
-    }
 
 }

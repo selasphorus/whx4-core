@@ -6,6 +6,7 @@ namespace atc\WXC\PostTypes;
 use atc\WXC\App;
 use atc\WXC\Logger;
 use atc\WXC\BaseHandler;
+use atc\WXC\Utils\Text;
 use atc\WXC\Traits\AppliesTitleArgs;
 use atc\WXC\Query\PostQuery;
 use atc\WXC\Templates\ViewLoader;
@@ -26,15 +27,9 @@ abstract class PostTypeHandler extends BaseHandler
     /** @var array<int,self> Cache: post_id => handler instance */
     protected static array $perPostCache = [];
 
-    // Constructor to set the config and post object
-    /*public function __construct( array $config = [], ?\WP_Post $post = null )
-    {
-        parent::__construct( $config, $post );
-    }*/
-    // Constructor
-	public function __construct(array $config = [], ?\WP_Post $post = null)
+    public function __construct(?\WP_Post $post = null)
 	{
-		parent::__construct($config, $post);
+		parent::__construct($post);
 		$this->post = $post;
 	}
 
@@ -43,11 +38,50 @@ abstract class PostTypeHandler extends BaseHandler
         add_filter( 'the_content', [ self::class, 'appendCustomContent' ], 15 );
 	}
 	
-	public function getSlug(): string
-    {
-        return (string)$this->getConfig()['slug'];
-    }
-    
+	public static function getSlug(): string
+	{
+		return (string) static::getConfig()['slug'];
+	}
+	
+	public static function getSupports(): array
+	{
+		return static::getConfig()['supports'] ?? ['title', 'author', 'editor', 'revisions'];
+	}
+	
+	public static function getTaxonomies(): array
+	{
+		return static::getConfig()['taxonomies'] ?? ['admin_tag'];
+	}
+	
+	/**
+	 * The default taxonomy slug used when a generic 'category' filter is passed.
+	 *
+	 * Set via the handler's config array: 'default_taxonomy' => 'event_category'.
+	 * Return null for post types with no meaningful default category taxonomy.
+	 */
+	public static function getDefaultTaxonomy(): ?string
+	{
+		return static::getConfig()['default_taxonomy'] ?? null;
+	}
+	
+	public static function getMenuIcon(): ?string
+	{
+		return static::getConfig()['menu_icon'] ?? 'dashicons-superhero';
+	}
+	
+	public static function getCapType(): array
+	{
+		$capType = static::getConfig()['capability_type'] ?? [];
+		if (empty($capType)) {
+			$capType = [static::getSlug(), static::getPluralSlug()];
+		} elseif (!is_array($capType)) {
+			$capType = [$capType, "{$capType}s"];
+		}
+		return $capType;
+	}
+	
+	
+	
 	// Optional explicit setter (handy for guarantees/safety-net)
 	// TBD: is this still needed? Redundant w/ constructor...
 	public function setPost(?\WP_Post $post): static
@@ -61,7 +95,7 @@ abstract class PostTypeHandler extends BaseHandler
 		return $this->post;
 	}
 
-	 /**
+	/**
 	 * Optional spec hook. Child classes override this only if they need
 	 * custom query behavior (date ranges, CPT-specific defaults, etc.).
 	 *
@@ -348,55 +382,41 @@ abstract class PostTypeHandler extends BaseHandler
     }
 
     /** @internal: turn CSV strings into arrays per taxonomy key */
-    protected static function parseTaxInputs(array $spec, array $in): array
-    {
-        $map = [];
-        foreach ($spec['taxonomies'] ?? [] as $tax) {
-            $raw = isset($in[$tax]) ? (string) $in[$tax] : '';
-            if ($raw === '') {
-                $map[$tax] = [];
-                continue;
-            }
-            $map[$tax] = array_values(array_filter(array_map('trim', explode(',', $raw))));
-        }
-        return $map;
-    }
-
-    public function getCapType(): array
-    {
-        $capType = $this->getConfig()['capability_type'] ?? [];
-        if ( empty($capType) ) { $capType = [ $this->getSlug(), $this->getPluralSlug() ]; } else if ( !is_array($capType) ) { $capType = [$capType, "{$capType}s" ]; };
-        return $capType;
-        //return $this->getConfig()['capability_type'] ?? [ $this->getSlug(), $this->getPluralSlug() ];
-    }
-
-    public function getSupports(): array
-    {
-        return $this->getConfig()['supports'] ?? [ 'title', 'author', 'editor', 'revisions' ];
-    }
-
-    public function getTaxonomies(): array
-    {
-        //$taxonomies = $this->getConfig()['taxonomies'] ?? [ 'admin_tag' => 'AdminTag' ];
-        return $this->getConfig()['taxonomies'] ?? [ 'admin_tag' ];
-        // WIP 08/26/25 -- turn this into an array of slug -> className pairs
-        //return $taxonomies;
-        //// WIP 08/26/25 -- figure out how to get fqcn for bare class names
-
-        // Wherever you attach/ensure taxonomies, resolve them:
-        //$taxonomyClasses = $this->resolveTaxonomyClasses($this->getConfig('taxonomies') ?? []);
-        // Example: hand them to your registrar, or call static register() if you use handlers.
-        // $this->taxonomyRegistrar->ensureRegistered($taxonomyClasses);
-
-        //return $this->getConfig()['taxonomies'] ?? [ 'admin_tag' => 'AdminTag' ];
-        //return $taxonomyClasses;
-    }
-
-    public function getMenuIcon(): ?string
-    {
-        return $this->getConfig()['menu_icon'] ?? 'dashicons-superhero';
-    }
-
+    
+    /**
+	 * Turn CSV taxonomy filter strings into slug arrays.
+	 *
+	 * Also resolves a generic 'category' key to the handler's default taxonomy
+	 * (via getDefaultTaxonomy()), so callers need not know the CPT-specific slug.
+	 * A direct taxonomy key always takes precedence over 'category'.
+	 */	
+	protected static function parseTaxInputs(array $spec, array $in): array
+	{
+		$parseCsv = static fn(string $raw): array =>
+			array_values(array_filter(array_map('trim', explode(',', $raw))));
+	
+		$map = [];
+	
+		foreach ($spec['taxonomies'] ?? [] as $tax) {
+			$raw       = isset($in[$tax]) ? (string) $in[$tax] : '';
+			$map[$tax] = $raw !== '' ? $parseCsv($raw) : [];
+		}
+	
+		// Resolve generic 'category' to the CPT's default taxonomy.
+		// A direct taxonomy key in $map always takes precedence.
+		$defaultTax = static::getDefaultTaxonomy();
+		if (
+			$defaultTax !== null
+			&& !isset($map[$defaultTax])
+			&& isset($in['category'])
+			&& (string) $in['category'] !== ''
+		) {
+			$map[$defaultTax] = $parseCsv((string) $in['category']);
+		}
+	
+		return $map;
+	}
+	
     /**
      * Get the handler FQCN for a CPT slug, or null if not WXC-managed.
      */
@@ -511,7 +531,33 @@ abstract class PostTypeHandler extends BaseHandler
 		$val = get_post_meta($id, $key, true);
 		return ($val === '' || $val === null) ? $default : $val;
 	}
-
+	
+	/**
+	 * Resolve short taxonomy names or FQCNs to fully-qualified class names.
+	 *
+	 * @param  array|string $taxonomies Short names, FQCNs, or 'Module:name' strings.
+	 * @return string[]
+	 */
+	protected function resolveTaxonomyClasses(array|string $taxonomies): array
+	{
+		$taxonomies = is_array($taxonomies) ? $taxonomies : [$taxonomies];
+		$resolved   = [];
+		//Logger::debug( 'taxonomies', $taxonomies, 'wxc' );
+	
+		foreach ($taxonomies as $t) {
+			$t = trim((string) $t);
+			if ($t !== '') {
+				$resolved[] = $this->resolveTaxonomyFqcn($t);
+			}
+		}
+	
+		return array_values(array_unique($resolved));
+	}
+	
+	protected function resolveTaxonomyFqcn(string $name): string
+	{
+		return $this->resolveFqcn($name, 'Taxonomies');
+	}
 
     // Method to get the post title
     /*public function get_post_title()

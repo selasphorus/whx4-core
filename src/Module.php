@@ -168,6 +168,24 @@ abstract class Module implements ModuleInterface
 	
 		foreach ($postTypes as $type) {
 		    //Logger::debug( 'About to run find for postType [' . $type .']', null, $logCtx );
+		    
+		    $map     = App::ctx()->getActivePostTypes();
+		    $class   = $map[$type] ?? null;
+		    
+		    // Resolve generic 'category' to this type's default taxonomy.
+			$typeFilters = $mergedFilters;
+			if (
+				$class
+				&& isset($typeFilters['category'])
+				&& is_subclass_of($class, PostTypeHandler::class)
+			) {
+				$defaultTax = $class::getDefaultTaxonomy();
+				if ($defaultTax !== null && $defaultTax !== 'category') {
+					$typeFilters[$defaultTax] = $typeFilters['category'];
+					unset($typeFilters['category']);
+				}
+			}
+        
 			$result = $this->findSingleType($type, array_merge($mergedFilters, ['post_type' => $type]));
 			Logger::debug( count($result['posts']).' found for postType: '.$type, null, $logCtx );
 			$allPosts   = array_merge($allPosts, $result['posts'] ?? []);

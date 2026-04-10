@@ -8,23 +8,15 @@ use atc\WXC\PostTypes\PostTypeHandler;
 
 final class Post extends PostTypeHandler
 {
-    public function __construct(?\WP_Post $post=null)
+    protected static function defineConfig(): array
     {
-        $config = [
-            'slug'    => 'post',
-            'labels'  => [
+        return [
+            'slug'             => 'post',
+            'default_taxonomy' => 'category',
+            'labels'           => [
                 'name'          => 'Posts',
                 'singular_name' => 'Post',
             ],
-            // Keep supports minimal; core already defines this post type.
-            // Your system can still hook titles/content/etc. by slug.
         ];
-
-        parent::__construct($config, $post);
-    }
-
-    public function boot(): void
-    {
-        parent::boot(); // Optional if you add shared logic later
     }
 }

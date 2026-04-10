@@ -9,53 +9,51 @@ abstract class TaxonomyHandler extends BaseHandler
 {
     protected const TYPE = 'taxonomy';
 
-    public function __construct(array $config = [], \WP_Term|null $term = null)
+    public function __construct(?\WP_Term $term = null)
     {
-        parent::__construct($config, $term);
+        parent::__construct($term);
     }
 
-    public function getObjectTypes(): array
+    public static function getSlug(): string
     {
-        return $this->getConfig()['object_types'] ?? [];
+        return (string) static::getConfig()['slug'];
     }
 
-    public function isHierarchical(): bool
+    public static function getObjectTypes(): array
     {
-        return (bool)($this->getConfig()['hierarchical'] ?? false);
+        return static::getConfig()['object_types'] ?? [];
     }
 
-    public function getSlug(): string
+    public static function isHierarchical(): bool
     {
-        return (string)$this->getConfig()['slug'];
+        return (bool) (static::getConfig()['hierarchical'] ?? false);
     }
 
     public function getArgs(): array
     {
-        $labels = $this->getLabels();
-        //
         return [
-            'labels'            => $labels,
+            'labels'            => $this->getLabels(),
             'public'            => false,
             'show_ui'           => true,
             'show_admin_column' => true,
-            'query_var'         => true, // ok for default?
-            'hierarchical'      => $this->isHierarchical(),
-            'meta_box_cb'       => $this->isHierarchical() ? 'post_categories_meta_box' : null, // TODO:  mod to allow override?
+            'query_var'         => true,
+            'hierarchical'      => static::isHierarchical(),
+            'meta_box_cb'       => static::isHierarchical() ? 'post_categories_meta_box' : null,
         ];
     }
 
     public function registerTaxonomy(): void
     {
-        $slug  = $this->getSlug();
-        $types = $this->getObjectTypes();
+        $slug  = static::getSlug();
+        $types = static::getObjectTypes();
         $args  = $this->getArgs();
 
         if (!taxonomy_exists($slug)) {
-            Logger::debug( 'about to register taxonomy: ' . $slug . ' for posttypes: ' . print_r($types,true) . "with args: " . print_r($args,true), 'wptx' );
+            Logger::debug('about to register taxonomy: ' . $slug . ' for posttypes: ' . print_r($types, true) . ' with args: ' . print_r($args, true), 'wptx');
             register_taxonomy($slug, $types, $args);
         } else {
             foreach ($types as $pt) {
-                Logger::debug( "about to register taxonomy: " . $slug . " for posttype: " . $pt, 'wptx' );
+                Logger::debug('about to register taxonomy: ' . $slug . ' for posttype: ' . $pt, 'wptx');
                 register_taxonomy_for_object_type($slug, $pt);
             }
         }
