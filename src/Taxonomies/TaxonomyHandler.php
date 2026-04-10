@@ -8,6 +8,7 @@ use atc\WXC\Logger;
 abstract class TaxonomyHandler extends BaseHandler
 {
     protected const TYPE = 'taxonomy';
+    public const OBJECT_TYPES_ALL = '*';
 
     public function __construct(?\WP_Term $term = null)
     {
@@ -19,10 +20,11 @@ abstract class TaxonomyHandler extends BaseHandler
         return (string) static::getConfig()['slug'];
     }
 
-    public static function getObjectTypes(): array
-    {
-        return static::getConfig()['object_types'] ?? [];
-    }
+	public static function getRawObjectTypes(): array
+	{
+		$types = static::getConfig()['object_types'] ?? [];
+		return is_array($types) ? $types : [$types];
+	}
 
     public static function isHierarchical(): bool
     {
@@ -41,21 +43,28 @@ abstract class TaxonomyHandler extends BaseHandler
             'meta_box_cb'       => static::isHierarchical() ? 'post_categories_meta_box' : null,
         ];
     }
-
-    public function registerTaxonomy(): void
-    {
-        $slug  = static::getSlug();
-        $types = static::getObjectTypes();
-        $args  = $this->getArgs();
-
-        if (!taxonomy_exists($slug)) {
-            Logger::debug('about to register taxonomy: ' . $slug . ' for posttypes: ' . print_r($types, true) . ' with args: ' . print_r($args, true), 'wptx');
-            register_taxonomy($slug, $types, $args);
-        } else {
-            foreach ($types as $pt) {
-                Logger::debug('about to register taxonomy: ' . $slug . ' for posttype: ' . $pt, 'wptx');
-                register_taxonomy_for_object_type($slug, $pt);
-            }
-        }
-    }
+    
+    /**
+	 * Register this taxonomy against the supplied object types.
+	 *
+	 * Object type resolution (including wildcard expansion) is the
+	 * registrar's responsibility; this method only handles the WP API calls.
+	 *
+	 * @param string[] $objectTypes Resolved CPT slugs to attach this taxonomy to.
+	 */
+	public function registerTaxonomy(array $objectTypes): void
+	{
+		$slug = static::getSlug();
+		$args = $this->getArgs();
+	
+		if (!taxonomy_exists($slug)) {
+			Logger::debug('registering taxonomy: ' . $slug . ' for: ' . implode(', ', $objectTypes), 'wptx');
+			register_taxonomy($slug, $objectTypes, $args);
+		} else {
+			foreach ($objectTypes as $pt) {
+				Logger::debug('registering taxonomy: ' . $slug . ' for: ' . $pt, 'wptx');
+				register_taxonomy_for_object_type($slug, $pt);
+			}
+		}
+	}
 }

@@ -22,8 +22,7 @@ final class TaxonomyRegistrar
     public static function bootstrap(): void
     {
         // 1) Start with any handlers contributed by CPTs/modules/core
-        $handlers = (array) apply_filters('wxc_register_taxonomy_handlers', []);
-        $handlers = array_unique($handlers); // Get rid of duplicates
+        $handlers = array_unique((array) apply_filters('wxc_register_taxonomy_handlers', []));
 
         // 2) Subtype taxonomies -- Add synthesized handlers for per‑CPT subtype taxonomies
         /*$subtypes = SubtypeRegistry::getAll();
@@ -61,38 +60,43 @@ final class TaxonomyRegistrar
                     //Logger::warn("handler class: " . $h . " is not a valid TaxonomyHandler class.");
                     continue;
                 }
+                $objectTypes = self::resolveObjectTypes($h, $activePostTypes);
                 $h = new $h();
-            } elseif (!$h instanceof TaxonomyHandler) {
-                //Logger::warn("handler class: " . $h . " is not a valid TaxonomyHandler class.");
-                continue;
-            }
-
-            // Resolve wildcard '*' and apply tax to all active WXC CPTs (if provided)
-            $targets = $h->getObjectTypes();
-            if (in_array('*', $targets, true)) {
-                $targets = $activePostTypes ?: [];
-                // If nothing provided, skip rather than registering a taxonomy with no object types
-                if (empty($targets)) {
-                    continue;
-                }
-                // Quick way to set the resolved targets: override via a tiny child class
-                $h = new class($h, $targets) extends TaxonomyHandler {
-                    public function __construct(private TaxonomyHandler $base, private array $targets)
-                    {
-                        // clone base config but swap object_types
-                        $cfg = $this->base->getConfig();
-                        $cfg['object_types'] = $this->targets;
-                        parent::__construct($cfg, null); //parent::__construct($cfg, 'taxonomy', null);
-                    }
-                };
-            }
-
-            // Finally, register it (handler knows how to call register_taxonomy)
-            try {
-				$h->registerTaxonomy();
-			} catch ( \Throwable $e ) {
-				Logger::error( $e->getMessage(), $e->getTraceAsString() );
+            } elseif ($h instanceof TaxonomyHandler) {
+				$objectTypes = self::resolveObjectTypes(get_class($h), $activePostTypes);
+			} else {
+				//Logger::warn("handler class: " . $h . " is not a valid TaxonomyHandler class.");
+				continue;
+			}
+			
+			if (empty($objectTypes)) {
+				continue;
+			}
+	
+			try {
+				$h->registerTaxonomy($objectTypes);
+			} catch (\Throwable $e) {
+				Logger::error($e->getMessage(), $e->getTraceAsString());
 			}
         }
     }
+    
+    /**
+	 * Resolve object types for a taxonomy handler class, expanding
+	 * OBJECT_TYPES_ALL ('*') to the full list of active CPT slugs.
+	 *
+	 * @param class-string<TaxonomyHandler> $handlerClass
+	 * @param string[] $activePostTypes
+	 * @return string[]
+	 */
+	private static function resolveObjectTypes(string $handlerClass, array $activePostTypes): array
+	{
+		$types = $handlerClass::getRawObjectTypes();
+	
+		if (in_array(TaxonomyHandler::OBJECT_TYPES_ALL, $types, true)) {
+			return $activePostTypes;
+		}
+	
+		return $types;
+	}
 }
