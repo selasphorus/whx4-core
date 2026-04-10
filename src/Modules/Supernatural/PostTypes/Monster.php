@@ -7,29 +7,24 @@ use atc\WXC\Modules\Supernatural\Taxonomies\Habitat; // ???
 
 class Monster extends PostTypeHandler
 {
-	public function __construct(?\WP_Post $post = null)
-	{
-		$config = [
-			'slug'        => 'monster',
-			//'plural_slug' => 'monsters',
-			'labels'      => [
+	protected static function defineConfig(): array
+    {
+        return [
+            'slug'             => 'monster',
+			'menu_icon'        => 'dashicons-palmtree',
+			'supports'         => ['title', 'author', 'thumbnail', 'editor', 'excerpt', 'revisions'],
+			'taxonomies'       => ['habitat'],
+            //'default_taxonomy' => 'category',
+            'labels'      => [
 				'add_new_item' => 'Summon New Monster',
 				'not_found'    => 'No monsters lurking nearby',
 			],
-			'menu_icon'   => 'dashicons-palmtree',
-			'taxonomies'   => [ 'habitat' ],
-			'supports' => ['title', 'author', 'thumbnail', 'editor', 'excerpt', 'revisions'],
-			//'capability_type' => ['monster', 'monsters'],
-			//'map_meta_cap'       => true,
-		];
-
-		parent::__construct( $config, $post );
-	}
+        ];
+    }
 
 	public function boot(): void
 	{
-	    parent::boot(); // Optional if you add shared logic later
-
+	    parent::boot();
 	    self::registerTitleDefaults(static::getSlug(), [
 			'line_breaks'   => true,
 			'show_subtitle' => true,

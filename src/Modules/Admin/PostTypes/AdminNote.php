@@ -7,20 +7,21 @@ use atc\WXC\PostTypes\PostTypeHandler;
 // TODO: phase out this post type, migrate admin_notes to more general "Notes" posttype?
 class AdminNote extends PostTypeHandler
 {
-    public function __construct(?\WP_Post $post = null) {
-        $config = [
-            'slug'        => 'admin_note',
-            //'plural_slug' => 'admin_notes',
-            'name' => 'Notes',
-            //'rewrite' => ['slug' => 'whimsy'],
-            //'menu_icon'   => 'dashicons-palmtree',
-            'capability_type' => ['secret','secrets'],
-            //'hierarchical' => false,
-            //'taxonomies' => ['admin_tag', 'secret_category'],
-            'taxonomies' => array( 'adminnote_category', 'admin_tag', 'data_table', 'query_tag', 'admin_tag' ),
+    protected static function defineConfig(): array
+    {
+        return [
+            'slug'             => 'admin_note',
+            'name'             => 'Notes',
+            //'menu_icon'        => 'dashicons-networking',
+			'capability_type'  => ['secret','secrets'], // ???
+            'supports'         => ['title', 'author', 'thumbnail', 'editor', 'excerpt', 'revisions'],
+			'taxonomies'       => ['adminnote_category', 'data_table', 'query_tag'],
+            'default_taxonomy' => 'adminnote_category',
+            'labels'           => [
+				//'add_new_item' => 'Gather a new Group',
+            ],
+			//'hierarchical' => true,
         ];
-
-        parent::__construct( $config, $post );
     }
 
     public function boot(): void

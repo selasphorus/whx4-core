@@ -7,44 +7,33 @@ use atc\WXC\Logger;
 // TODO: adapt as needed to apply to taxonomies and blocks as well as post types -- ???
 trait HasTypeProperties
 {
-	abstract public function getConfig(): array;
+    abstract public static function getConfig(): array;
     abstract public function getType(): string; // 'post_type' or 'taxonomy'
 
-    public function getSlug(): string
+    public static function getSlug(): string
     {
-        //Logger::debug( 'config', $this->getConfig(), 'wxc' );
-        return $this->getConfig()['slug'] ?? strtolower( basename( str_replace( '\\', '/', static::class ) ) );
+        return static::getConfig()['slug']
+            ?? strtolower(basename(str_replace('\\', '/', static::class)));
     }
 
-    public function getPluralSlug(): string
+    public static function getPluralSlug(): string
     {
-        return $this->getConfig()['plural_slug'] ?? $this->getSlug() . 's';
+        return static::getConfig()['plural_slug'] ?? static::getSlug() . 's';
     }
 
     public function getLabels(): array
 	{
-		$slug = $this->getSlug();
-		$defaults = $this->getDefaultLabels();
-		$overrides = $this->getConfig()['labels'] ?? [];
-		// Merge defaults with overrides
-		$labels = array_merge($defaults, $overrides);
-
-		// Troubleshooting...
-		//Logger::debug( 'default labels', $defaults, 'wxc' );
-		//Logger::debug( 'override labels', $overrides, 'wxc' );
-		//Logger::debug( 'labels (merged)', $labels, 'wxc' );
-
-    	// Filter the array
+		$slug     = static::getSlug();
+		// Merge default labels with overrides from handler-specific config
+		$labels   = array_merge($this->getDefaultLabels(), static::getConfig()['labels'] ?? []);
 		$filtered = apply_filters("wxc_labels_{$slug}", $labels, $slug, $this);
-		return apply_filters("wxc_labels", $filtered, $slug, $this);
+        return apply_filters('wxc_labels', $filtered, $slug, $this);
 	}
 
 	public function getDefaultLabels(): array
 	{
-		//$singular = ucfirst( $this->getSlug() );
-        $singular = ucwords (str_replace(['_', '-'], ' ', $this->getSlug() ));
-        //$plural   = ucfirst( $this->getPluralSlug() );
-        $plural = ucwords (str_replace(['_', '-'], ' ', $this->getPluralSlug() ));
+        $singular = ucwords(str_replace(['_', '-'], ' ', static::getSlug()));
+        $plural   = ucwords(str_replace(['_', '-'], ' ', static::getPluralSlug()));
 
 		return [
 			'name'               => $plural,
@@ -57,24 +46,16 @@ trait HasTypeProperties
             'search_items'       => "Search $plural",
 			'not_found'          => "No $plural found",
 			'not_found_in_trash' => "No $plural found in Trash",
-            /*
-            'menu_name'          => ucfirst($this->postTypeSlug) . 's',
-            'name_admin_bar'     => ucfirst($this->postTypeSlug),
-            'add_new'            => 'Add New',
-            'all_items'          => 'All ' . ucfirst($this->postTypeSlug) . 's',
-            'parent_item_colon'  => 'Parent ' . ucfirst($this->postTypeSlug) . 's:',
-            */
-			// Add more defaults as needed
 		];
 	}
 
     public function getCapabilities(): array
     {
-        // If capType is set, configure capabilities accordingly... NOT simply based on slug/plural
-        $capType = $this->getConfig()['capability_type'] ?? [];
-        if ( !is_array($capType) ) { $capType = [$capType, "{$capType}s" ]; };
-        //
-        $custom = $this->getConfig()['capabilities'] ?? [];
+        $capType = static::getConfig()['capability_type'] ?? [];
+        if (!is_array($capType)) {
+            $capType = [$capType, "{$capType}s"];
+        }
+        $custom = static::getConfig()['capabilities'] ?? [];
         return array_merge( $this->getDefaultCapabilities( $capType ), $custom );
     }
 
@@ -85,8 +66,8 @@ trait HasTypeProperties
             $singular = $capType[0];
             $plural = $capType[1];
         } else {
-            $singular = $this->getSlug();
-            $plural   = $this->getPluralSlug() ?? "{$singular}s";
+            $singular = static::getSlug();
+            $plural   = static::getPluralSlug();
         }
         //Logger::debug( 'type: ' . $type . '; singular: ' . $singular . '; plural: ' . $plural );
 
@@ -116,7 +97,7 @@ trait HasTypeProperties
 	public function isHierarchical(): bool
 	{
 		$default = $this->getType() === 'taxonomy';
-		return $this->getConfig()['hierarchical'] ?? $default;
+        return static::getConfig()['hierarchical'] ?? $default;
 	}
 
 }

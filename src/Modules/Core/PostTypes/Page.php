@@ -8,20 +8,19 @@ use atc\WXC\PostTypes\PostTypeHandler;
 
 final class Page extends PostTypeHandler
 {
-    public function __construct(?\WP_Post $post=null)
+    protected static function defineConfig(): array
     {
-        $config = [
-            'slug'   => 'page',
-            'labels' => [
+        return [
+            'slug'             => 'page',
+            'taxonomies'       => ['page_tag'],
+            //'default_taxonomy' => 'category',
+            'labels'            => [
                 'name'          => 'Pages',
                 'singular_name' => 'Page',
             ],
-            'taxonomies'   => [ 'page_tag' ],
             // Keep supports minimal; core already defines this post type.
             // Your system can still hook titles/content/etc. by slug.
         ];
-
-        parent::__construct($config, $post);
     }
 
     public function boot(): void

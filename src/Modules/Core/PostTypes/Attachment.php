@@ -8,19 +8,18 @@ use atc\WXC\PostTypes\PostTypeHandler;
 
 final class Attachment extends PostTypeHandler
 {
-    public function __construct(?\WP_Post $post=null)
+    protected static function defineConfig(): array
     {
-        $config = [
-            'slug'   => 'attachment',
-            'labels' => [
+        return [
+            'slug'             => 'attachment',
+            'taxonomies'       => ['media_category', 'media_tag'],
+            'default_taxonomy' => 'media_category',
+            'labels'           => [
                 'name'          => 'Media',
                 'singular_name' => 'File',
             ],
-            'taxonomies'   => [ 'media_category', 'media_tag' ],
             // Attachments are special in WP; don't redefine supports here.
         ];
-
-        parent::__construct($config, $post);
     }
 
     public function boot(): void
