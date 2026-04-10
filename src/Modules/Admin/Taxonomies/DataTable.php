@@ -6,13 +6,13 @@ use atc\WXC\Taxonomies\TaxonomyHandler;
 
 class DataTable extends TaxonomyHandler
 {
-    public function __construct(\WP_Term|null $term = null)
+    protected static function defineConfig(): array
     {
-        parent::__construct([
-            'slug'         => 'data_table',
-            'plural_slug'  => 'data_tables',
+        return [
+            'slug'             => 'data_table',
+            //'plural_slug'      => 'data_tables',
             'object_types' => ['admin_note', 'note'], // array of post types (by slug) to which this taxonomy applies
             'hierarchical' => true,
-        ], $term);
+        ];
     }
 }

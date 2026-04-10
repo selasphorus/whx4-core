@@ -6,13 +6,13 @@ use atc\WXC\Taxonomies\TaxonomyHandler;
 
 class MediaCategory extends TaxonomyHandler
 {
-    public function __construct(\WP_Term|null $term = null)
+    protected static function defineConfig(): array
     {
-        parent::__construct([
+        return [
             'slug'         => 'media_category',
             'plural_slug'  => 'media_categories',
-            'object_types' => ['attachment'], // array of post types (by slug) to which this taxonomy applies
+            'object_types' => ['attachment'],
             'hierarchical' => true,
-        ], $term);
+        ];
     }
 }

@@ -6,13 +6,13 @@ use atc\WXC\Taxonomies\TaxonomyHandler;
 
 class Habitat extends TaxonomyHandler
 {
-    public function __construct(\WP_Term|null $term = null)
+    protected static function defineConfig(): array
     {
-        parent::__construct([
+        return [
             'slug'         => 'habitat',
             'plural_slug'  => 'habitats',
             'object_types' => ['monster'],
             'hierarchical' => true,
-        ], $term);
+        ];
     }
 }

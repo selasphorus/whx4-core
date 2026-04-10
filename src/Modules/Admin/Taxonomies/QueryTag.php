@@ -6,13 +6,13 @@ use atc\WXC\Taxonomies\TaxonomyHandler;
 
 class QueryTag extends TaxonomyHandler
 {
-    public function __construct(\WP_Term|null $term = null)
+    protected static function defineConfig(): array
     {
-        parent::__construct([
+        return [
             'slug'         => 'query_tag',
             'plural_slug'  => 'query_tags',
-            'object_types' => ['admin_note', 'note'], // array of post types (by slug) to which this taxonomy applies
+            'object_types' => ['admin_note', 'note'],
             'hierarchical' => true,
-        ], $term);
+        ];
     }
 }

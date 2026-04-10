@@ -6,13 +6,13 @@ use atc\WXC\Taxonomies\TaxonomyHandler;
 
 class PageTag extends TaxonomyHandler
 {
-    public function __construct(\WP_Term|null $term = null)
+    protected static function defineConfig(): array
     {
-        parent::__construct([
+        return [
             'slug'         => 'page_tag',
             'plural_slug'  => 'page_tags',
-            'object_types' => ['page'], // array of post types (by slug) to which this taxonomy applies
+            'object_types' => ['page'],
             'hierarchical' => false,
-        ], $term);
+        ];
     }
 }
