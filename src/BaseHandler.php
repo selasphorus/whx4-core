@@ -33,8 +33,9 @@ abstract class BaseHandler
     {
         $this->object = $object;
     }
-
-    public function getType(): string {
+    
+    public static function getType(): string
+	{
 		return static::TYPE;
 	}
 	

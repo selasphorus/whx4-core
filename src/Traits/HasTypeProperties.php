@@ -8,7 +8,8 @@ use atc\WXC\Logger;
 trait HasTypeProperties
 {
     abstract public static function getConfig(): array;
-    abstract public function getType(): string; // 'post_type' or 'taxonomy'
+    abstract public static function getType(): string; // 'post_type' or 'taxonomy'
+    //abstract public function getType(): string;
 
     public static function getSlug(): string
     {
@@ -61,7 +62,7 @@ trait HasTypeProperties
 
     public function getDefaultCapabilities( array $capType = [] ): array
     {
-        $type     = $this->getType();
+        $type = static::getType(); //$type     = $this->getType();
         if ( $capType ) {
             $singular = $capType[0];
             $plural = $capType[1];
