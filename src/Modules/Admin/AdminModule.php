@@ -16,7 +16,7 @@ final class AdminModule extends BaseModule
         $this->registerDefaultViewRoot();
         parent::boot();
         
-        // This extra step ensures that the AdminTag taxonomy will be registered for ALL active CPTs and WXC-registered Core types (Post, Page, Attachment)
+        // This extra step ensures that the AdminTag taxonomy will be registered for ALL WXC-registered active CPTs and Core types (Post, Page, Attachment)
         add_filter('wxc_register_taxonomy_handlers', function (array $handlers): array {
 			$handlers[] = \atc\WXC\Modules\Admin\Taxonomies\AdminTag::class;
 			return $handlers;
