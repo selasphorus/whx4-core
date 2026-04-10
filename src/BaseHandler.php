@@ -2,6 +2,7 @@
 
 namespace atc\WXC;
 
+use atc\WXC\Utils\Text;
 use atc\WXC\Traits\HasTypeProperties;
 
 // Shared logic & constructor for all registrable types (CPTs, taxonomies, maybe more)
