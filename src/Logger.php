@@ -30,8 +30,8 @@ class Logger
 
         $caller = self::resolveCaller( debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 5 ) );        
         $logType = $level !== self::DEBUG ? '[' . strtoupper( $level ) . '] ' : '';
-        //$entry = sprintf( '(%s::%s) %s%s', $caller['class'], $caller['function'], $logType, $message ); // no line nums
-        $entry = sprintf( '(%s::%s:%d) %s%s', $caller['class'], $caller['function'], $caller['line'], $logType, $message );
+        $entry = sprintf( '(%s::%s) %s%s', $caller['class'], $caller['function'], $logType, $message ); // no line nums
+        //$entry = sprintf( '(%s::%s:%d) %s%s', $caller['class'], $caller['function'], $caller['line'], $logType, $message ); // wip
         
         if ( $data !== null ) {
 			$dump = is_string( $data ) ? $data : print_r( $data, true );
