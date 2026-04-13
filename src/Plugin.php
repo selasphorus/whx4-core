@@ -437,16 +437,12 @@ final class Plugin implements PluginContext
 					continue;
 				}
 
-				//$definedPostTypes = $moduleClass::getPostTypes();
 				$definedPostTypes = $moduleInstance->getPostTypeHandlerClasses();
-				//$handlers = $module->getPostTypeHandlers();
-				//Logger::debug( 'definedPostTypes: ' . print_r($definedPostTypes, true), 'wxc' );
+				//Logger::debug( 'definedPostTypes', $definedPostTypes, 'wxc' );
 
 				$enabled = $enabledPostTypesByModule[ $moduleSlug ] ?? $definedPostTypes;
 				//Logger::debug( 'Module $moduleSlug: defined=' . implode(',', $definedPostTypes) . '; enabled=' . implode(',', $enabled), 'wxc' );
 
-				//foreach ($definedPostTypes as $postTypeSlug => $name) {
-				//foreach ( $handlers as $handlerClass ) {
 				foreach ( $definedPostTypes as $postTypeHandlerClass ) {
 				    if ( ! class_exists( $postTypeHandlerClass ) ) {
 						continue;
@@ -459,14 +455,6 @@ final class Plugin implements PluginContext
 					} else {
 						//Logger::debug( "Post type '$postTypeSlug' from module '$moduleSlug' is not enabled.", 'wxc' );
 					}
-					/*
-					if (
-						! isset( $activeSlugsByModule[ $moduleSlug ] ) ||
-						! in_array( $slug, $activeSlugsByModule[ $moduleSlug ], true )
-					) {
-						continue;
-					}
-					*/
 				}
 			} catch( \Throwable $e ) {
 				Logger::error( 'Exception in getActivePostTypes for module $moduleSlug: ' . $e->getMessage());
