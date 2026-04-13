@@ -437,7 +437,7 @@ final class Plugin implements PluginContext
 				}
 
 				$definedPostTypes = $moduleInstance->getPostTypeHandlerClasses();
-				//Logger::debug( 'definedPostTypes', $definedPostTypes, 'wxc' );
+				Logger::debug( 'definedPostTypes', $definedPostTypes, 'wxc' );
 
 				$enabled = $enabledPostTypesByModule[ $moduleSlug ] ?? $definedPostTypes;
 				//Logger::debug( 'Module $moduleSlug: defined=' . implode(',', $definedPostTypes) . '; enabled=' . implode(',', $enabled), 'wxc' );
