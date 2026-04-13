@@ -456,7 +456,7 @@ final class Plugin implements PluginContext
 					}
 				}
 			} catch( \Throwable $e ) {
-				Logger::error( 'Exception in getActivePostTypes for module $moduleSlug: ' . $e->getMessage());
+				Logger::error('Exception in getActivePostTypes for module: '.$moduleSlug." | ".$e->getMessage());
 			}
 		}
 
