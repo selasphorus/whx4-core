@@ -80,6 +80,33 @@ abstract class PostTypeHandler extends BaseHandler
 		return $capType;
 	}
 	
+	/**
+	 * Resolve short taxonomy names or FQCNs to fully-qualified class names.
+	 *
+	 * @param  array|string $taxonomies Short names, FQCNs, or 'Module:name' strings.
+	 * @return string[]
+	 */
+	public static function resolveTaxonomyClasses(array|string $taxonomies): array
+	{
+		$taxonomies = is_array($taxonomies) ? $taxonomies : [$taxonomies];
+		$resolved   = [];
+		//Logger::debug( 'taxonomies', $taxonomies, 'wxc' );
+	
+		foreach ($taxonomies as $t) {
+			$t = trim((string) $t);
+			if ($t !== '') {
+				$resolved[] = static::resolveTaxonomyFqcn($t);
+			}
+		}
+	
+		return array_values(array_unique($resolved));
+	}
+	
+	protected static function resolveTaxonomyFqcn(string $name): string
+	{
+		return static::resolveFqcn($name, 'Taxonomies');
+	}
+	
 	
 	
 	// Optional explicit setter (handy for guarantees/safety-net)
@@ -531,41 +558,7 @@ abstract class PostTypeHandler extends BaseHandler
 		$val = get_post_meta($id, $key, true);
 		return ($val === '' || $val === null) ? $default : $val;
 	}
-	
-	/**
-	 * Resolve short taxonomy names or FQCNs to fully-qualified class names.
-	 *
-	 * @param  array|string $taxonomies Short names, FQCNs, or 'Module:name' strings.
-	 * @return string[]
-	 */
-	public function resolveTaxonomyClasses(array|string $taxonomies): array
-	{
-		$taxonomies = is_array($taxonomies) ? $taxonomies : [$taxonomies];
-		$resolved   = [];
-		//Logger::debug( 'taxonomies', $taxonomies, 'wxc' );
-	
-		foreach ($taxonomies as $t) {
-			$t = trim((string) $t);
-			if ($t !== '') {
-				$resolved[] = $this->resolveTaxonomyFqcn($t);
-			}
-		}
-	
-		return array_values(array_unique($resolved));
-	}
-	
-	protected function resolveTaxonomyFqcn(string $name): string
-	{
-		return $this->resolveFqcn($name, 'Taxonomies');
-	}
 
-    // Method to get the post title
-    /*public function get_post_title()
-    {
-        return get_the_title($this->getPostID());
-    }*/
-
-    //public function getCustomTitleArgs(): array
 	public function getCustomTitleArgs( \WP_Post $post ): array
 	{
 		return [];
@@ -960,5 +953,7 @@ abstract class PostTypeHandler extends BaseHandler
 		
 		return $descendants;
 	}
+	
+	////
 }
 

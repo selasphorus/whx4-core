@@ -49,11 +49,9 @@ class PostTypeRegistrar
 
 		// Contribute CPT-specific taxonomy handlers (e.g., Habitat) to the unified registrar
 		if (!empty($activePostTypes)) {
-		    add_filter('wxc_register_taxonomy_handlers', function (array $taxArray) use ($activePostTypes): array {
+			add_filter('wxc_register_taxonomy_handlers', function (array $taxArray) use ($activePostTypes): array {
 				foreach ($activePostTypes as $slug => $handlerClass) {
-					$handler        = new $handlerClass();
-					$taxonomyClasses = $handler->resolveTaxonomyClasses($handler->getTaxonomies());
-					$taxArray        = array_merge($taxArray, $taxonomyClasses);
+					$taxArray = array_merge($taxArray, $handlerClass::resolveTaxonomyClasses($handlerClass::getTaxonomies()));
 				}
 				return $taxArray;
 			}, 10, 1);
@@ -63,7 +61,7 @@ class PostTypeRegistrar
 	// Registers a custom post type using a PostTypeHandler
     public function registerCPT(PostTypeHandler $handler): void
     {
-        $slug = $handler->getSlug();
+        $slug = $handler::getSlug();
     	//Logger::debug('slug: '.$slug);
 
     	$capType = $handler->getCapType();
@@ -86,8 +84,8 @@ class PostTypeRegistrar
     	//Logger::debug('icon: '.$icon);
 
     	// WIP: better to enclose the following in mini-methods like getSupports? or simplify them all/most?
-    	$hierarchical = $handler->getConfig()['hierarchical'] ?? false;
-    	$rewrite = $handler->getConfig()['rewrite'] ?? ['slug' => $slug];
+    	$hierarchical = $handler::getConfig()['hierarchical'] ?? false;
+    	$rewrite      = $handler::getConfig()['rewrite'] ?? ['slug' => $slug];
 
         // Register the post type
         register_post_type($slug, [
@@ -133,38 +131,34 @@ class PostTypeRegistrar
 
 	public function assignPostTypeCapabilities(): void
 	{
-		$roles = ['administrator', 'editor'];
-
+		$roles           = ['administrator', 'editor'];
 		$activePostTypes = App::ctx()->getActivePostTypes();
 		//Logger::debug( 'activePostTypes', $activePostTypes, 'wxc' );
-
+	
 		foreach ( $activePostTypes as $slug => $handlerClass ) {
 		    //Logger::debug( 'preparing to add caps for handlerClass: '.$handlerClass );
-			// Make sure the handler is of correct type
-			$handler = new $handlerClass();
-			//Logger::debug( 'handler', $handler, 'wxc' );
-			if ( $handler instanceof PostTypeHandler ) {
-				$caps = $handler->getCapabilities();
-				$obsoleteCaps = [];
-				//$obsoleteCaps = [ 'delete_venue', 'edit_venue', 'read_venue', 'delete_wxc_event', 'edit_wxc_event', 'read_wxc_event', 'delete_workpayment', 'edit_workpayment', 'read_workpayment', 'delete_person', 'edit_person', 'read_person', 'edit_transactions', 'edit_others_transactions', 'delete_transactions', 'publish_transactions', 'read_private_transactions', 'delete_private_transactions', 'delete_published_transactions', 'delete_others_transactions', 'edit_private_transactions', 'edit_published_transactions'];
-				//Logger::debug( 'caps for handler ' . $handler->getSlug() . ': ' . print_r($caps, true) );
-				//
-				foreach ($roles as $roleName) {
-					$role = get_role($roleName);
-					if ($role) {
-						foreach ($caps as $cap) {
-						    //Logger::debug( ' adding cap: ' . $cap . ' for roleName: '. $roleName );
-							$role->add_cap($cap);
-						}
-						// Remove obsolete caps (tmp)
-						foreach ($obsoleteCaps as $cap) {
-						    //Logger::debug( ' removing cap: ' . $cap . ' for roleName: '. $roleName );
-							$role->remove_cap($cap);
-						}
-					}
+			if ( ! is_subclass_of( $handlerClass, PostTypeHandler::class ) ) {
+				Logger::debug( 'handler is not a PostTypeHandler.' );
+				continue;
+			}
+	
+			$caps = $handlerClass::getCapabilities();
+			$obsoleteCaps = [];
+			//$obsoleteCaps = [ 'delete_venue', 'edit_venue', 'read_venue', 'delete_wxc_event', 'edit_wxc_event', 'read_wxc_event', 'delete_workpayment', 'edit_workpayment', 'read_workpayment', 'delete_person', 'edit_person', 'read_person', 'edit_transactions', 'edit_others_transactions', 'delete_transactions', 'publish_transactions', 'read_private_transactions', 'delete_private_transactions', 'delete_published_transactions', 'delete_others_transactions', 'edit_private_transactions', 'edit_published_transactions'];
+			//Logger::debug( 'caps for handler ' . $handler::getSlug() . ': ' . print_r($caps, true) );
+	
+			foreach ( $roles as $roleName ) {
+				$role = get_role( $roleName );
+				if ( ! $role ) continue;
+				foreach ($caps as $cap) {
+					//Logger::debug( ' adding cap: ' . $cap . ' for roleName: '. $roleName );
+					$role->add_cap($cap);
 				}
-			} else {
-			    Logger::debug('handler is not a PostTypeHandler.');
+				// Remove obsolete caps (tmp)
+				foreach ($obsoleteCaps as $cap) {
+					//Logger::debug( ' removing cap: ' . $cap . ' for roleName: '. $roleName );
+					$role->remove_cap($cap);
+				}
 			}
 		}
 	}
@@ -174,7 +168,7 @@ class PostTypeRegistrar
 		$roles = [ 'administrator', 'editor' ]; // Adjust as needed
 
 		foreach ( $this->getPostTypeHandlers() as $handler ) {
-			$caps = $handler->getCapabilities();
+			$caps = $handlerClass::getCapabilities();
 
 			foreach ( $roles as $role_name ) {
 				$role = get_role( $role_name );

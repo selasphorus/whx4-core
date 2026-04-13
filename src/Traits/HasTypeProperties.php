@@ -21,79 +21,72 @@ trait HasTypeProperties
     {
         return static::getConfig()['plural_slug'] ?? static::getSlug() . 's';
     }
-
-    public function getLabels(): array
+    
+    public static function getLabels(): array
 	{
 		$slug     = static::getSlug();
 		// Merge default labels with overrides from handler-specific config
-		$labels   = array_merge($this->getDefaultLabels(), static::getConfig()['labels'] ?? []);
-		$filtered = apply_filters("wxc_labels_{$slug}", $labels, $slug, $this);
-        return apply_filters('wxc_labels', $filtered, $slug, $this);
+		$labels   = array_merge(static::getDefaultLabels(), static::getConfig()['labels'] ?? []);
+		$filtered = apply_filters("wxc_labels_{$slug}", $labels, $slug, static::class);
+		return apply_filters('wxc_labels', $filtered, $slug, static::class);
 	}
 
-	public function getDefaultLabels(): array
+	public static function getDefaultLabels(): array
 	{
-        $singular = ucwords(str_replace(['_', '-'], ' ', static::getSlug()));
-        $plural   = ucwords(str_replace(['_', '-'], ' ', static::getPluralSlug()));
-
+		$singular = ucwords(str_replace(['_', '-'], ' ', static::getSlug()));
+		$plural   = ucwords(str_replace(['_', '-'], ' ', static::getPluralSlug()));
+	
 		return [
 			'name'               => $plural,
 			'singular_name'      => $singular,
 			'add_new_item'       => "Add New $singular",
-            'edit_item'          => "Edit $singular",
-            'new_item'           => "New $singular",
-            'view_item'          => "View $singular",
-            'view_items'         => "View $plural",
-            'search_items'       => "Search $plural",
+			'edit_item'          => "Edit $singular",
+			'new_item'           => "New $singular",
+			'view_item'          => "View $singular",
+			'view_items'         => "View $plural",
+			'search_items'       => "Search $plural",
 			'not_found'          => "No $plural found",
 			'not_found_in_trash' => "No $plural found in Trash",
 		];
 	}
 
-    public function getCapabilities(): array
-    {
-        $capType = static::getConfig()['capability_type'] ?? [];
-        if (!is_array($capType)) {
-            $capType = [$capType, "{$capType}s"];
-        }
-        $custom = static::getConfig()['capabilities'] ?? [];
-        return array_merge( $this->getDefaultCapabilities( $capType ), $custom );
-    }
+	public static function getCapabilities(): array
+	{
+		$capType = static::getConfig()['capability_type'] ?? [];
+		if (!is_array($capType)) {
+			$capType = [$capType, "{$capType}s"];
+		}
+		$custom = static::getConfig()['capabilities'] ?? [];
+		return array_merge(static::getDefaultCapabilities($capType), $custom);
+	}
 
-    public function getDefaultCapabilities( array $capType = [] ): array
-    {
-        $type = static::getType(); //$type     = $this->getType();
-        if ( $capType ) {
-            $singular = $capType[0];
-            $plural = $capType[1];
-        } else {
-            $singular = static::getSlug();
-            $plural   = static::getPluralSlug();
-        }
-        //Logger::debug( 'type: ' . $type . '; singular: ' . $singular . '; plural: ' . $plural );
-
-        if ( $type === 'taxonomy' ) {
-            return [
-                'manage_terms' => "manage_{$plural}",
-                'edit_terms'   => "edit_{$plural}",
-                'delete_terms' => "delete_{$plural}",
-                'assign_terms' => "assign_{$plural}",
-            ];
-        }
-
+	public static function getDefaultCapabilities(array $capType = []): array
+	{
+		$singular = $capType[0] ?? static::getSlug();
+		$plural   = $capType[1] ?? static::getPluralSlug();
+	
+		if (static::getType() === 'taxonomy') {
+			return [
+				'manage_terms' => "manage_{$plural}",
+				'edit_terms'   => "edit_{$plural}",
+				'delete_terms' => "delete_{$plural}",
+				'assign_terms' => "assign_{$plural}",
+			];
+		}
+	
 		return [
-		    "edit_{$plural}",
-		    "edit_others_{$plural}",
-		    "delete_{$plural}",
-		    "publish_{$plural}",
-		    "read_private_{$plural}",
-		    "delete_private_{$plural}",
-		    "delete_published_{$plural}",
-		    "delete_others_{$plural}",
-		    "edit_private_{$plural}",
-		    "edit_published_{$plural}",
+			"edit_{$plural}",
+			"edit_others_{$plural}",
+			"delete_{$plural}",
+			"publish_{$plural}",
+			"read_private_{$plural}",
+			"delete_private_{$plural}",
+			"delete_published_{$plural}",
+			"delete_others_{$plural}",
+			"edit_private_{$plural}",
+			"edit_published_{$plural}",
 		];
-    }
+	}
 	
 	public static function isHierarchical(): bool
 	{

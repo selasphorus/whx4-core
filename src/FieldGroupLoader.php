@@ -87,8 +87,7 @@ class FieldGroupLoader
                 // Fallback: instantiate handler only if needed
                 if ( !$handlerSlug ) {
                     try {
-                        $handler = new $handlerClass();
-                        $handlerSlug = $handler->getSlug();
+                        $handlerSlug = $handlerClass::getSlug();
                     } catch ( \Throwable ) {
                         continue;
                     }

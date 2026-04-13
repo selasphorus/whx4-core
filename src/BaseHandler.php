@@ -128,7 +128,7 @@ abstract class BaseHandler
 	 * @param  string $subNamespace Sub-namespace segment, e.g. 'Taxonomies', 'Shortcodes'.
 	 * @return string
 	 */
-	protected function resolveFqcn(string $name, string $subNamespace): string
+	protected static function resolveFqcn(string $name, string $subNamespace): string
 	{
 		if (str_contains($name, '\\')) {
 			return ltrim($name, '\\');

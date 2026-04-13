@@ -188,7 +188,7 @@ class TitleFilter
         $handlers = App::ctx()->getActivePostTypes();
 
         foreach ( $handlers as $handler ) {
-            if ( $handler->getSlug() === $postType ) {
+            if ( $handler::getSlug() === $postType ) {
                 return new $handler( $post );
             }
         }
