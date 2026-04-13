@@ -108,7 +108,6 @@ abstract class PostTypeHandler extends BaseHandler
 	}
 	
 	
-	
 	// Optional explicit setter (handy for guarantees/safety-net)
 	// TBD: is this still needed? Redundant w/ constructor...
 	public function setPost(?\WP_Post $post): static

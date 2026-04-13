@@ -64,23 +64,23 @@ class PostTypeRegistrar
         $slug = $handler::getSlug();
     	//Logger::debug('slug: '.$slug);
 
-    	$capType = $handler->getCapType();
+    	$capType = $handler::getCapType();
     	//Logger::debug( 'capType', $capType, 'wxc' );
 
-    	$labels = $handler->getLabels();
+    	$labels = $handler::getLabels();
     	//Logger::debug( 'labels', $labels, 'wxc' );
 
-    	$supports = $handler->getSupports();
+    	$supports = $handler::getSupports();
     	//Logger::debug( 'supports', $supports, 'wxc' );
 
-    	$taxonomies = $handler->getTaxonomies();
+    	$taxonomies = $handler::getTaxonomies();
     	//Logger::debug( 'taxonomies', $taxonomies, 'wxc' );
 
     	// Get capabilities (if defined, otherwise fall back to defaults)
-        $capabilities = $handler->getCapabilities();
+        $capabilities = $handler::getCapabilities();
     	//Logger::debug( 'capabilities', $capabilities, 'wxc' );
 
-    	$icon = $handler->getMenuIcon();
+    	$icon = $handler::getMenuIcon();
     	//Logger::debug('icon: '.$icon);
 
     	// WIP: better to enclose the following in mini-methods like getSupports? or simplify them all/most?
