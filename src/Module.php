@@ -11,32 +11,16 @@ use atc\WXC\Shortcodes\ShortcodeManager;
 
 use WP_Post;
 
-// TODO: make this final class?
 abstract class Module implements ModuleInterface
 {
     protected ?string $moduleSlug = null;
 
-    /**
-	 * @return array<class-string>
-	 */
-	 // TODO: consider finding these automatically, as with FieldGroups?
+    /** @return array<class-string<PostTypeHandler>> */
 	abstract public function getPostTypeHandlerClasses(): array;
-	/**
-	 * @return array<class-string>
-	 */
-    //abstract public function getPostTypeHandlers(): array;
-    public function getPostTypeHandlers(): array
-	{
-		return array_map(
-			fn( $class ) => new $class(),
-			$this->getPostTypeHandlerClasses()
-		);
-	}
 
     public function boot(): void
     {
 		$logCtx = ['wxc'];
-		//Logger::debug( 'module: ' . $this->getSlug() );
         $this->registerDefaultViewRoot();
 
         $enabledSlugs = App::ctx()
@@ -52,24 +36,11 @@ abstract class Module implements ModuleInterface
 				continue;
 			}
 
-			$handler = new $handlerClass();
-
-			if ( ! method_exists( $handler, 'getSlug' ) ) {
-				Logger::error( "Handler class $handlerClass missing getSlug()" );
+            if ( ! in_array( $handlerClass::getSlug(), $enabledSlugs, true ) ) {
 				continue;
 			}
 
-			if ( ! in_array( $handler->getSlug(), $enabledSlugs, true ) ) {
-				//Logger::debug( 'slug: ' . $handler->getSlug() . ' is not in the enabledSlugs array: ' . print_r($enabledSlugs,true) );
-				continue; // Skip if not enabled for this module
-			}
-
-			//Logger::debug( 'About to attempt handler boot() for PostType handlerClass: ' . $handlerClass . '===' );
-			if ( ! method_exists( $handler, 'boot' ) ) {
-				Logger::error( "Handler class $handlerClass missing boot()" );
-				continue;
-			}
-			$handler->boot();
+            ( new $handlerClass() )->boot();
 		}
 
         ShortcodeManager::add(WXC\Shortcodes\WXCListShortcode::class);
@@ -80,7 +51,7 @@ abstract class Module implements ModuleInterface
 		return $this->detectModuleSlugFromNamespace();
 	}
 
-	// Human-readable label version of Module name
+	// Human-readable label derived from the module namespace.
 	public function getName(): string
 	{
 		$parts = explode( '\\', static::class );
@@ -91,49 +62,43 @@ abstract class Module implements ModuleInterface
 		return ucwords( str_replace( '_', ' ', $name ) );
 	}
 
-	protected function registerDefaultViewRoot(): void
-	{
-		$slug = $this->detectModuleSlugFromNamespace();
+    /**
+     * Returns a slug => label map of all post types defined by this module.
+     * Useful for settings UIs. For query purposes, use findViaHandler() instead.
+     */
+    public function getPostTypes(): array
+    {
+        $postTypes = [];
 
-		if ( ! ViewLoader::hasViewRoot( $slug ) ) {
-			$reflector = new \ReflectionClass( $this );
-			$moduleDir = dirname( $reflector->getFileName() );
-			ViewLoader::registerModuleViewRoot( $slug, $moduleDir . '/Views' );
-		}
-	}
-	
-	// findViaHandler v1
-	/*protected function findViaHandler(string $postType, array $filters): array
-	{
-		$map   = App::ctx()->getActivePostTypes(); // ['monster' => Monster::class, ...]
-		$class = $map[$postType] ?? null;
-	
-		if (!$class || !is_subclass_of($class, PostTypeHandler::class)) {
-			return ['posts' => [], 'pagination' => ['found' => 0, 'max_pages' => 0, 'paged' => $filters['paged'] ?? 1], 'debug' => ['error' => 'handler missing']];
-		}
-		
-		//Logger::debug('postType=' . $postType);
-		//Logger::debug('class=' . (($class ?? 'NULL')));
-		//Logger::debug('filters=' . json_encode($filters, JSON_UNESCAPED_SLASHES));
-		
-		// @var class-string<PostTypeHandler> $class
-		$result = $class::find($filters);
-		
-		//Logger::debug('result.debug=' . json_encode($result['debug'] ?? [], JSON_UNESCAPED_SLASHES));
-		return $result;
-	}*/
+        foreach ( $this->getPostTypeHandlerClasses() as $class ) {
+            try {
+                $postTypes[ $class::getSlug() ] = $class::getLabels()['singular_name'];
+            } catch ( \Throwable $e ) {
+                Logger::error( "Error in post type handler {$class}", $e->getMessage() );
+            }
+        }
 
+        return $postTypes;
+    }
+
+    // -------------------------------------------------------------------------
+    // Query
+    // -------------------------------------------------------------------------
+
+    /**
+     * Find posts of one or more post types, dispatching to the correct handler.
+     *
+     * @param string|string[] $postType
+     */
 	protected function findViaHandler(string|array $postType, array $filters): array
 	{
 		$postTypes = (array) $postType;
 		//Logger::debug( 'postTypes', $postTypes, ['wxc', 'query'] );
 		//Logger::debug( 'filters', $filters, ['wxc', 'query'] );
 	
-		if (count($postTypes) === 1) {
-			return $this->findSingleType($postTypes[0], $filters);
-		}
-	
-		return $this->findAcrossTypes($postTypes, $filters);
+        return count( $postTypes ) === 1
+            ? $this->findSingleType( $postTypes[0], $filters )
+            : $this->findAcrossTypes( $postTypes, $filters );
 	}
 	
 	private function findSingleType(string $postType, array $filters): array
@@ -153,6 +118,14 @@ abstract class Module implements ModuleInterface
 		return $class::find($filters);
 	}
 	
+    /**
+     * Merge results across multiple post types.
+     *
+     * Pagination is not well-defined across merged result sets; results are
+     * fetched in full, merged, re-sorted, and then limited if requested.
+     * A generic 'category' filter is resolved per-type to each handler's
+     * default taxonomy before dispatching.
+     */
 	private function findAcrossTypes(array $postTypes, array $filters): array
 	{
 		$logCtx = ['wxc', 'query'];
@@ -161,19 +134,18 @@ abstract class Module implements ModuleInterface
 		// Pagination is not well-defined across merged result sets.
 		// Fetch all matching posts from each type and merge.
 		$mergedFilters = array_merge($filters, ['limit' => -1, 'paged' => 1]);
-		//Logger::debug( 'mergedFilters', $mergedFilters, $logCtx );
+        $map           = App::ctx()->getActivePostTypes();
 	
 		$allPosts = [];
 		$totalFound = 0;
 	
 		foreach ($postTypes as $type) {
 		    //Logger::debug( 'About to run find for postType [' . $type .']', null, $logCtx );
-		    
-		    $map     = App::ctx()->getActivePostTypes();
 		    $class   = $map[$type] ?? null;
+            $typeFilters = $mergedFilters;
 		    
 		    // Resolve generic 'category' to this type's default taxonomy.
-			$typeFilters = $mergedFilters;
+            // A direct taxonomy key always takes precedence over 'category'.
 			if (
 				$class
 				&& isset($typeFilters['category'])
@@ -185,15 +157,14 @@ abstract class Module implements ModuleInterface
 					unset($typeFilters['category']);
 				}
 			}
-        
-			$result = $this->findSingleType($type, array_merge($mergedFilters, ['post_type' => $type]));
+			$result = $this->findSingleType($type, array_merge($typeFilters, ['post_type' => $type]));
 			Logger::debug( count($result['posts']).' found for postType: '.$type, null, $logCtx );
 			$allPosts   = array_merge($allPosts, $result['posts'] ?? []);
 			$totalFound += $result['pagination']['found'] ?? 0;
 		}
 		//Logger::debug( count($allPosts).' posts found', null, $logCtx );
 	
-		// Re-sort if requested — title sort is the common case
+        // Re-sort if requested — title sort is the common case.
 		$orderby = $filters['orderby'] ?? null;
 		$order   = strtoupper($filters['order'] ?? 'ASC');
 	
@@ -205,7 +176,7 @@ abstract class Module implements ModuleInterface
 			});
 		}
 	
-		// Apply limit after merge+sort if one was requested
+        // Apply limit after merge and sort.
 		$limit = (int) ($filters['limit'] ?? -1);
 		if ($limit > 0) {
 			$allPosts = array_slice($allPosts, 0, $limit);
@@ -216,7 +187,7 @@ abstract class Module implements ModuleInterface
 			'posts'      => $allPosts,
 			'pagination' => [
 				'found'     => $totalFound,
-				'max_pages' => 1, // merged result treated as single page
+                'max_pages' => 1,
 				'paged'     => 1,
 			],
 			'debug' => ['merged_types' => $postTypes],
@@ -231,6 +202,20 @@ abstract class Module implements ModuleInterface
 			'debug'      => ['error' => 'handler missing'],
 		];
 	}
+	
+	// -------------------------------------------------------------------------
+    // Internals
+    // -------------------------------------------------------------------------
+    
+	protected function registerDefaultViewRoot(): void
+	{
+		$slug = $this->detectModuleSlugFromNamespace();
+
+		if ( ! ViewLoader::hasViewRoot( $slug ) ) {
+			$reflector = new \ReflectionClass( $this );
+            ViewLoader::registerModuleViewRoot( $slug, dirname( $reflector->getFileName() ) . '/Views' );
+		}
+	}
 
 	protected function detectModuleSlugFromNamespace(): string
 	{
@@ -239,37 +224,12 @@ abstract class Module implements ModuleInterface
 		}
 
 		$parts = explode( '\\', static::class ); // Example: smith\Rex\Modules\Supernatural\Module → supernatural
+        $key   = array_search( 'Modules', $parts, true );
 
-		$key = array_search( 'Modules', $parts, true );
-		if ( $key !== false && isset( $parts[ $key + 1 ] ) ) {
-			$this->moduleSlug = strtolower( $parts[ $key + 1 ] );
-		} else {
-			// Fallback
-			// ->getShortName() returns just the class name without the namespace
-			$this->moduleSlug = strtolower( ( new \ReflectionClass( $this ) )->getShortName() );
-		}
+        $this->moduleSlug = ( $key !== false && isset( $parts[ $key + 1 ] ) )
+            ? strtolower( $parts[ $key + 1 ] )
+            : strtolower( ( new \ReflectionClass( $this ) )->getShortName() );
 
 		return $this->moduleSlug;
-	}
-
-	// ?? obsolete/redundant
-	public function getPostTypes(): array
-	{
-		$postTypes = [];
-
-		foreach( $this->getPostTypeHandlerClasses() as $class ) {
-			try {
-				$handler = new $class();
-				$slug = $handler->getSlug();
-				$label = $handler->getLabels()['singular_name']; // or getLabel()
-				$postTypes[ $slug ] = $label;
-			} catch( \Throwable $e ) {
-				Logger::error( "Error in post type handler {$class}", $e->getMessage() );
-			}
-		}
-
-		//Logger::Logger::debug("postTypes", $postTypes, 'wxc' );
-
-		return $postTypes;
 	}
 }
