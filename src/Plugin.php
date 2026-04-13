@@ -405,14 +405,13 @@ final class Plugin implements PluginContext
 	{
     	// Don't reload activePostTypes if we've cached them already
 		if ( ! empty( $this->activePostTypes ) ) {
-		    //Logger::debug( 'activePostTypes already cached', 'wxc' );
+		    Logger::debug('activePostTypes already cached', null, 'wxc');
 			return $this->activePostTypes;
 		}
 
     	$this->loadActiveModules();
 		$enabledPostTypesByModule = $this->getSettingsManager()->getEnabledPostTypeSlugsByModule();
-		//$activeSlugsByModule = $this->settingsManager->getEnabledPostTypeSlugsByModule();
-		//Logger::debug( 'enabledPostTypesByModule: ' . print_r($enabledPostTypesByModule, true), 'wxc' );
+		Logger::debug('enabledPostTypesByModule', $enabledPostTypesByModule, 'wxc');
 
 		$postTypeClasses = [];
 
