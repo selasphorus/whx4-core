@@ -30,7 +30,8 @@ class Logger
 
         $caller = self::resolveCaller( debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 5 ) );        
         $logType = $level !== self::DEBUG ? '[' . strtoupper( $level ) . '] ' : '';
-        $entry = sprintf( '(%s::%s) %s%s', $caller['class'], $caller['function'], $logType, $message );
+        //$entry = sprintf( '(%s::%s) %s%s', $caller['class'], $caller['function'], $logType, $message ); // no line nums
+        $entry = sprintf( '(%s::%s:%d) %s%s', $caller['class'], $caller['function'], $caller['line'], $logType, $message );
         
         if ( $data !== null ) {
 			$dump = is_string( $data ) ? $data : print_r( $data, true );
@@ -106,6 +107,7 @@ class Logger
 					? basename( str_replace( '\\', '/', $frame['class'] ) )
 					: basename( $frame['file'] ?? 'unknown' ),
                 'function' => $frame['function'] ?? 'unknown',
+                'line'     => $frame['line'] ?? 0,
             ];
         }
         return [ 'class' => 'unknown', 'function' => 'unknown' ];
