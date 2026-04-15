@@ -67,7 +67,7 @@ class TitleRenderer
 
         // 1. Resolve raw title
         $title = self::resolveRawTitle($post, $args);
-        Logger::debug( 'title: '.$title, null, ['display'] );
+        //Logger::debug( 'title: '.$title, null, ['display'] );
 
         if ($title === '') {
             return '';
@@ -75,7 +75,7 @@ class TitleRenderer
 
         // 2. Format
         $title = self::format($title, $args);
-        Logger::debug( 'formatted title: '.$title, null, ['display'] );
+        //Logger::debug( 'formatted title: '.$title, null, ['display'] );
 
         // 3. Enrich
         $subtitle = self::resolveSubtitle($post, $args);
