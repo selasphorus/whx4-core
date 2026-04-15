@@ -174,10 +174,10 @@ abstract class ContentRenderer
         }
         
 		$flexBoxClasses = "flex-box wxc-grid__item ".$atts['aspect_ratio'];
-		if ( !empty($atts['spacing']) ) { $flex_box_classes .= " ".$atts['spacing']; }
+		if ( !empty($atts['spacing']) ) { $flexBoxClasses .= " ".$atts['spacing']; }
 		if ( $atts['overlay'] == "true" || $atts['overlay'] == "fullover" ) {
 			$overclass = "overlay";
-			$flex_box_classes .= " overlaid";
+			$flexBoxClasses .= " overlaid";
 			if ( $atts['overlay'] == "fullover" ) { $overclass .= " fullover"; }
 		} else {
 			$overclass = null;
