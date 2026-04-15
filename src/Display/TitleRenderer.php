@@ -67,6 +67,7 @@ class TitleRenderer
 
         // 1. Resolve raw title
         $title = self::resolveRawTitle($post, $args);
+        Logger::debug( 'title: '.$title, null, ['display'] );
 
         if ($title === '') {
             return '';
@@ -74,6 +75,7 @@ class TitleRenderer
 
         // 2. Format
         $title = self::format($title, $args);
+        Logger::debug( 'formatted title: '.$title, null, ['display'] );
 
         // 3. Enrich
         $subtitle = self::resolveSubtitle($post, $args);
@@ -222,7 +224,8 @@ class TitleRenderer
         string $title,
         string $subtitle,
         array $args
-    ): string {
+    ): string
+    {
         // Prepend / append raw strings
         $title = $args['prepend'] . $title . $args['append'];
 
@@ -238,6 +241,7 @@ class TitleRenderer
         $class = esc_attr((string) $args['hclass']);
 
         if ($level > 0) {
+            Logger::debug( 'level: '.$level, null, ['display'] );
             $title = '<h' . $level . ' class="' . $class . '">' . $title . '</h' . $level . '>';
         }
 
