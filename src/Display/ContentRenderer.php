@@ -166,6 +166,7 @@ abstract class ContentRenderer
     {
         $type = $this->postTypeClass();
         $cols = isset($atts['cols']) ? (int) $atts['cols'] : 3;
+        $hlevel = isset($atts['hlevel']) ? (int) $atts['hlevel'] : 3; // header level for title
         
         Logger::debug( 'type: '.$type, null, ['display', 'shortcodes'] );
 
