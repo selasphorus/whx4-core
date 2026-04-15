@@ -239,9 +239,9 @@ class TitleRenderer
         // Heading element
         $level = (int) $args['hlevel'];
         $class = esc_attr((string) $args['hclass']);
-
+        
+        Logger::debug( 'level: '.$level, null, ['display'] );
         if ($level > 0) {
-            Logger::debug( 'level: '.$level, null, ['display'] );
             $title = '<h' . $level . ' class="' . $class . '">' . $title . '</h' . $level . '>';
         }
 
