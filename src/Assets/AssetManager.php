@@ -1,4 +1,5 @@
 <?php
+// TODO: Add code comments
 
 declare(strict_types=1);
 
