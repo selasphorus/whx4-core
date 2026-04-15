@@ -32,13 +32,14 @@ final class DisplayShortcode implements ShortcodeInterface
 
     public function render(array $atts = [], string $content = '', string $tag = ''): string
     {
-        Logger::debug( 'shortcode atts', $atts, 'shortcodes' );
+        //Logger::debug( 'shortcode atts', $atts, 'shortcodes' );
         
         $atts = shortcode_atts(self::defaults(), $atts, $tag);
         $postType = (string) $atts['post_type'];
-        $display  = (string) $atts['display_format'];
+        $display_format  = (string) $atts['display_format'];
         
-        Logger::debug( 'atts merged with defaults', $atts, 'shortcodes' );
+        //Logger::debug( 'atts merged with defaults', $atts, 'shortcodes' );
+        Logger::debug( 'display_format: '.$display_format, null, 'shortcodes' );
 
         // Run posts query
         $posts = $this->query($atts);
@@ -53,11 +54,12 @@ final class DisplayShortcode implements ShortcodeInterface
 
         // Group_by requires a different rendering path
         if (!empty($atts['group_by'])) {
-            Logger::debug( 'renderGrouped', null, 'shortcodes' );
-            return $this->renderGrouped($posts, $atts, $renderer, $display);
+            Logger::debug( 'about to renderGrouped', null, 'shortcodes' );
+            return $this->renderGrouped($posts, $atts, $renderer, $display_format);
         }
-
-        return $renderer->renderItems($posts, $atts, $display);
+        
+        Logger::debug( 'about to renderItems', null, 'shortcodes' );
+        return $renderer->renderItems($posts, $atts, $display_format);
     }
 
     // -------------------------------------------------------------------------
@@ -166,20 +168,20 @@ final class DisplayShortcode implements ShortcodeInterface
      * @param  \WP_Post[]      $posts     Full post set (used for group membership checks).
      * @param  array           $atts      Merged shortcode atts.
      * @param  ContentRenderer $renderer  Resolved renderer for this post type.
-     * @param  string          $display   Display variant.
+     * @param  string          $display_format  Display variant.
      * @return string
      */
     private function renderGrouped(
         array $posts,
         array $atts,
         ContentRenderer $renderer,
-        string $display
+        string $display_format
     ): string {
         $taxonomy = (string) $atts['group_by'];
 
         if (!taxonomy_exists($taxonomy)) {
             // Taxonomy not found — fall back to flat rendering
-            return $renderer->renderItems($posts, $atts, $display);
+            return $renderer->renderItems($posts, $atts, $display_format);
         }
 
         $terms = get_terms([
@@ -191,7 +193,7 @@ final class DisplayShortcode implements ShortcodeInterface
         ]);
 
         if (is_wp_error($terms) || empty($terms)) {
-            return $renderer->renderItems($posts, $atts, $display);
+            return $renderer->renderItems($posts, $atts, $display_format);
         }
 
         // Build a map of term_id => posts for fast lookup
@@ -208,11 +210,11 @@ final class DisplayShortcode implements ShortcodeInterface
 
             $out .= '<section class="wxc-group" id="' . esc_attr($term->slug) . '">';
             $out .= '<h2 class="wxc-group__title">' . esc_html($term->name) . '</h2>';
-            $out .= $renderer->renderItems($termPosts, $atts, $display);
+            $out .= $renderer->renderItems($termPosts, $atts, $display_format);
             $out .= '</section>';
 
             // Recurse into child terms
-            $out .= $this->renderChildTerms($term->term_id, $taxonomy, $postsByTerm, $atts, $renderer, $display);
+            $out .= $this->renderChildTerms($term->term_id, $taxonomy, $postsByTerm, $atts, $renderer, $display_format);
         }
 
         $out .= '</div>';
@@ -228,7 +230,7 @@ final class DisplayShortcode implements ShortcodeInterface
      * @param  array           $postsByTerm   term_id => WP_Post[]
      * @param  array           $atts
      * @param  ContentRenderer $renderer
-     * @param  string          $display
+     * @param  string          $display_format
      * @return string
      */
     private function renderChildTerms(
@@ -237,7 +239,7 @@ final class DisplayShortcode implements ShortcodeInterface
         array $postsByTerm,
         array $atts,
         ContentRenderer $renderer,
-        string $display
+        string $display_format
     ): string {
         $childTerms = get_terms([
             'taxonomy'   => $taxonomy,
@@ -260,7 +262,7 @@ final class DisplayShortcode implements ShortcodeInterface
 
             $out .= '<section class="wxc-group wxc-group--child" id="' . esc_attr($child->slug) . '">';
             $out .= '<h3 class="wxc-group__title">' . esc_html($child->name) . '</h3>';
-            $out .= $renderer->renderItems($childPosts, $atts, $display);
+            $out .= $renderer->renderItems($childPosts, $atts, $display_format);
             $out .= '</section>';
         }
 
