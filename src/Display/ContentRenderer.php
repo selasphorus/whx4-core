@@ -173,9 +173,9 @@ abstract class ContentRenderer
             return $this->emptyMessage('grid', $type);
         }
 
-        $out = '<div class="wxc-grid wxc-grid--' . esc_attr($type) . ' wxc-grid--cols-' . $cols . '">';
+        $out = '<div class="wxc-grid wxc-grid--' . esc_attr($type) . ' wxc-grid--cols-' . $cols . ' flex-container">'; // TODO: simplify classes?
         foreach ($posts as $post) {
-            $out .= '<div class="wxc-grid__item">' . $this->renderItem($post, $atts) . '</div>';
+            $out .= '<div class="wxc-grid__item flex-box">' . $this->renderItem($post, $atts) . '</div>';
         }
         $out .= '</div>';
 

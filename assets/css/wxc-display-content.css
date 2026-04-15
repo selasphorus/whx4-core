@@ -1,0 +1,457 @@
+@charset "UTF-8";
+/* CSS Document */
+
+
+.alignleft {
+	text-align: left;
+}
+
+.posts_archive {
+	display: flow-root;
+}
+
+.dsplycntnt-posts.archive .posts_archive h2.entry-title {
+	font-size: 1.7rem;
+}
+
+.dsplycntnt-posts.archive .posts_archive h2.entry-title:not(.with-subtitle) {
+	margin-bottom: 1.5rem;
+}
+
+/*** Excerpts styling ***/
+.dsplycntnt-posts.excerpts h2.entry-title {
+	margin: 1rem 0;
+	font-weight: 600;
+}
+
+.dsplycntnt-posts.excerpts .post-thumbnail.float-left {
+    margin-bottom: 0;
+}
+
+/*** FLEX grid layouts -- for events, landing pages, &c. ***/
+
+.wxc-grid,
+.flex-container {
+	display: flex;
+	flex-wrap: wrap;
+    flex-direction: row;
+	justify-content: space-around; /* was: center; */
+	margin-bottom: 1.5rem;
+}
+
+.flex-container.centered {
+    justify-content: center;
+}
+
+.wxc-grid__item,
+.flex-box {
+	position: relative;
+	display: block;
+	padding: 0.25rem;
+    text-align: center;
+	overflow: hidden;
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 200px; /*min-width: 250px;*/ /* was 300 */
+    border: 1px solid #eee;
+    border-radius: 9px 9px 0 0;
+    margin-bottom: 1rem;
+}
+
+.flex-box.mini {
+	min-width: 100px;
+	max-width: 50%;
+	border: none;
+	padding: 0;
+}
+
+.flex-box.alignleft {
+	text-align: left;
+}
+
+.flex-container.borderless .flex-box,
+.flex-box.landscape,
+.flex-box.portrait {
+    border: none;
+}
+
+/*.spaced .flex-box,
+.flex-box.spaced {
+    margin: 1%;
+}
+
+.flex-box.flush {
+    margin: 0;
+}*/
+
+.flex-container.onecol .flex-box {
+    flex: 100%;
+    max-width: 100%;
+    min-width: 250px;
+}
+
+.flex-container.twocol .flex-box {
+    flex: 50%;
+    max-width: 48%;
+    min-width: 250px;
+}
+
+.flex-container.threecol .flex-box {
+    flex: 33%;
+    max-width: 32%;
+    min-width: 250px;
+}
+
+.flex-container.fourcol .flex-box {
+    flex: 25%;
+    max-width: 24%;
+    /*flex-basis: 250px;*/
+}
+
+.flex-container.centered .flex-box {
+    margin-left: 1%;
+    margin-right: 1%;
+}
+
+/*
+.flex-container.twocol.spaced .flex-box,
+.flex-container.twocol .flex-box.spaced {
+    flex: 48%;
+    max-width: 48%;
+}
+
+.flex-container.threecol.spaced .flex-box,
+.flex-container.threecol .flex-box.spaced {
+    flex: 31%;
+    max-width: 31%;
+}
+
+.flex-container.fourcol.spaced .flex-box,
+.flex-container.fourcol .flex-box.spaced {
+    flex: 24%;
+    max-width: 24%;
+    flex-basis: 250px;
+}
+*/
+
+.flex-container.squares .flex-box {
+    /*background-color:deepskyblue;*/
+}
+
+.post-thumbnail.dp img {
+    padding-top: 0.5rem;
+}
+
+/* --- WIP --- */
+.archive_item_image:not(.full) {
+	max-width: 250px;
+    float: left;
+    margin: 0 1rem 1rem 0;
+}
+
+.cc_item:not(.full) img {
+	max-width: inherit;
+}
+/* --- END WIP --- */
+
+/*** Excerpts ***/
+
+.hide {
+	display: none;
+}
+
+.more-text,
+.less-text {
+	font-style: italic;
+	font-weight: 600;
+    color: #860313;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.text-full.hide {
+	display: none;
+}
+
+.more-text.hide,
+.less-text.hide {
+	display: none;
+}
+
+/*** FLEX BOXES ***/
+
+.flex-box .item_info {
+	padding: 1rem;
+}
+
+/*.flex-box h3:not(.grid_landscape),
+.fullwidth.centered .entry-content .flex-box .item_info h3:not(.grid_landscape),
+.flex-box .item_info h3:not(.grid_landscape),*/
+.entry-content .flex-box .item_info h3:not(.grid_landscape) {
+	font-weight: normal;
+	font-size: 1rem;
+	line-height: normal;
+	font-style: normal;
+}
+
+/* Two options: 1) post_info, shows BELOW flex-box, 2) overlay */
+
+/*
+.post_info {
+    margin-top: 1rem;
+    padding: 0.5rem;
+}
+
+.post_info .post_title {
+    font-size: 1.1rem;
+}
+
+.post_info > a {
+    color: inherit;
+}
+
+.post_info > a:not(.button) > .post_title,
+.post_info > a:link:not(.button) > .post_title {
+    border-bottom: 1px solid var(--mdred);
+    transition: color .3s ease-in-out;
+}
+*/
+.overlay {
+    display: flex;
+    flex-direction:column;
+    justify-content:center;
+	position:absolute;
+    z-index: 1;
+    width:100%;
+    height: auto;
+    bottom: 0;
+	left:0;
+    opacity: 0.85;
+	padding: 1rem;
+    background-color: transparent;
+	text-align: center;
+    font-size: 1rem;
+    transition: opacity 0.5s;
+}
+
+.overlay.fullover {
+	height: 100%;
+	background: var(--white);
+	opacity: 0;
+}
+
+.overlay.fullover:hover {
+	opacity: 0.85;
+}
+
+.overlay a {
+    background: var(--white);
+    padding: 1rem;
+}
+
+.overlay.fullover a {
+	opacity: inherit;
+}
+
+.overlay.fullover a:hover {
+	opacity: inherit;
+}
+
+.flex-img {
+	/*padding: 0.25rem;*/
+	overflow: hidden;
+}
+
+.flex-img,
+.flex-img img {
+	border-radius: 9px 9px 0 0;
+    -moz-border-radius: 9px 9px 0 0;
+    -webkit-border-radius: 9px 9px 0 0;
+	-webkit-transition: transform .8s cubic-bezier(.05,0.2,.1,1);
+    transition: transform .8s cubic-bezier(.05,0.2,.1,1);
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.flex-box.square .flex-img {
+	aspect-ratio: 1/1;
+}
+img.grid_crop_square {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    width: 100%;
+    height: auto;
+}
+
+.overlaid .flex-img,
+.overlaid .flex-img img {
+	border-radius: 9px;
+    -moz-border-radius: 9px;
+    -webkit-border-radius: 9px;
+}
+
+.flex-container.landscape .flex-img,
+.flex-container.landscape .flex-img:hover/*,
+.flex-container.portrait .flex-img,
+.flex-container.portrait .flex-img:hover*/ {
+    box-shadow: 0 0 5px 1px rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 0 5px 1px rgba(0,0,0,.5);
+    -moz-box-shadow: 0 0 5px 1px rgba(0,0,0,.5);
+}
+
+.entry-content .borderless .flex-img,
+.entry-content .borderless .flex-img img,
+.entry-content .landscape .flex-img,
+.entry-content .landscape .flex-img img,
+.entry-content .portrait .flex-img,
+.entry-content .portrait .flex-img img {
+    border-radius: 9px;
+    -moz-border-radius: 9px;
+    -webkit-border-radius: 9px;
+}
+
+.flex-container.twocol .flex-box .flex-img {
+    max-height: 600px;
+}
+
+.flex-container.twocol.portrait .flex-box .flex-img,
+.flex-container.threecol.portrait .flex-box .flex-img {
+    max-height: 525px;
+}
+
+.flex-container.threecol .flex-box .flex-img {
+    max-height: 400px;
+}
+
+.flex-container.fourcol .flex-box .flex-img {
+    max-height: 300px;
+}
+
+.flex-container.fourcol.portrait .flex-box .flex-img {
+    max-height: 400px;
+}
+
+.flex-img img/*,
+.flex-img > img
+.flex-img a img,
+.grid_item_image img,
+.entry-content .portrait .flex-img img*/ {
+	/*display: block;*/
+	display: inline-block;
+}
+
+.flex-img p {
+    margin: 0;
+}
+
+.bordered {
+    border: 1px solid var(--ltgrey);
+}
+
+div.related_links {
+	text-align: center;
+}
+
+a.icon {
+	font-size: 2.5rem;
+	text-decoration: none;
+	line-height: inherit;
+	background: transparent;
+	margin: 0.25rem;
+    padding: 0.5rem;
+    border: 1px solid grey;
+}
+
+a.icon .icons {
+	font-size: inherit;
+	line-height: inherit;
+	height: fit-content;
+	width: fit-content;
+}
+
+/*** Tables ***/
+
+table.posts_archive {
+	/*width: fit-content;*/
+	width: 100%;
+	display: table;
+}
+
+table.posts_archive tr th,
+table.posts_archive tr td {
+	padding: 0 0.5rem;
+	text-align: left;
+}
+
+table tfoot {
+	font-weight: 700;
+}
+
+/*** Groupings **/
+
+.dsplycntnt.index {
+	columns: 250px 4;
+}
+
+h2.collection_group {
+    padding-top: 1rem;
+	border-top: 1px solid;
+}
+
+.index_anchor.primary {
+	display: inline-block;
+	font-weight: bold;
+	margin: 0.5rem 0;
+    padding: 0;
+}
+
+
+/*** TODO: (maybe) move zoom-fade img styling from apostle style.css to this plugin? ***/
+
+/*** Hover Capability ***/
+/* Primary input mechanism system can
+   hover over elements with ease */
+@media (hover: hover) {
+
+    .overlay {
+        display: none;
+        height:100%;
+	    top:0;
+        font-size: inherit;
+    }
+
+    .flex-box:hover {
+        cursor: pointer;
+    }
+
+    .flex-box:hover .overlay {
+        display: flex;
+        background-color: var(--white);
+    }
+}
+
+@media (max-width: 800px) { /* Changed from 600px to 800px 08/23/21 */
+
+    .flex-container .flex-box.square,
+    .flex-container.twocol .flex-box,
+    .flex-container.threecol .flex-box,
+    .flex-container.fourcol .flex-box {
+        flex: 100%;
+        max-width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .flex-container .flex-box.landscape,
+    .flex-container .flex-box.portrait {
+    	margin-bottom: 0;
+    }
+
+    .flex-container .flex-box h3 {
+    	font-size: 1.5rem;
+    }
+
+    .flex-box .item_info {
+    	font-size: 1.1rem;
+    }
+
+}
