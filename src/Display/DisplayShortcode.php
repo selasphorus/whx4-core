@@ -47,6 +47,7 @@ final class DisplayShortcode implements ShortcodeInterface
         if (empty($posts)) {
             return '';
         }
+        Logger::debug( count($posts).' posts found', null, 'shortcodes' );
 
         // Resolve renderer and dispatch
         $renderer = ContentRenderer::resolve($postType);
@@ -54,11 +55,11 @@ final class DisplayShortcode implements ShortcodeInterface
 
         // Group_by requires a different rendering path
         if (!empty($atts['group_by'])) {
-            Logger::debug( 'about to renderGrouped', null, 'shortcodes' );
+            //Logger::debug( 'about to renderGrouped', null, 'shortcodes' );
             return $this->renderGrouped($posts, $atts, $renderer, $display_format);
         }
         
-        Logger::debug( 'about to renderItems', null, 'shortcodes' );
+        //Logger::debug( 'about to renderItems', null, 'shortcodes' );
         return $renderer->renderItems($posts, $atts, $display_format);
     }
 
@@ -176,7 +177,8 @@ final class DisplayShortcode implements ShortcodeInterface
         array $atts,
         ContentRenderer $renderer,
         string $display_format
-    ): string {
+    ): string
+    {
         $taxonomy = (string) $atts['group_by'];
 
         if (!taxonomy_exists($taxonomy)) {
@@ -240,7 +242,8 @@ final class DisplayShortcode implements ShortcodeInterface
         array $atts,
         ContentRenderer $renderer,
         string $display_format
-    ): string {
+    ): string
+    {
         $childTerms = get_terms([
             'taxonomy'   => $taxonomy,
             'hide_empty' => true,

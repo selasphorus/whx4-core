@@ -79,6 +79,7 @@ abstract class ContentRenderer
     public function renderItems(array $posts, array $atts, string $variant): string
     {
         $method = 'render' . ucfirst(strtolower($variant));
+        Logger::debug( 'method: '.$method, null, 'shortcodes' );
 
         if ($method !== 'renderItems' && method_exists($this, $method)) {
             return $this->$method($posts, $atts);
