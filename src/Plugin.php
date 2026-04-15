@@ -265,6 +265,13 @@ final class Plugin implements PluginContext
             [],
             filemtime( WXC_PLUGIN_DIR . 'assets/css/wxc.css' )
         );
+        // TBC: should this go elsewhere?
+    	wp_enqueue_style(
+            'wxc-display-content',
+            WXC_PLUGIN_URL . 'assets/css/wxc-display-content.css',
+            [],
+            filemtime( WXC_PLUGIN_DIR . 'assets/css/wxc-display-content.css' )
+        );
     }
 
 	public function maybeLoadSettingsManager(): void
