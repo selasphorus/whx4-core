@@ -80,7 +80,7 @@ abstract class ContentRenderer
     public function renderItems(array $posts, array $atts, string $variant): string
     {
         $method = 'render' . ucfirst(strtolower($variant));
-        Logger::debug( 'method: '.$method, null, 'shortcodes' );
+        Logger::debug( 'method: '.$method, null, ['display', 'shortcodes'] );
 
         if ($method !== 'renderItems' && method_exists($this, $method)) {
             return $this->$method($posts, $atts);
@@ -166,6 +166,8 @@ abstract class ContentRenderer
     {
         $type = $this->postTypeClass();
         $cols = isset($atts['cols']) ? (int) $atts['cols'] : 3;
+        
+        Logger::debug( 'type: '.$type, null, ['display', 'shortcodes'] );
 
         if (!$posts) {
             return $this->emptyMessage('grid', $type);
