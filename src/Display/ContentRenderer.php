@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace atc\WXC\Display;
 
+use atc\WXC\Logger;
 use atc\WXC\Display\TitleRenderer;
 
 /**

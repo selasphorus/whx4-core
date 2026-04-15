@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace atc\WXC\Display;
 
+use atc\WXC\Logger;
+
 /**
  * Renders post titles with optional formatting, enrichment, and wrapping.
  *
