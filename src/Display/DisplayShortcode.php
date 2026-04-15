@@ -85,25 +85,28 @@ final class DisplayShortcode implements ShortcodeInterface
             //
             'ids'            => null,
             'slugs'          => null,
+            //'post_id'     => null, // ?
+            //'name'         => null,
             //
-            //'category' => null, // for posts/pages only
+            'category' => null, // see getDefaultTaxonomy...
             'taxonomy'       => null,
             'tax_terms'      => null,
             //
-            'display_format' => 'list',   // list | table | grid | archive
+			'has_image' => false, // set to true to ONLY return posts with featured images
+            'scope'          => null, //'all', //'upcoming', // For post_type 'event' -- and others, wip (e.g. transactions -- any post type with important date fields)
+            'group_by'       => null,     // taxonomy slug to group results under
+            
+            // For Events or Sermons
+            'series' => false,
+            
             //
+            'context' => 'general', // wip
+            
+            // Styling attributes
+            'display_format' => 'list',   // list | table | grid | archive
+            'class'          => null,
             'aspect_ratio' => 'square',
-			
-			// For grid display_format:
-			'cols' => 4,
-			'spacing' => 'spaced',
-			'header' => false,
-			'overlay' => false,
-            // For table display_format
-            'fields'  => null,
-            'headers'  => null,
 			//
-			'has_image' => false, // set to true to ONLY return posts with features images
             'image_size'     => 'thumbnail',
             'link_posts'     => true,
             'show_images'    => false,
@@ -112,15 +115,22 @@ final class DisplayShortcode implements ShortcodeInterface
             'expandable' => false, // for excerpts
             'text_length' => 'excerpt', // excerpt or full length
             'preview_length' => '55',
-            //
             'prefer_short_title' => false,
-            'scope'          => null, //'all', //'upcoming',
-            'group_by'       => null,     // taxonomy slug to group results under
-            'class'          => null,
-            // For Events or Sermons
-            'series' => false,
-            //
-            'context' => 'general', // wip
+			
+			// For grid styling:
+			'cols' => 4,
+			'spacing' => 'spaced',
+			'header' => false,
+			'overlay' => false,
+            
+            // For table styling
+            'fields'  => null,
+            'headers'  => null,
+            
+        
+        // This group_by is NOT the same as the wpq arg 'groupby' -- we're going to use it to retrieve posts group by group for display with headers... WIP
+        //'group_by'    => null, // e.g. category, event-categories, link_category -- for queries using scope, TODO: also build in options to group_by month, etc.
+        
         ];
     }
 

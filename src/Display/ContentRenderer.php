@@ -172,10 +172,20 @@ abstract class ContentRenderer
         if (!$posts) {
             return $this->emptyMessage('grid', $type);
         }
-
+        
+		$flexBoxClasses = "flex-box wxc-grid__item ".$atts['aspect_ratio'];
+		if ( !empty($atts['spacing']) ) { $flex_box_classes .= " ".$atts['spacing']; }
+		if ( $atts['overlay'] == "true" || $atts['overlay'] == "fullover" ) {
+			$overclass = "overlay";
+			$flex_box_classes .= " overlaid";
+			if ( $atts['overlay'] == "fullover" ) { $overclass .= " fullover"; }
+		} else {
+			$overclass = null;
+		}
+    
         $out = '<div class="wxc-grid wxc-grid--' . esc_attr($type) . ' wxc-grid--cols-' . $cols . ' flex-container">'; // TODO: simplify classes?
         foreach ($posts as $post) {
-            $out .= '<div class="wxc-grid__item flex-box">' . $this->renderItem($post, $atts) . '</div>';
+            $out .= '<div class="'.$flexBoxClasses.'">' . $this->renderItem($post, $atts) . '</div>';
         }
         $out .= '</div>';
 
