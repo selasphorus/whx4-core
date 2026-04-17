@@ -184,9 +184,6 @@
 	padding: 1rem;
 }
 
-/*.flex-box h3:not(.grid_landscape),
-.fullwidth.centered .entry-content .flex-box .item_info h3:not(.grid_landscape),
-.flex-box .item_info h3:not(.grid_landscape),*/
 .entry-content .flex-box .item_info h3:not(.grid_landscape) {
 	font-weight: normal;
 	font-size: 1rem;
@@ -194,28 +191,6 @@
 	font-style: normal;
 }
 
-/* Two options: 1) post_info, shows BELOW flex-box, 2) overlay */
-
-/*
-.post_info {
-    margin-top: 1rem;
-    padding: 0.5rem;
-}
-
-.post_info .post_title {
-    font-size: 1.1rem;
-}
-
-.post_info > a {
-    color: inherit;
-}
-
-.post_info > a:not(.button) > .post_title,
-.post_info > a:link:not(.button) > .post_title {
-    border-bottom: 1px solid var(--mdred);
-    transition: color .3s ease-in-out;
-}
-*/
 .overlay {
     display: flex;
     flex-direction:column;
@@ -257,11 +232,12 @@
 	opacity: inherit;
 }
 
+.flex-box img,
 .flex-img {
-	/*padding: 0.25rem;*/
 	overflow: hidden;
 }
 
+.flex-box img,
 .flex-img,
 .flex-img img {
 	border-radius: 9px 9px 0 0;
@@ -273,6 +249,7 @@
     max-height: 100%;
 }
 
+.flex-box.square img,
 .flex-box.square .flex-img {
 	aspect-ratio: 1/1;
 }
