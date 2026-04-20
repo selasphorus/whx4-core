@@ -6,6 +6,7 @@ namespace atc\WXC\Display;
 
 use atc\WXC\Logger;
 use atc\WXC\Display\TitleRenderer;
+use atc\WXC\Utils\Text;
 
 /**
  * Base renderer for lists of WP_Post objects.
@@ -20,10 +21,24 @@ use atc\WXC\Display\TitleRenderer;
  * render{Variant}() on the concrete subclass (or this base), then falls
  * back to renderList(). No registry is required.
  *
+ * CSS naming convention: BEM with wxc- prefix for WordPress directory safety.
+ *   .wxc-grid                  — grid container
+ *   .wxc-grid--{type}          — post-type modifier (e.g. wxc-grid--event)
+ *   .wxc-grid--{cols}col       — column count modifier (e.g. wxc-grid--threecol)
+ *   .wxc-grid--{aspect}        — aspect ratio modifier (e.g. wxc-grid--square)
+ *   .wxc-card                  — individual grid/card item
+ *   .wxc-card--{aspect}        — aspect ratio modifier on card
+ *   .wxc-card__image           — image container within card
+ *   .wxc-card__info            — text/meta container within card
+ *   .wxc-card__overlay         — overlay info layer (hover-capable devices)
+ *   .wxc-list                  — list variant container
+ *   .wxc-table                 — table variant container
+ *   .wxc-archive               — archive variant container
+ *
  * Usage from a shortcode or handler:
  *
  *   $renderer = ContentRenderer::resolve($postType);
- *   return $renderer->renderItems($posts, $atts, 'table');
+ *   return $renderer->renderItems($posts, $atts, 'grid');
  */
 abstract class ContentRenderer
 {
@@ -34,6 +49,9 @@ abstract class ContentRenderer
     /**
      * Resolve and instantiate the appropriate renderer for a given post type.
      *
+     * Asks each registered plugin's module loader to supply a renderer class
+     * via the filter below, then falls back to GenericRenderer if nothing found.
+     * ///
      * Convention: a renderer for post type 'whx4_event' is expected at
      * atc\WHx4\Modules\Events\Display\EventRenderer, but this method does
      * not need to know that. It asks each registered plugin's module loader
@@ -58,6 +76,27 @@ abstract class ContentRenderer
         return new GenericRenderer();
     }
 
+    /**
+     * Register this renderer for a post type via the wxc_content_renderer_class filter.
+     *
+     * Call from a module's boot() method, passing the post type slug:
+     *
+     *   EventRenderer::register( Event::getSlug() );
+     *
+     * @param string $postType  Post type slug to claim (e.g. 'whx4_event').
+     */
+    public static function register(string $postType): void
+    {
+        add_filter(
+            'wxc_content_renderer_class',
+            static function (?string $class, string $type) use ($postType): ?string {
+                return $type === $postType ? static::class : $class;
+            },
+            10,
+            2
+        );
+    }
+
     // -------------------------------------------------------------------------
     // Primary dispatch
     // -------------------------------------------------------------------------
@@ -68,9 +107,6 @@ abstract class ContentRenderer
      * Variant resolution order:
      *   1. render{Variant}() on the concrete subclass       — e.g. renderTable()
      *   2. renderList() as the universal fallback
-     *
-     * This means a subclass that only overrides renderTable() still gets the
-     * base renderList() and renderGrid() implementations for free.
      *
      * @param  \WP_Post[] $posts
      * @param  array      $atts   Shortcode / caller atts (passed through to render methods).
@@ -94,7 +130,7 @@ abstract class ContentRenderer
     // -------------------------------------------------------------------------
 
     /**
-     * Render posts as a `<ul>` list.
+     * Render posts as a <ul> list.
      *
      * @param  \WP_Post[] $posts
      * @param  array      $atts
@@ -120,8 +156,8 @@ abstract class ContentRenderer
     /**
      * Render posts as an HTML table.
      *
-     * The base implementation produces a two-column Date / Title table.
-     * Subclasses should override this (and/or getTableColumns()) to
+     * The base implementation produces a single Title column.
+     * Subclasses override getTableColumns() and getTableCells() to
      * produce type-appropriate columns.
      *
      * @param  \WP_Post[] $posts
@@ -156,7 +192,18 @@ abstract class ContentRenderer
     }
 
     /**
-     * Render posts as a flex grid.
+     * Render posts as a card grid.
+     *
+     * Produces a .wxc-grid container with .wxc-card items. Each card is
+     * rendered by renderCard(), which separates image and info into
+     * .wxc-card__image and .wxc-card__info wrappers.
+     *
+     * Supported atts:
+     *   cols         int     Number of columns. Default 3.
+     *   aspect_ratio string  'square' | 'landscape' | 'portrait'. Default 'square'.
+     *   spacing      string  Optional spacing modifier class.
+     *   overlay      string  'true' | 'fullover' | null. Enables hover overlay.
+     *   hlevel       int     Heading level for card titles. Default 3.
      *
      * @param  \WP_Post[] $posts
      * @param  array      $atts
@@ -165,28 +212,40 @@ abstract class ContentRenderer
     public function renderGrid(array $posts, array $atts): string
     {
         $type = $this->postTypeClass();
-        $cols = isset($atts['cols']) ? (int) $atts['cols'] : 3;
-        $atts['hlevel'] = (int) ( $atts['hlevel'] ?? 3 );; // header level for title -- default to h3 for grids
         
         //Logger::debug( 'type: '.$type, null, ['display', 'shortcodes'] );
 
         if (!$posts) {
             return $this->emptyMessage('grid', $type);
         }
+
+        // Default heading level to h3 for grid contexts
+        $atts['hlevel'] = (int) ($atts['hlevel'] ?? 3);
+
+        $cols        = (int) ($atts['cols'] ?? 3);
+        $aspectRatio = $atts['aspect_ratio'] ?? 'square';
+        $colWord     = Text::digitToWord($cols);
+
+        $containerClasses = implode(' ', array_filter([
+            'wxc-grid',
+            'wxc-grid--' . esc_attr($type),
+            'wxc-grid--' . esc_attr($colWord) . 'col',
+            'wxc-grid--' . esc_attr($aspectRatio),
+            !empty($atts['spacing']) ? 'wxc-grid--' . esc_attr($atts['spacing']) : null,
+        ]));
         
-		$flexBoxClasses = "flex-box wxc-grid__item ".$atts['aspect_ratio'];
-		if ( !empty($atts['spacing']) ) { $flexBoxClasses .= " ".$atts['spacing']; }
+        // WIP
 		if ( $atts['overlay'] == "true" || $atts['overlay'] == "fullover" ) {
 			$overclass = "overlay";
-			$flexBoxClasses .= " overlaid";
+			$containerClasses .= " overlaid";
 			if ( $atts['overlay'] == "fullover" ) { $overclass .= " fullover"; }
 		} else {
 			$overclass = null;
 		}
     
-        $out = '<div class="wxc-grid wxc-grid--' . esc_attr($type) . ' wxc-grid--cols-' . $cols . ' flex-container">'; // TODO: simplify classes?
+        $out = '<div class="' . $containerClasses . '">';
         foreach ($posts as $post) {
-            $out .= '<div class="'.$flexBoxClasses.'">' . $this->renderItem($post, $atts) . '</div>';
+            $out .= $this->renderCard($post, $atts);
         }
         $out .= '</div>';
 
@@ -230,14 +289,17 @@ abstract class ContentRenderer
     }
 
     // -------------------------------------------------------------------------
-    // Item-level rendering — override these in subclasses for custom markup
+    // Item-level rendering
     // -------------------------------------------------------------------------
 
     /**
-     * Render a single post item (used by renderList and renderGrid).
+     * Render a single post item for list and archive contexts.
      *
-     * Composes title, image, and meta. Subclasses can override this entirely
-     * or override the individual getItem*() helpers.
+     * Composes title, image, and meta inline. For grid contexts,
+     * renderCard() is used instead.
+     *
+     * Subclasses can override this entirely or override the individual
+     * getItem*() helpers.
      *
      * @param  \WP_Post $post
      * @param  array    $atts
@@ -249,22 +311,79 @@ abstract class ContentRenderer
         $meta  = $this->getItemMeta($post, $atts);
         $image = $this->getItemImage($post, $atts);
 
-        $out  = $image;
+        $out = '';
+
+        if ($image) {
+            $out .= $image;
+        }
+
         $out .= $title;
 
         if ($meta) {
             $out .= '<span class="wxc-item__meta">' . $meta . '</span>';
         }
 
-        return '<span class="wxc-item">' . $out . '</span>';
+        return $out;
+    }
+
+    /**
+     * Render a single post as a card for grid contexts.
+     *
+     * Produces the .wxc-card structure with separate __image and __info
+     * containers. When overlay is enabled, info is placed in a
+     * .wxc-card__overlay div instead of .wxc-card__info.
+     *
+     * @param  \WP_Post $post
+     * @param  array    $atts
+     * @return string
+     */
+    protected function renderCard(\WP_Post $post, array $atts): string
+    {
+        $aspectRatio = $atts['aspect_ratio'] ?? 'square';
+        $overlay     = $atts['overlay'] ?? null;
+
+        $cardClasses = implode(' ', array_filter([
+            'wxc-card',
+            'wxc-card--' . esc_attr($aspectRatio),
+            ($overlay === 'true' || $overlay === 'fullover') ? 'wxc-card--overlaid' : null,
+        ]));
+
+        // Resolve all content before building markup
+        $image   = $this->getItemImage($post, $atts);
+        $title   = $this->getItemTitle($post, $atts);
+        $meta    = $this->getItemMeta($post, $atts);
+
+        $infoHtml  = $title;
+        if ($meta) {
+            $infoHtml .= '<span class="wxc-card__meta">' . $meta . '</span>';
+        }
+
+        $out = '<div class="' . $cardClasses . '">';
+
+        if ($image) {
+            $out .= '<div class="wxc-card__image hoverZoom">' . $image . '</div>';
+        }
+
+        if ($overlay === 'true' || $overlay === 'fullover') {
+            $overlayClass = 'wxc-card__overlay';
+            if ($overlay === 'fullover') {
+                $overlayClass .= ' wxc-card__overlay--full';
+            }
+            $out .= '<div class="' . $overlayClass . '">' . $infoHtml . '</div>';
+        } else {
+            $out .= '<div class="wxc-card__info">' . $infoHtml . '</div>';
+        }
+
+        $out .= '</div>';
+
+        return $out;
     }
 
     /**
      * Render a single table row (used by renderTable).
      *
-     * Override this in a subclass when the row structure differs from the
-     * base two-column Date / Title layout — or override getTableColumns()
-     * and getTableCells() together for a data-only change.
+     * Override this in a subclass when the row structure differs, or
+     * override getTableColumns() and getTableCells() for a data-only change.
      *
      * @param  \WP_Post $post
      * @param  array    $atts
@@ -287,7 +406,11 @@ abstract class ContentRenderer
     // -------------------------------------------------------------------------
 
     /**
-     * Return the linked post title.
+     * Return the rendered post title HTML.
+     *
+     * Delegates to TitleRenderer::render() which handles subtitle, heading
+     * level, link wrapping, and formatting transforms. Post-type defaults
+     * registered via AppliesTitleArgs are applied automatically.
      *
      * @param  \WP_Post $post
      * @param  array    $atts
@@ -299,7 +422,11 @@ abstract class ContentRenderer
 	}
 
     /**
-     * Return the post thumbnail HTML, or empty string if none.
+     * Return the post image HTML via the wxc_post_image filter.
+     *
+     * Image size is derived from the image_size att if set, then from
+     * aspect_ratio (e.g. 'square' → 'grid_crop_square'), then falls
+     * back to 'thumbnail'.
      *
      * @param  \WP_Post $post
      * @param  array    $atts
@@ -307,7 +434,13 @@ abstract class ContentRenderer
      */
     protected function getItemImage(\WP_Post $post, array $atts): string
 	{
-		$size = $atts['image_size'] ?? 'thumbnail';
+        if (!empty($atts['image_size'])) {
+            $size = $atts['image_size'];
+        } elseif (!empty($atts['aspect_ratio'])) {
+            $size = 'grid_crop_' . $atts['aspect_ratio'];
+        } else {
+            $size = 'thumbnail';
+        }
 	
 		return (string) apply_filters('wxc_post_image', '', $post, $size, $atts);
 	}
@@ -375,17 +508,27 @@ abstract class ContentRenderer
     // Helpers
     // -------------------------------------------------------------------------
 
+    /** @var array<string,string> Cache: FQCN => CSS type string */
+    private static array $typeClassCache = [];
+
     /**
      * A CSS-safe identifier derived from the concrete class name.
      *
+     * Computed once per class per request and cached as a static property,
+     * consistent with the caching pattern used in PostTypeHandler.
      * EventRenderer → 'event', GenericRenderer → 'generic', etc.
+     * Used as a BEM modifier on container elements.
      *
      * @return string
      */
     protected function postTypeClass(): string
     {
-        $short = (new \ReflectionClass($this))->getShortName();
-        return strtolower(str_replace('Renderer', '', $short));
+        $class = static::class;
+        if (!isset(self::$typeClassCache[$class])) {
+            $short = substr($class, strrpos($class, '\\') + 1);
+            self::$typeClassCache[$class] = strtolower(str_replace('Renderer', '', $short));
+        }
+        return self::$typeClassCache[$class];
     }
 
     /**

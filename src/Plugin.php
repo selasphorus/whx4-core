@@ -259,6 +259,14 @@ final class Plugin implements PluginContext
 
     public function enqueuePublicAssets(): void
     {
+    	wp_enqueue_script(
+			'wxc-settings',
+			WXC_PLUGIN_URL . 'assets/js/dc.js',
+			[],
+			'1.0',
+			true
+		);
+		
     	wp_enqueue_style(
             'wxc-style',
             WXC_PLUGIN_URL . 'assets/css/wxc.css',
