@@ -146,7 +146,7 @@ abstract class ContentRenderer
 
         $out = '<ul class="wxc-list wxc-list--' . esc_attr($type) . '">';
         foreach ($posts as $post) {
-            $out .= '<li>' . $this->renderItem($post, $atts) . '</li>';
+            $out .= '<li>' . $this->resolvePostRenderer($post)->renderItem($post, $atts) . '</li>';
         }
         $out .= '</ul>';
 
@@ -183,7 +183,7 @@ abstract class ContentRenderer
         $out .= '</tr></thead><tbody>';
 
         foreach ($posts as $post) {
-            $out .= $this->renderTableRow($post, $atts);
+            $out .= $this->resolvePostRenderer($post)->renderTableRow($post, $atts);
         }
 
         $out .= '</tbody></table>';
@@ -212,7 +212,6 @@ abstract class ContentRenderer
     public function renderGrid(array $posts, array $atts): string
     {
         $type = $this->postTypeClass();
-        
         //Logger::debug( 'type: '.$type, null, ['display', 'shortcodes'] );
 
         if (!$posts) {
@@ -245,7 +244,7 @@ abstract class ContentRenderer
     
         $out = '<div class="' . $containerClasses . '">';
         foreach ($posts as $post) {
-            $out .= $this->renderCard($post, $atts);
+            $out .= $this->resolvePostRenderer($post)->renderCard($post, $atts);
         }
         $out .= '</div>';
 
@@ -280,7 +279,11 @@ abstract class ContentRenderer
         foreach ($grouped as $groupLabel => $groupPosts) {
             $out .= '<section class="wxc-archive__group">';
             $out .= '<h2 class="wxc-archive__group-title">' . esc_html((string) $groupLabel) . '</h2>';
-            $out .= $this->renderList($groupPosts, $atts);
+            $out .= '<ul class="wxc-list wxc-list--' . esc_attr($type) . '">';
+            foreach ($groupPosts as $post) {
+                $out .= '<li>' . $this->resolvePostRenderer($post)->renderItem($post, $atts) . '</li>';
+            }
+            $out .= '</ul>';
             $out .= '</section>';
         }
         $out .= '</div>';
@@ -510,6 +513,26 @@ abstract class ContentRenderer
 
     /** @var array<string,string> Cache: FQCN => CSS type string */
     private static array $typeClassCache = [];
+
+    /**
+     * Resolve the appropriate renderer for a single post.
+     *
+     * Returns $this for homogeneous collections where the post type matches
+     * the renderer's own type, or when using GenericRenderer as the entry
+     * point for a mixed-type collection. Otherwise resolves and returns the
+     * correct subclass renderer for the post's type, enabling mixed-type
+     * collections to render each post with its own type-specific renderer.
+     *
+     * @param  \WP_Post $post
+     * @return static
+     */
+    protected function resolvePostRenderer(\WP_Post $post): static
+    {
+        if ($this instanceof GenericRenderer || $post->post_type === $this->postTypeClass()) {
+            return $this;
+        }
+        return static::resolve($post->post_type);
+    }
 
     /**
      * A CSS-safe identifier derived from the concrete class name.
