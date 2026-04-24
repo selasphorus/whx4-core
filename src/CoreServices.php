@@ -45,7 +45,9 @@ class CoreServices
 			if (!has_post_thumbnail($post->ID)) {
 				return '';
 			}
-			return get_the_post_thumbnail($post->ID, $size, ['class' => 'wxc-item__image']);
+			return get_the_post_thumbnail($post->ID, $size, [
+				'class' => 'wxc-item__image ' . esc_attr($size),
+			]);
 		}, 5, 4);
     }
 }
