@@ -76,8 +76,8 @@ final class Text
     // Hyperlinks -- TODO: move this to separate class? maybe...
 
     // Make hyperlink
-    function makeLink( $url, $text, $title = null, $class = null, $target = null) {
-
+    public static function makeLink( $url, $text, $title = null, $class = null, $target = null)
+    {
         // TODO: sanitize URL?
         $link = '<a href="'.$url.'"';
         if ( $text && empty($title) ) { $title = $text; } // Use text as title if title is empty
@@ -92,7 +92,7 @@ final class Text
     
     // WIP
     // digit_to_word >> used currently only by Display Content plugin...
-	function digitToWord ( $number ) 
+	public static function digitToWord ( $number ) 
 	{
 		switch($number){
 			case 0:$word = "zero";break;
@@ -109,7 +109,7 @@ final class Text
 		return $word;
 	}
 	
-	function word_to_digit ( $word ) 
+	public static function wordToDigit ( $word ) 
 	{
 		$words_to_digits = [
 			'zero' => 0,
@@ -138,7 +138,7 @@ final class Text
 		return isset($words_to_digits[$word]) ? $words_to_digits[$word] : null;
 	}
 	
-	function containsNumbers ( $string )
+	public static function containsNumbers ( $string )
 	{
 		if ( preg_match('/first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|one|two|three|four|five|six|seven|eight|nine|ten|[0-9]+/', $string) ) {
 			return true;
@@ -146,16 +146,15 @@ final class Text
 		return false;
 	}
 	
-	function extractNumbers ( $string ) 
+	public static function extractNumbers ( $string ) 
 	{
-	
 		$numbers = array();
 		preg_match_all('/first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|one|two|three|four|five|six|seven|eight|nine|ten|[0-9]+/', $string, $matches); //PREG_OFFSET_CAPTURE
 	
 		// Make sure the numbers are digits -- convert them as needed
 		foreach ( $matches as $match ) {
 			$word = $match[0];
-			$num = sdg_word_to_digit ( $word );
+			$num = wordToDigit ( $word );
 			if ( $num ) { $numbers[]= $num; } else { $numbers[]= $word; }
 		}
 		return $numbers;
