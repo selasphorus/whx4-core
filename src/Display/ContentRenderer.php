@@ -75,27 +75,43 @@ abstract class ContentRenderer
 
         return new GenericRenderer();
     }
-
+    
     /**
-     * Register this renderer for a post type via the wxc_content_renderer_class filter.
-     *
-     * Call from a module's boot() method, passing the post type slug:
-     *
-     *   EventRenderer::register( Event::getSlug() );
-     *
-     * @param string $postType  Post type slug to claim (e.g. 'whx4_event').
-     */
-    public static function register(string $postType): void
-    {
-        add_filter(
-            'wxc_content_renderer_class',
-            static function (?string $class, string $type) use ($postType): ?string {
-                return $type === $postType ? static::class : $class;
-            },
-            10,
-            2
-        );
-    }
+	 * Register this renderer for its associated post type via the wxc_content_renderer_class filter.
+	 *
+	 * Reads the post type slug from the handler class declared in the subclass's
+	 * $handlerClass property. Subclasses must declare:
+	 *
+	 *   protected static string $handlerClass = SomePostTypeHandler::class;
+	 *
+	 * Call from the module's boot() method, e.g.:
+	 *
+	 *   EventRenderer::register();
+	 *
+	 * Subclasses that need to register for multiple slugs (e.g. during a post
+	 * type migration) should override this method and call the parent explicitly
+	 * for each slug.
+	 */
+    public static function register(): void
+	{
+		$slug = defined('static::$handlerClass') && static::$handlerClass !== ''
+			? (static::$handlerClass)::getSlug()
+			: '';
+	
+		if ($slug === '') {
+			return;
+		}
+	
+		add_filter(
+			'wxc_content_renderer_class',
+			static function (?string $class, string $type) use ($slug): ?string {
+				return $type === $slug ? static::class : $class;
+			},
+			10,
+			2
+		);
+	}
+
 
     // -------------------------------------------------------------------------
     // Primary dispatch
