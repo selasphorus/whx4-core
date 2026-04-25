@@ -239,6 +239,8 @@ abstract class ContentRenderer
 
         $cols        = (int) ($atts['cols'] ?? 3);
         $aspectRatio = $atts['aspect_ratio'] ?? 'square';
+        $atts['aspect_ratio'] = $aspectRatio; // ensure it's set for downstream methods
+
         $colWord     = Text::digitToWord($cols);
 
         $containerClasses = implode(' ', array_filter([
@@ -460,6 +462,8 @@ abstract class ContentRenderer
         } else {
             $size = 'thumbnail';
         }
+        
+        Logger::debug('getItemImage size: ' . $size . ' for post ' . $post->ID, null, 'display');
 	
 		return (string) apply_filters('wxc_post_image', '', $post, $size, $atts);
 	}

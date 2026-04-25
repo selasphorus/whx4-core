@@ -9,6 +9,7 @@ use atc\WXC\Templates\TemplateRouter;
 use atc\WXC\Shortcodes\ShortcodeManager;
 use atc\WXC\Assets\AssetManager;
 use atc\WXC\Display\DisplayShortcode;
+use atc\WXC\Display\ImageSizes;
 
 class CoreServices
 {
@@ -23,6 +24,7 @@ class CoreServices
             TemplateRouter::class,
             ShortcodeManager::class,
             AssetManager::class,
+            ImageSizes::class,
         ]);
 
         foreach ( $services as $class ) {
