@@ -107,7 +107,7 @@ final class DisplayShortcode implements ShortcodeInterface
             'class'          => null,
             'aspect_ratio' => 'square',
 			//
-            'image_size'     => 'thumbnail',
+            'image_size'     => null, // in order to allow getItemImage() to fall through to the aspect_ratio derivation for grid display
             'link_posts'     => true,
             'show_images'    => false,
             'show_subtitles' => true,
@@ -126,11 +126,7 @@ final class DisplayShortcode implements ShortcodeInterface
             // For table styling
             'fields'  => null,
             'headers'  => null,
-            
-        
-        // This group_by is NOT the same as the wpq arg 'groupby' -- we're going to use it to retrieve posts group by group for display with headers... WIP
-        //'group_by'    => null, // e.g. category, event-categories, link_category -- for queries using scope, TODO: also build in options to group_by month, etc.
-        
+                
         ];
     }
 
