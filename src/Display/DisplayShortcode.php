@@ -108,7 +108,9 @@ final class DisplayShortcode implements ShortcodeInterface
             'aspect_ratio' => 'square',
 			//
             'image_size'     => null, // in order to allow getItemImage() to fall through to the aspect_ratio derivation for grid display
-            'link_posts'     => true,
+            'link' => true,
+            //'link_posts'    => true, // deprecated
+            'link_target' => '_blank',
             'show_images'    => false,
             'show_subtitles' => true,
             'show_content'   => null,     // null | excerpts | full
@@ -116,7 +118,6 @@ final class DisplayShortcode implements ShortcodeInterface
             'text_length' => 'excerpt', // excerpt or full length
             'preview_length' => '55',
             'prefer_short_title' => false,
-            'link' => true,
 			
 			// For grid styling:
 			'cols' => 4,

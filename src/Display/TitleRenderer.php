@@ -230,11 +230,12 @@ class TitleRenderer
         $title = $args['prepend'] . $title . $args['append'];
 
         // Link wrapping
-        if ($args['link']) {
-            $title = '<a href="' . esc_url(get_permalink($post)) . '" rel="bookmark">'
-                   . $title
-                   . '</a>';
-        }
+		if ($args['link']) {
+			$target = !empty($args['link_target']) ? ' target="' . esc_attr($args['link_target']) . '"' : '';
+			$title  = '<a href="' . esc_url(get_permalink($post)) . '" rel="bookmark"' . $target . '>'
+					. $title
+					. '</a>';
+		}
 
         // Heading element
         $level = (int) $args['hlevel'];

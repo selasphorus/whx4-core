@@ -455,17 +455,28 @@ abstract class ContentRenderer
      */
     protected function getItemImage(\WP_Post $post, array $atts): string
 	{
-        if (!empty($atts['image_size'])) {
-            $size = $atts['image_size'];
-        } elseif (!empty($atts['aspect_ratio'])) {
-            $size = 'grid_crop_' . $atts['aspect_ratio'];
-        } else {
-            $size = 'thumbnail';
-        }
-        
-        Logger::debug('getItemImage size: ' . $size . ' for post ' . $post->ID, null, 'display');
+		if (!empty($atts['image_size'])) {
+			$size = $atts['image_size'];
+		} elseif (!empty($atts['aspect_ratio'])) {
+			$size = 'grid_crop_' . $atts['aspect_ratio'];
+		} else {
+			$size = 'thumbnail';
+		}
 	
-		return (string) apply_filters('wxc_post_image', '', $post, $size, $atts);
+		$image = (string) apply_filters('wxc_post_image', '', $post, $size, $atts);
+	
+		if (!$image) {
+			return '';
+		}
+	
+		if ($atts['link'] ?? true) {
+			$target = !empty($atts['link_target']) ? ' target="' . esc_attr($atts['link_target']) . '"' : '';
+			$image  = '<a href="' . esc_url(get_permalink($post)) . '" rel="bookmark"' . $target . '>'
+					. $image
+					. '</a>';
+		}
+	
+		return $image;
 	}
 
     /**
