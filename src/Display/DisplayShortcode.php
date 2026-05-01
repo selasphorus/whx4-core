@@ -142,10 +142,22 @@ final class DisplayShortcode implements ShortcodeInterface
      * @param  array $atts  Merged shortcode atts.
      * @return \WP_Post[]
      */
+    
     private function query(array $atts): array
-    {
-        //$result = PostQuery::find([
-        $result = (new PostQuery())->find([
+	{
+		// Resolve 'category' to the handler's default taxonomy
+		if (!empty($atts['category']) && empty($atts['taxonomy'])) {
+			$handlerClass = PostTypeHandler::getHandlerClassForPostType($atts['post_type']);
+			if ($handlerClass) {
+				$defaultTax = $handlerClass::getDefaultTaxonomy();
+				if ($defaultTax) {
+					$atts['taxonomy']  = $defaultTax;
+					$atts['tax_terms'] = $atts['category'];
+				}
+			}
+		}
+		
+		$result = (new PostQuery())->find([
             'post_type'   => $atts['post_type'],
             'limit'       => (int) $atts['limit'],
             'orderby'     => $atts['orderby'],
@@ -158,10 +170,10 @@ final class DisplayShortcode implements ShortcodeInterface
             'tax_terms'   => $atts['tax_terms'],
             'scope'       => $atts['scope'],
         ]);
-
-        return $result['posts'] ?? [];
-    }
-
+	
+		return $result['posts'] ?? [];
+	}
+	
     // -------------------------------------------------------------------------
     // Grouped rendering
     // -------------------------------------------------------------------------
