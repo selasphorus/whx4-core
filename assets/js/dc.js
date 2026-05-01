@@ -7,7 +7,7 @@
  *   - zoom-fade entrance animation applied to images as they enter the viewport
  */
 
-jQuery( document ).ready( function ( $ ) {
+jQuery(document).ready(function($) {
 
     // -------------------------------------------------------------------------
     // Sticky navigation

@@ -364,7 +364,8 @@ img.grid_crop_square {
  */
 .site-inner img,
 .site-inner .featured_image_caption,
-.site-inner .wp-caption-text {
+.site-inner .wp-caption-text,
+.wxc-card__image.hoverZoom img {
     opacity: 0;
 }
 
@@ -383,14 +384,16 @@ img.grid_crop_square {
  * container creates a crop-zoom effect rather than the image overflowing.
  */
 .wxc-card__image.hoverZoom {
-    transform: scale(1.1);
     transition: transform 0.75s ease-in-out;
-    animation: wxcZoomFade 2s ease-out forwards;
-    animation-iteration-count: 1;
 }
 
 .wxc-card__image.hoverZoom:hover {
     transform: scale(1.1);
+}
+
+.wxc-card__image.hoverZoom img {
+    animation: wxcZoomFade 2s ease-out forwards;
+    animation-iteration-count: 1;
 }
 
 @keyframes wxcZoomFade {
