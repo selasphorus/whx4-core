@@ -318,6 +318,15 @@ final class PostQuery
 		
         // 9) Taxonomy map: ensure "taxonomy => [slugs...]" (trimmed, non-empty) // ensure "taxonomy => [terms...]" (slugs by default)
         // check if isset($params['tax'])?
+        
+        // Normalise taxonomy/tax_terms shorthand into the tax map format
+		if (!empty($params['taxonomy']) && !empty($params['tax_terms'])) {
+			$terms = is_array($params['tax_terms'])
+				? $params['tax_terms']
+				: array_map('trim', explode(',', (string) $params['tax_terms']));
+			$params['tax'][(string) $params['taxonomy']] = $terms;
+		}
+
         $taxIn = is_array($params['tax'] ?? null) ? $params['tax'] : [];
         $taxOut = [];
         foreach ($taxIn as $taxonomy => $terms) {
