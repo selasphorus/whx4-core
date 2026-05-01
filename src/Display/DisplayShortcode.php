@@ -7,6 +7,7 @@ namespace atc\WXC\Display;
 use atc\WXC\Logger;
 use atc\WXC\Contracts\ShortcodeInterface;
 use atc\WXC\Query\PostQuery;
+use atc\WXC\PostTypes\PostTypeHandler;
 
 /**
  * Generic multi-type display shortcode.
