@@ -157,6 +157,8 @@ final class DisplayShortcode implements ShortcodeInterface
 					$atts['tax_terms'] = $atts['category'];
 				}
 			}
+		} else {
+		    Logger::debug( 'No need to ID default taxonomy...', $atts, 'shortcodes' );
 		}
 		
 		$result = (new PostQuery())->find([
