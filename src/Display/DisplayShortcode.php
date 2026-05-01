@@ -148,6 +148,7 @@ final class DisplayShortcode implements ShortcodeInterface
 	{
 		// Resolve 'category' to the handler's default taxonomy
 		if (!empty($atts['category']) && empty($atts['taxonomy'])) {
+		    Logger::debug( 'attempting to ID default taxonomy...', $atts, 'shortcodes' );
 			$handlerClass = PostTypeHandler::getHandlerClassForPostType($atts['post_type']);
 			if ($handlerClass) {
 				$defaultTax = $handlerClass::getDefaultTaxonomy();
