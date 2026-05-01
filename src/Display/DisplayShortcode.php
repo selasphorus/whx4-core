@@ -116,6 +116,7 @@ final class DisplayShortcode implements ShortcodeInterface
             'text_length' => 'excerpt', // excerpt or full length
             'preview_length' => '55',
             'prefer_short_title' => false,
+            'link' => true,
 			
 			// For grid styling:
 			'cols' => 4,
