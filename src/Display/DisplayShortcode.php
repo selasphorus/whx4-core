@@ -148,21 +148,24 @@ final class DisplayShortcode implements ShortcodeInterface
 	{
 		// Resolve 'category' to the handler's default taxonomy
 		if (!empty($atts['category']) && empty($atts['taxonomy'])) {
-		    Logger::debug( 'attempting to ID default taxonomy for post_type ['.$atts['post_type'].']', null, 'shortcodes' );
+		    //Logger::debug( 'attempting to ID default taxonomy for post_type ['.$atts['post_type'].']', null, 'shortcodes' );
 			$handlerClass = PostTypeHandler::getHandlerClassForPostType($atts['post_type']);
 			if ($handlerClass) {
 				$defaultTax = $handlerClass::getDefaultTaxonomy();
 				if ($defaultTax) {
-				    Logger::debug( 'defaultTax: ['.$defaultTax.']', null, 'shortcodes' );
+				    //Logger::debug( 'defaultTax: ['.$defaultTax.']', null, 'shortcodes' );
 					$atts['taxonomy']  = $defaultTax;
 					$atts['tax_terms'] = $atts['category'];
 				} else {
-				    Logger::debug( 'NO defaultTax found', null, 'shortcodes' );
+				    //Logger::debug( 'NO defaultTax found', null, 'shortcodes' );
 				}
 			}
 		} else {
-		    Logger::debug( 'No need to ID default taxonomy.', null, 'shortcodes' );
+		    //Logger::debug( 'No need to ID default taxonomy.', null, 'shortcodes' );
 		}
+		
+		Logger::debug( 'taxonomy: ['.$atts['taxonomy'].']', null, 'shortcodes' );
+		Logger::debug( 'tax_terms: ['.$atts['tax_terms'].']', null, 'shortcodes' );
 		
 		$result = (new PostQuery())->find([
             'post_type'   => $atts['post_type'],
