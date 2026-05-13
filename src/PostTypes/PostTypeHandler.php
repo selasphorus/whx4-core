@@ -715,16 +715,10 @@ abstract class PostTypeHandler extends BaseHandler
 
 		// Init
 		$info = "";
-		$ts_info = "";
-
-		$ts_info .= "post_id: ".$post_id."<br />";
 
 		if ( $post_id === null ) { return false; }
 
-		//$info .= $ts_info;
-
 		return $info;
-
 	}
 	
 	/**
