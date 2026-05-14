@@ -28,7 +28,7 @@ final class DisplayShortcode implements ShortcodeInterface
 {
     public static function tag(): string
     {
-        return 'display_posts';
+        return 'wxc_display_posts';
     }
 
     public function render(array $atts = [], string $content = '', string $tag = ''): string
