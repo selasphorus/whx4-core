@@ -4,7 +4,7 @@
  * Description:       A WordPress plugin for core functionality used by WHx4, Bkkp, SDG, etc.
  * Dependencies:      
  * Requires Plugins:  advanced-custom-fields-pro
- * Version:           1.260611.1
+ * Version:           1.260618.1
  * Author:            atc
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -132,13 +132,14 @@ function wxc_log( string $message, mixed $data = null, string|array|null $contex
 /* ***** TODO: Move most or all of the following away into classes ***** */
 
 // Function to check for main dev/admin user
-function wxc_queenbee() 
+function queenbee() 
 {
 	$current_user = wp_get_current_user();
 	$username = $current_user->user_login;
 	$useremail = $current_user->user_email;
 	//
     if ( $username == 'stcdev' || $useremail == "birdhive@gmail.com" ) {
+    	wxc_log("queenbee!", null, ['wxc']);
     	return true;
     } else {
     	return false;
