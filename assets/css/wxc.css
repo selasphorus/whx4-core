@@ -94,8 +94,37 @@ button.icon-button img,
     vertical-align: middle;
 }
 
+/* General/Override styles */
 
+.hidden,
+.print-only {
+    display: none;
+}
 
 .alignleft {
 	text-align: left;
+}
+
+/**
+ * Print
+ */
+
+@media print {
+
+    .print-only {
+        display: block;
+    }
+
+    .screen-only {
+        display: none;
+    }
+
+    @page {
+        margin: 1in 0.5in; /* 1 inch margin for all sides */
+    }
+
+    @page :first {
+        margin-top: 0.5in;
+    }
+    
 }

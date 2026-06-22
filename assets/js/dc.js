@@ -65,6 +65,11 @@ jQuery(document).ready(function($) {
                 return;
             }
 
+            // TMP Skip grid_item_image images
+            if ( $img.hasClass( 'grid_item_image' ) || $img.parent().hasClass( 'grid_item_image' ) ) {
+                return;
+            }
+
             // Skip images inside hoverZoom containers (.wxc-card__image.hoverZoom)
             // — those have their own CSS entrance animation
             if ( $img.closest( '.wxc-card__image.hoverZoom' ).length ) {
