@@ -498,3 +498,14 @@ h2.collection_group {
         font-size: 1.1rem;
     }
 }
+
+@media print {
+
+	.site-inner img,
+	.site-inner .featured_image_caption,
+	.site-inner .wp-caption-text,
+	.wxc-card__image.hoverZoom img {
+		opacity: 1;
+	}
+	
+}
