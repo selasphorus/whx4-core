@@ -273,7 +273,7 @@ final class Plugin implements PluginContext
             [],
             filemtime( WXC_PLUGIN_DIR . 'assets/css/wxc.css' )
         );
-        // TBC: should this go elsewhere?
+        // TBC: should this go elsewhere? or be renamed?
     	wp_enqueue_style(
             'wxc-display-content',
             WXC_PLUGIN_URL . 'assets/css/wxc-display-content.css',

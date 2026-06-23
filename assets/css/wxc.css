@@ -97,7 +97,8 @@ button.icon-button img,
 /* General/Override styles */
 
 .hidden,
-.print-only {
+.print-only,
+.print-header {
     display: none;
 }
 

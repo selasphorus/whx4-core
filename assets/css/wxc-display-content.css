@@ -19,6 +19,44 @@
  *   --white, --ltgrey, --mdred, --charcoal, --mddkgrey
  */
 
+/* =============================================================================
+   POST IMAGES
+   ============================================================================= */
+
+.post-thumbnail {
+    margin: 0;
+}
+
+.post-thumbnail.float-left {
+    margin-right: 1.5rem;
+}
+
+.entry-content img,
+.post-thumbnail img,
+.gallery-icon img,
+.em_event_single img,
+.archive-image img {
+    border-radius: 9px;
+    -moz-border-radius: 9px;
+    -webkit-border-radius: 9px;
+}
+
+figure.has-caption img,
+.post-thumbnail.has-caption img,
+.em_event_single .has-caption img,
+.archive-image.has-caption img {
+    border-radius: 9px 9px 0 0;
+    -moz-border-radius: 9px 9px 0 0;
+    -webkit-border-radius: 9px 9px 0 0;
+}
+
+img.box-shadow {
+    box-shadow: 0 0 5px 1px rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 0 5px 1px rgba(0,0,0,.5);
+    -moz-box-shadow: 0 0 5px 1px rgba(0,0,0,.5);
+    max-width: 98%;
+    margin: auto;
+}
 
 /* =============================================================================
    ARCHIVE / LIST DISPLAY
@@ -46,6 +84,10 @@
 
 .dsplycntnt-posts.excerpts .post-thumbnail.float-left {
     margin-bottom: 0;
+}
+
+.archive-image {
+    margin-bottom: 1.5rem;
 }
 
 .archive_item_image:not(.full) {
@@ -474,6 +516,37 @@ h2.collection_group {
    RESPONSIVE
    ============================================================================= */
 
+@media (max-width: 600px) {
+
+    .archive .entry-header {
+        display: inline-block;
+    }
+
+    .post-thumbnail.float-left {
+        margin: 0;
+        padding: 0;
+        float: none;
+        width: 100%;
+    }
+
+    .post-thumbnail.float-left img {
+        width: 100%;
+    }
+
+    .post-thumbnail.no-caption {
+        margin-bottom: 1rem;
+    }
+
+    video.hero-video {
+        /*max-height: 300px;*/
+    }
+
+    div.hero.youtube-responsive-container {
+        margin-top: -20px;
+    }
+
+}
+
 @media (max-width: 800px) {
 
     .wxc-grid--square .wxc-card,
@@ -498,6 +571,24 @@ h2.collection_group {
         font-size: 1.1rem;
     }
 }
+
+
+@media (max-width: 30em ) {
+    .hide-on-mobile {
+		display: none;
+	}
+    .post-thumbnail.float-left {
+        max-height: auto;
+    }
+}
+
+@media screen and (min-width: 44.375em) {
+
+    .post-thumbnail.float-left {
+		max-height: 300px; /* was 250px */
+	}
+}
+
 
 @media print {
 
