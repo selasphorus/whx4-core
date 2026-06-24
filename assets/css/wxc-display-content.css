@@ -408,7 +408,7 @@ img.grid_crop_square {
 .site-inner .featured_image_caption,
 .site-inner .wp-caption-text,
 .wxc-card__image.hoverZoom img {
-    opacity: 0;
+    /*opacity: 0;*/
 }
 
 .zoom-fade,
