@@ -89,10 +89,14 @@ class Logger
 			return true;
 		}
 		
-		$activeContexts = array_map( 'trim', explode( ',', $devParam ) );
-		$callContexts = is_array( $context ) ? $context : [ $context ];
+		$activeContexts = array_map( 'trim', explode( ',', (string) $devParam ) );
+
+		$callContexts = array_filter( array_map(
+			static fn( $c ) => is_scalar( $c ) ? (string) $c : null,
+			is_array( $context ) ? $context : [ $context ]
+		) );
 		
-		return $context !== null && ! empty( array_intersect( $callContexts, $activeContexts ) );
+		return $callContexts && array_intersect( $callContexts, $activeContexts );
 	}
 	
 	/**
