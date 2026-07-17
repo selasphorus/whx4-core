@@ -113,7 +113,7 @@ class Logger
 		if ( isset( $_GET['dev'] ) ) {
 			$value = self::sanitizeDevValue( (string) $_GET['dev'] );
 	
-			if ( ! headers_sent() ) {
+			/*if ( ! headers_sent() ) {
 				setcookie(
 					'wxc_dev',
 					$value,
@@ -121,7 +121,7 @@ class Logger
 					defined( 'COOKIEPATH' ) ? COOKIEPATH : '/',
 					defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : ''
 				);
-			}
+			}*/
 	
 			return $value;
 		}
