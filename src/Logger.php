@@ -100,6 +100,26 @@ class Logger
 	}
 	
 	/**
+	 * Persist the ?dev flag to a cookie so logging survives redirects and
+	 * form posts. Runs once, early, when headers can still be sent — never
+	 * from the logging hot path.
+	 */
+	public static function captureDevFlag(): void
+	{
+		if ( ! isset( $_GET['dev'] ) || headers_sent() ) {
+			return;
+		}
+	
+		setcookie(
+			'wxc_dev',
+			self::sanitizeDevValue( (string) $_GET['dev'] ),
+			time() + HOUR_IN_SECONDS,
+			defined( 'COOKIEPATH' ) ? COOKIEPATH : '/',
+			defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : ''
+		);
+	}
+	
+	/**
 	 * Resolve the active dev flag from the query string, persisting it to a
 	 * cookie so it survives redirects and form posts. Falls back to the
 	 * existing cookie when no query param is present.
@@ -111,19 +131,7 @@ class Logger
 	private static function resolveDevParam(): ?string
 	{
 		if ( isset( $_GET['dev'] ) ) {
-			$value = self::sanitizeDevValue( (string) $_GET['dev'] );
-	
-			/*if ( ! headers_sent() ) {
-				setcookie(
-					'wxc_dev',
-					$value,
-					time() + HOUR_IN_SECONDS,
-					defined( 'COOKIEPATH' ) ? COOKIEPATH : '/',
-					defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : ''
-				);
-			}*/
-	
-			return $value;
+			return self::sanitizeDevValue( (string) $_GET['dev'] );
 		}
 	
 		if ( isset( $_COOKIE['wxc_dev'] ) ) {

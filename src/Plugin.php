@@ -97,6 +97,8 @@ final class Plugin implements PluginContext
         if ( $this->booted ) {
             return;
 		}
+		
+		Logger::captureDevFlag(); // persist ?dev before anything can emit output
 
 		// Allow others to register modules early
 		do_action( 'wxc_pre_boot', $this );
@@ -226,7 +228,6 @@ final class Plugin implements PluginContext
         // front-end assets (separate hook family)
         add_action( 'wp_enqueue_scripts', [ $this, 'enqueuePublicAssets' ] ); // wip
         //\smith\Rex\Core\Assets::register();                      // add_action('wp_enqueue_scripts', ..., BootOrder::ENQUEUE_ASSETS)
-
 	}
 
     // TODO: move this to core Assets class?
