@@ -59,6 +59,10 @@ class Logger
 	 *       - ?dev=true   → log all levels
 	 *       - ?dev=<context>  → log only calls whose $context matches
 	 *     Untagged non-error calls are suppressed when a specific context is set.
+     *  4. The dev flag is read from ?dev if present (and persisted to a cookie
+     *     for the session), otherwise from the wxc_dev cookie. This keeps
+     *     logging active across form submissions and redirects that drop
+     *     the query string.
 	 */
 	private static function shouldLog( string $level, string|array|null $context = null ): bool
 	{
@@ -72,10 +76,9 @@ class Logger
 		if ( ! $debugActive ) {
 			return false;
 		}
-	
-		//$devParam = get_query_var('dev'); // nope too early
-		//$devParam = isset( $_GET['dev'] ) ? sanitize_key( $_GET['dev'] ) : null;
-		$devParam = isset( $_GET['dev'] ) ? strtolower( trim( $_GET['dev'] ) ) : null;
+		
+		$devParam = self::resolveDevParam();
+		//$devParam = isset( $_GET['dev'] ) ? strtolower( trim( $_GET['dev'] ) ) : null;
 		//error_log( 'devParam: ' . var_export( $devParam, true ) . ' | context: ' . var_export( $context, true ) ); // tft
 	
 		if ( $devParam === null ) {
@@ -85,13 +88,35 @@ class Logger
 		if ( $devParam === 'true' ) {
 			return true;
 		}
-	
-		//return $context !== null && $devParam === $context; // single tag version
-		//$activeContexts = array_map( 'trim', explode( ',', $devParam ) );
 		
 		$activeContexts = array_map( 'trim', explode( ',', $devParam ) );
 		$callContexts = is_array( $context ) ? $context : [ $context ];
+		
 		return $context !== null && ! empty( array_intersect( $callContexts, $activeContexts ) );
+	}
+	
+	/**
+	 * Resolve the active dev flag from the query string, persisting it to a
+	 * cookie so it survives redirects and form posts. Falls back to the
+	 * existing cookie when no query param is present.
+	 */
+	private static function resolveDevParam(): ?string
+	{
+		if ( isset( $_GET['dev'] ) ) {
+			$value = strtolower( trim( sanitize_text_field( wp_unslash( $_GET['dev'] ) ) ) );
+	
+			if ( ! headers_sent() ) {
+				setcookie( 'wxc_dev', $value, time() + HOUR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+			}
+	
+			return $value;
+		}
+	
+		if ( isset( $_COOKIE['wxc_dev'] ) ) {
+			return strtolower( trim( sanitize_text_field( wp_unslash( $_COOKIE['wxc_dev'] ) ) ) );
+		}
+	
+		return null;
 	}
 
     /** Return the first backtrace frame that isn't Logger itself. */
