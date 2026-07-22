@@ -56,6 +56,9 @@ class PostTypeRegistrar
 				return $taxArray;
 			}, 10, 1);
 		}
+		
+		// Suppress search engine indexing for post types opted in via defineConfig()
+		add_filter('wp_robots', [self::class, 'filterRobotsForNoindexedPostTypes']);
     }
 
 	// Registers a custom post type using a PostTypeHandler
@@ -180,6 +183,30 @@ class PostTypeRegistrar
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Applies a noindex directive on singular views of any active post
+	 * type whose handler config marks it as noindex.
+	 *
+	 * @param array $robots Existing robots directives.
+	 * @return array Modified robots directives.
+	 */
+	public static function filterRobotsForNoindexedPostTypes(array $robots): array
+	{
+		$postType = get_post_type();
+	
+		if (! $postType || ! is_singular($postType)) {
+			return $robots;
+		}
+	
+		$handler = Plugin::getInstance()->getActivePostTypes()[$postType] ?? null;
+	
+		if ($handler && $handler::isNoindex()) {
+			$robots['noindex'] = true;
+		}
+	
+		return $robots;
 	}
 
 }

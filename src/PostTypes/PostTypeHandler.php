@@ -81,6 +81,18 @@ abstract class PostTypeHandler extends BaseHandler
 	}
 	
 	/**
+	 * Whether singular views of this post type should be excluded
+	 * from search engine indexes via the robots meta tag.
+	 * Defaults to false (indexable) unless overridden in defineConfig().
+	 *
+	 * @return bool
+	 */
+	public static function isNoindex(): bool
+	{
+		return static::getConfigValue('noindex', false);
+	}
+	
+	/**
 	 * Resolve short taxonomy names or FQCNs to fully-qualified class names.
 	 *
 	 * @param  array|string $taxonomies Short names, FQCNs, or 'Module:name' strings.
