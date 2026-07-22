@@ -200,8 +200,8 @@ class PostTypeRegistrar
 		if (! $postType || ! is_singular($postType)) {
 			return $robots;
 		}
-	
-		$handler = Plugin::getInstance()->getActivePostTypes()[$postType] ?? null;
+		
+		$handler = App::ctx()->getActivePostTypes()[$postType] ?? null;
 	
 		if ($handler && $handler::isNoindex()) {
 			$robots['noindex'] = true;
