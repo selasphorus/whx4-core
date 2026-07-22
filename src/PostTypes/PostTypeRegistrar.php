@@ -187,7 +187,8 @@ class PostTypeRegistrar
 	
 	/**
 	 * Applies a noindex directive on singular views of any active post
-	 * type whose handler config marks it as noindex.
+	 * type whose handler config marks it as noindex, and removes the
+	 * max-image-preview directive (irrelevant once noindex is set).
 	 *
 	 * @param array $robots Existing robots directives.
 	 * @return array Modified robots directives.
@@ -204,6 +205,7 @@ class PostTypeRegistrar
 	
 		if ($handler && $handler::isNoindex()) {
 			$robots['noindex'] = true;
+			unset($robots['max-image-preview']);
 		}
 	
 		return $robots;
