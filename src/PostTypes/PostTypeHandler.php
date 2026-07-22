@@ -89,7 +89,7 @@ abstract class PostTypeHandler extends BaseHandler
 	 */
 	public static function isNoindex(): bool
 	{
-		return static::getConfigValue('noindex', false);
+		return static::getConfig()['noindex'] ?? false;
 	}
 	
 	/**
