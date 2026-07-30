@@ -11,7 +11,7 @@ class AdminTag extends TaxonomyHandler
         return [
             'slug'             => 'admin_tag',
             //'plural_slug'      => 'admin_tags',
-            'object_types' => ['*'],
+            'object_types' => ['*'], // i.e. All
             'hierarchical' => true,
         ];
     }
