@@ -15,7 +15,7 @@ class AdminNote extends PostTypeHandler
             //'menu_icon'        => 'dashicons-networking',
 			'capability_type'  => ['secret','secrets'], // ???
             'supports'         => ['title', 'author', 'thumbnail', 'editor', 'excerpt', 'revisions'],
-			'taxonomies'       => ['adminnote_category', 'data_table', 'query_tag'],
+			'taxonomies'       => ['adminnote_category', 'data_table', 'query_tag'], // , 'admin_tag'
             'default_taxonomy' => 'adminnote_category',
             'labels'           => [
 				//'add_new_item' => 'Gather a new Group',
