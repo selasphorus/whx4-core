@@ -11,7 +11,7 @@ use atc\WXC\Utils\DateHelper;
 use atc\WXC\Query\QueryHelpers;
 use atc\WXC\Query\MetaQueryBuilder;
 use atc\WXC\Query\TaxQueryBuilder;
-//use atc\WXC\Contracts\QueryContributor;
+use atc\WXC\Contracts\QueryContributor;
 //use atc\WXC\Query\ScopedDateResolver;
 use atc\WXC\Http\UrlParamBridge;
 
@@ -95,9 +95,6 @@ final class PostQuery
 			}
 		
 			$taxQuery = TaxQueryBuilder::build($taxSpec);
-			if (!empty($taxQuery)) {
-				$args['tax_query'] = $taxQuery;
-			}
 		}
 
         // 4) Assemble basic WP_Query args		
