@@ -636,7 +636,8 @@ abstract class PostTypeHandler extends BaseHandler
 
 		// Loop through the records returned
 		if ( $related->posts && count($related->posts) > 0 ) {
-
+		
+		    Logger::debug( count($related->posts).' matching posts found for wp_args', $wp_args );
 			//return $related->posts;
 			/*
 			if ( $limit == 1 ) {
