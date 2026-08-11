@@ -576,6 +576,22 @@ abstract class PostTypeHandler extends BaseHandler
 	}
 
 	// WIP -- maybe this goes elsewhere?
+	/**
+	 * Get posts related to a given post via an ACF relationship/multi-value field.
+	 *
+	 * Queries $related_post_type for posts whose $related_field_name meta value
+	 * contains $post_id. Works with ACF relationship fields, which store values
+	 * as serialized arrays, by using a quoted LIKE comparison.
+	 *
+	 * @param array $args {
+	 *     @type int    $post_id            ID of the post to find relations for. Required.
+	 *     @type string $related_post_type  Post type to query. Required.
+	 *     @type string $related_field_name Meta key of the relationship field. Required.
+	 *     @type int    $limit              Max posts to return. -1 for unlimited. Default -1.
+	 *     @type mixed  $scope              Reserved for future scoping logic. Unused currently.
+	 * }
+	 * @return WP_Post[] Array of matching posts, or empty array if none found or args invalid.
+	 */
 	function getRelatedPosts( $args = [] )
 	{
 		// Defaults
@@ -584,20 +600,18 @@ abstract class PostTypeHandler extends BaseHandler
 			'related_post_type' => null,
 			'related_field_name'=> null,
 			'limit'             => "-1",
-			'scope'             => null,
+			//'scope'             => null,
 		);
 		$args = wp_parse_args( $args, $defaults );
-		// TBD: use extract? maybe not as safe, though
-		$post_id = $args['post_id'];
-		$related_post_type = $args['related_post_type'];
+		
+		$post_id            = $args['post_id'];
+		$related_post_type  = $args['related_post_type'];
 		$related_field_name = $args['related_field_name'];
-		$limit = $args['limit'];
-		$scope = $args['scope'];
-		//
-		$arrPosts = [];
+		$limit              = (int) $args['limit'];
+		//$scope = $args['scope']; // TODO: wire in scope-based filtering later.
 
 		// If we don't have actual values for all parameters, there's not enough info to proceed
-		if ($post_id === null || $related_field_name === null || $related_post_type === null) { return null; }
+		if ($post_id === null || $related_field_name === null || $related_post_type === null) { return []; }
 
 		$related_id = null; // init
 
@@ -606,11 +620,12 @@ abstract class PostTypeHandler extends BaseHandler
 			'post_type'   => $related_post_type,
 			'post_status' => 'publish',
 			'posts_per_page' => $limit,
-			'meta_query' => array(
+			'meta_query'     => array(
 				array(
 					'key'     => $related_field_name,
-					'value'   => $post_id,
-				)
+					'value'   => '"' . $post_id . '"',
+					'compare' => 'LIKE',
+				),
 			),
 			'orderby'        => 'title',
 			'order'            => 'ASC',
@@ -622,7 +637,7 @@ abstract class PostTypeHandler extends BaseHandler
 		// Loop through the records returned
 		if ( $related->posts && count($related->posts) > 0 ) {
 
-			return $related->posts;
+			//return $related->posts;
 			/*
 			if ( $limit == 1 ) {
 				$p = $related->posts[0];
@@ -641,8 +656,8 @@ abstract class PostTypeHandler extends BaseHandler
 		} else {
 			//$info = "No matching posts found for wp_args: ".print_r($wp_args,true);
 		}
-
-		return $arrPosts;
+		
+		return $related->posts ?: [];
 	}
 
 	// TODO: modify to allow for before/after/replace of $content with custom content(?)
