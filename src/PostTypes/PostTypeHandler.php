@@ -654,7 +654,7 @@ abstract class PostTypeHandler extends BaseHandler
 			*/
 
 		} else {
-			//$info = "No matching posts found for wp_args: ".print_r($wp_args,true);
+			Logger::debug( 'No matching posts found for wp_args', $wp_args );
 		}
 		
 		return $related->posts ?: [];
