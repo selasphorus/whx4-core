@@ -573,17 +573,22 @@ h2.collection_group {
 }
 
 
-@media (max-width: 30em ) {
+.hide-on-mobile {
+    display: none;
+}
+
+@media screen and (min-width: 56em) {
     .hide-on-mobile {
-		display: none;
-	}
+        display: inherit;
+    }
+}
+@media (max-width: 30em) {
     .post-thumbnail.float-left {
         max-height: auto;
     }
 }
 
 @media screen and (min-width: 44.375em) {
-
     .post-thumbnail.float-left {
 		max-height: 300px; /* was 250px */
 	}
