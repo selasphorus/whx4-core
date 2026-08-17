@@ -11,6 +11,7 @@ use RecursiveIteratorIterator;
 use RegexIterator;
 use atc\WXC\Contracts\FieldGroupInterface;
 use atc\WXC\Contracts\PostTypeFieldGroupInterface;
+use atc\WXC\Contracts\MultiPostTypeFieldGroupInterface;
 use atc\WXC\Contracts\SubtypeFieldGroupInterface;
 
 class FieldGroupLoader
@@ -143,6 +144,19 @@ class FieldGroupLoader
                             continue;
                         }
                     } catch ( \Throwable $e ) { /* ignore and fall through */ }
+                }
+                
+                // Handle field groups spanning multiple, independently-owned post types
+                if ( is_subclass_of( $className, MultiPostTypeFieldGroupInterface::class ) ) {
+                    //Logger::debug( 'className: ' . $className . ' is_subclass_of MultiPostTypeFieldGroupInterface', 'wxc' );
+                    try {
+                        $instance = new $className();
+                        $targetPostTypes = $instance->getPostTypes();
+                        if ( array_intersect( $targetPostTypes, array_keys( $activePostTypes ) ) ) {
+                            $className::register();
+                            continue; // handled
+                            }
+                        } catch ( \Throwable $e ) { /* ignore and fall through */ }
                 }
 
                 $basename = basename( $file, '.php' ); // e.g. "MonsterFields"
