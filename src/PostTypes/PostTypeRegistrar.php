@@ -42,9 +42,13 @@ class PostTypeRegistrar
 		// Register CPTs
 		$this->registerMany( $activePostTypes );
 
-		// Expose active CPT slugs for wildcard shared taxonomies
+		// Expose active CPT slugs for wildcard shared taxonomies		
 		add_filter('wxc_active_post_types', function(array $cpts) use ($activePostTypes): array {
-			return array_keys($activePostTypes);
+			//return array_keys($activePostTypes);
+			// Merge rather than replace, so contributions from other filter callbacks
+			// (e.g. third-party plugins hooking wxc_active_post_types) are preserved
+			// regardless of registration order.
+			return array_values(array_unique(array_merge($cpts, array_keys($activePostTypes))));
 		}, 10, 1);
 
 		// Contribute CPT-specific taxonomy handlers (e.g., Habitat) to the unified registrar
