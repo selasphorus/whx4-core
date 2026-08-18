@@ -51,9 +51,9 @@ final class TaxonomyRegistrar
         //Logger::debug("taxonomy handlers", $handlers, 'wxc' );
 
         // Resolve active CPTs (for '*' wildcard); decouple via a filter
-        $activePostTypes = (array) apply_filters('wxc_active_post_types', []);
-        $activePostTypes[] = 'sermon';
-
+        $activePostTypes = array_unique((array) apply_filters('wxc_active_post_types', []));
+        Logger::debug("activePostTypes", $activePostTypes, 'wxc' );
+        
         foreach ($handlers as $h) {
             // Accept FQCNs or ready instances
             if (is_string($h)) {
