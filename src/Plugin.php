@@ -184,11 +184,12 @@ final class Plugin implements PluginContext
         $this->bootActiveModules();
 
 		// Ensure the active CPTs filter is added AFTER CPTs (10) and BEFORE Taxonomies (12)
-		// WIP 08/23/25
 		add_action('init', function (): void {
 			add_filter('wxc_active_post_types', function (array $cpts): array {
-				// Return slugs of currently active CPTs
-				return array_keys($this->getActivePostTypes());
+				// Merge with whatever other plugins (e.g. legacy SDG) have already contributed,
+				// rather than overwriting their additions.
+				return array_values(array_unique(array_merge($cpts, array_keys($this->getActivePostTypes()))));
+				//return array_keys($this->getActivePostTypes()); // original version // Return slugs of currently active CPTs
 			}, 10, 1);
 		}, BootOrder::SUBTYPES); // 11
 
