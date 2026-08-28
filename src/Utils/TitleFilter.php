@@ -9,7 +9,7 @@ class TitleFilter
 {
     public static function boot(): void
     {
-        Logger::debug( 'boot...', 'titles' );
+        //Logger::debug( 'boot...', 'titles' );
         //add_filter( 'the_title', [ self::class, 'filterTitle' ], 10, 2 );
     }
 

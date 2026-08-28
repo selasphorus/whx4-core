@@ -112,7 +112,7 @@ final class Plugin implements PluginContext
         
         // Run as early as possible on init so modules are ready before init:10 work.
 		if ( did_action('init') ) {
-		    Logger::debug( 'Already did init; finishBoot now.', 'wxc' );
+		    //Logger::debug( 'Already did init; finishBoot now.', 'wxc' );
 			$this->finishBoot(); // if we're already past init (rare), just run now
 		} else {
 			add_action('init', [$this, 'finishBoot'], 0);
