@@ -151,18 +151,22 @@ class Logger
     private static function resolveCaller( array $trace ): array
     {
         foreach ( $trace as $frame ) {
-            if ( ( $frame['class'] ?? '' ) === self::class ) {
+            // Skip Logger's own frames and the wxc_log() procedural wrapper,
+            // so the resolved caller is the actual originating function.
+            if ( ( $frame['class'] ?? '' ) === self::class
+                || ( $frame['function'] ?? '' ) === 'wxc_log' ) {
                 continue;
             }
             return [
                 //'class'    => $frame['class'] ?? basename( $frame['file'] ?? 'unknown' ),
                 'class' => isset( $frame['class'] )
 					? basename( str_replace( '\\', '/', $frame['class'] ) )
-					: basename( $frame['file'] ?? 'unknown' ),
+					: basename( $frame['file'] ?? 'unknown', '.php' ),
                 'function' => $frame['function'] ?? 'unknown',
                 'line'     => $frame['line'] ?? 0,
             ];
         }
         return [ 'class' => 'unknown', 'function' => 'unknown' ];
     }
+    
 }
