@@ -58,11 +58,11 @@ abstract class TaxonomyHandler extends BaseHandler
 		$args = $this->getArgs();
 	
 		if (!taxonomy_exists($slug)) {
-			Logger::debug('registering taxonomy: ' . $slug . ' for: ' . implode(', ', $objectTypes), 'wptx');
+			//Logger::debug('registering taxonomy: ' . $slug . ' for: ' . implode(', ', $objectTypes), null, 'wptx');
 			register_taxonomy($slug, $objectTypes, $args);
 		} else {
 			foreach ($objectTypes as $pt) {
-				Logger::debug('registering taxonomy: ' . $slug . ' for: ' . $pt, 'wptx');
+				//Logger::debug('registering taxonomy: ' . $slug . ' for: ' . $pt, null, 'wptx');
 				register_taxonomy_for_object_type($slug, $pt);
 			}
 		}
