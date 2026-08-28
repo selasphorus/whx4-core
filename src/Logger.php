@@ -150,20 +150,23 @@ class Logger
     /** Return the first backtrace frame that isn't Logger itself. */
     private static function resolveCaller( array $trace ): array
     {
+        $callSite = null; // file/line from the last skipped frame — this is where inside the real caller's body the call originated, not the landed frame's own file/line.
         foreach ( $trace as $frame ) {
-            // Skip Logger's own frames and the wxc_log() procedural wrapper,
-            // so the resolved caller is the actual originating function.
             if ( ( $frame['class'] ?? '' ) === self::class
                 || ( $frame['function'] ?? '' ) === 'wxc_log' ) {
+                $callSite = $frame;
                 continue;
             }
+            
+            $file = $callSite['file'] ?? $frame['file'] ?? 'unknown';
+            
             return [
                 //'class'    => $frame['class'] ?? basename( $frame['file'] ?? 'unknown' ),
                 'class' => isset( $frame['class'] )
 					? basename( str_replace( '\\', '/', $frame['class'] ) )
-					: basename( $frame['file'] ?? 'unknown', '.php' ),
+					: basename( $file, '.php' ),
                 'function' => $frame['function'] ?? 'unknown',
-                'line'     => $frame['line'] ?? 0,
+                'line'     => $callSite['line'] ?? $frame['line'] ?? 0,
             ];
         }
         return [ 'class' => 'unknown', 'function' => 'unknown' ];
