@@ -52,7 +52,7 @@ final class TaxonomyRegistrar
 
         // Resolve active CPTs (for '*' wildcard); decouple via a filter
         $activePostTypes = array_unique((array) apply_filters('wxc_active_post_types', []));
-        Logger::debug("activePostTypes", $activePostTypes, 'wxc' );
+        //Logger::debug("activePostTypes", $activePostTypes, 'wxc' );
         
         foreach ($handlers as $h) {
             // Accept FQCNs or ready instances

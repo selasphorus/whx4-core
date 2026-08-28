@@ -297,7 +297,7 @@ final class Plugin implements PluginContext
 
 	public function setAvailableModules( array $modules ): void
 	{
-		Logger::debug( 'modules:'.print_r($modules, true), 'wxc' );
+		//Logger::debug( 'modules:'.print_r($modules, true), 'wxc' );
 
 		// Validate classes -- make sure they implement ModuleInterface
 		foreach( $modules as $slug => $class ) {
