@@ -421,13 +421,13 @@ final class Plugin implements PluginContext
 	{
     	// Don't reload activePostTypes if we've cached them already
 		if ( ! empty( $this->activePostTypes ) ) {
-		    Logger::debug('activePostTypes already cached', null, 'wxc');
+		    //Logger::debug('activePostTypes already cached', null, 'wxc');
 			return $this->activePostTypes;
 		}
 
     	$this->loadActiveModules();
 		$enabledPostTypesByModule = $this->getSettingsManager()->getEnabledPostTypeSlugsByModule();
-		Logger::debug('enabledPostTypesByModule', $enabledPostTypesByModule, 'wxc');
+		//Logger::debug('enabledPostTypesByModule', $enabledPostTypesByModule, 'wxc');
 
 		$postTypeClasses = [];
 
@@ -453,7 +453,7 @@ final class Plugin implements PluginContext
 				}
 
 				$definedPostTypes = $moduleInstance->getPostTypeHandlerClasses();
-				Logger::debug( 'definedPostTypes', $definedPostTypes, 'wxc' );
+				//Logger::debug( 'definedPostTypes', $definedPostTypes, 'wxc' );
 
 				$enabled = $enabledPostTypesByModule[ $moduleSlug ] ?? $definedPostTypes;
 				//Logger::debug( 'Module $moduleSlug: defined=' . implode(',', $definedPostTypes) . '; enabled=' . implode(',', $enabled), 'wxc' );
@@ -518,7 +518,7 @@ final class Plugin implements PluginContext
             }
 
             $count = is_countable($handlers) ? count($handlers) : 0;
-            Logger::debug( "Assigning capabilities for {$count} handler(s).", 'wxc' );
+            //Logger::debug( "Assigning capabilities for {$count} handler(s).", 'wxc' );
             //Logger::debug( 'handlers: ' . print_r( $handlers, true ), 'wxc' );
 
             /*
