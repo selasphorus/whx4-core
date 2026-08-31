@@ -579,7 +579,7 @@ h2.collection_group {
 
 @media screen and (min-width: 56em) {
     .hide-on-mobile {
-        display: inherit;
+        display: initial;
     }
 }
 @media (max-width: 30em) {
