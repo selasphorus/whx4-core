@@ -43,7 +43,7 @@ final class DisplayShortcode implements ShortcodeInterface
         //Logger::debug( 'atts merged with defaults', $atts, $logCtx );
         //Logger::debug( 'display_format: '.$display_format, null, '$logCtx );
         Logger::debug( 'postType: '.$postType, null, $logCtx );
-        Logger::debug( 'atts['scope']: '.$atts['scope'], null, $logCtx );
+        Logger::debug( 'atts[scope]: '.$atts['scope'], null, $logCtx );
 
         // Run posts query
         $posts = $this->query($atts);
