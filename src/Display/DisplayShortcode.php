@@ -33,15 +33,16 @@ final class DisplayShortcode implements ShortcodeInterface
 
     public function render(array $atts = [], string $content = '', string $tag = ''): string
     {
-        //Logger::debug( 'shortcode atts', $atts, 'shortcodes' );
+        $logCtx = ['shortcodes', 'wip'];
+        //Logger::debug( 'shortcode atts', $atts, $logCtx );
         
         $atts = shortcode_atts(self::defaults(), $atts, $tag);
         $postType = (string) $atts['post_type'];
         $display_format  = (string) $atts['display_format'];
         
-        Logger::debug( 'atts merged with defaults', $atts, 'shortcodes' );
-        //Logger::debug( 'display_format: '.$display_format, null, 'shortcodes' );
-        Logger::debug( 'postType: '.$postType, null, 'shortcodes' );
+        Logger::debug( 'atts merged with defaults', $atts, $logCtx );
+        //Logger::debug( 'display_format: '.$display_format, null, '$logCtx );
+        Logger::debug( 'postType: '.$postType, null, $logCtx );
 
         // Run posts query
         $posts = $this->query($atts);
@@ -49,19 +50,19 @@ final class DisplayShortcode implements ShortcodeInterface
         if (empty($posts)) {
             return '';
         }
-        Logger::debug( count($posts).' posts found', null, 'shortcodes' );
+        Logger::debug( count($posts).' posts found', null, $logCtx );
 
         // Resolve renderer and dispatch
         $renderer = ContentRenderer::resolve($postType);
-        //Logger::debug( 'renderer', $renderer, 'shortcodes' );
+        //Logger::debug( 'renderer', $renderer, $logCtx );
 
         // Group_by requires a different rendering path
         if (!empty($atts['group_by'])) {
-            //Logger::debug( 'about to renderGrouped', null, 'shortcodes' );
+            //Logger::debug( 'about to renderGrouped', null, $logCtx );
             return $this->renderGrouped($posts, $atts, $renderer, $display_format);
         }
         
-        //Logger::debug( 'about to renderItems', null, 'shortcodes' );
+        //Logger::debug( 'about to renderItems', null, $logCtx );
         return $renderer->renderItems($posts, $atts, $display_format);
     }
 
@@ -147,6 +148,8 @@ final class DisplayShortcode implements ShortcodeInterface
     
     private function query(array $atts): array
 	{
+		$logCtx = ['shortcodes', 'wip'];
+		
 		// Resolve 'category' to the handler's default taxonomy
 		if (!empty($atts['category']) && empty($atts['taxonomy'])) {
 		    //Logger::debug( 'attempting to ID default taxonomy for post_type ['.$atts['post_type'].']', null, 'shortcodes' );
@@ -154,19 +157,19 @@ final class DisplayShortcode implements ShortcodeInterface
 			if ($handlerClass) {
 				$defaultTax = $handlerClass::getDefaultTaxonomy();
 				if ($defaultTax) {
-				    //Logger::debug( 'defaultTax: ['.$defaultTax.']', null, 'shortcodes' );
+				    //Logger::debug( 'defaultTax: ['.$defaultTax.']', null, $logCtx );
 					$atts['taxonomy']  = $defaultTax;
 					$atts['tax_terms'] = $atts['category'];
 				} else {
-				    //Logger::debug( 'NO defaultTax found', null, 'shortcodes' );
+				    //Logger::debug( 'NO defaultTax found', null, $logCtx );
 				}
 			}
 		} else {
-		    //Logger::debug( 'No need to ID default taxonomy.', null, 'shortcodes' );
+		    //Logger::debug( 'No need to ID default taxonomy.', null, $logCtx );
 		}
 		
-		//Logger::debug( 'taxonomy: ['.$atts['taxonomy'].']', null, 'shortcodes' );
-		//Logger::debug( 'tax_terms: ['.$atts['tax_terms'].']', null, 'shortcodes' );
+		//Logger::debug( 'taxonomy: ['.$atts['taxonomy'].']', null, $logCtx );
+		//Logger::debug( 'tax_terms: ['.$atts['tax_terms'].']', null, $logCtx );
 		
 		$result = (new PostQuery())->find([
             'post_type'   => $atts['post_type'],
@@ -182,7 +185,7 @@ final class DisplayShortcode implements ShortcodeInterface
             'scope'       => $atts['scope'],
         ]);
         
-        Logger::debug( 'query_request', $result['query_request'], 'shortcodes' );
+        Logger::debug( 'query_request', $result['query_request'], $logCtx );
 		return $result['posts'] ?? [];
 	}
 	
