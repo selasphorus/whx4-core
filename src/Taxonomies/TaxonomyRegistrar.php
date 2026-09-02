@@ -2,6 +2,7 @@
 
 namespace atc\WXC\Taxonomies;
 
+use atc\WXC\App;
 use atc\WXC\Logger;
 use atc\WXC\BootOrder;
 use atc\WXC\Taxonomies\TaxonomyHandler;
