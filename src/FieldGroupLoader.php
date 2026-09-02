@@ -52,7 +52,7 @@ class FieldGroupLoader
         $subtypesDir  = $fieldsDir . '/Subtypes'; // maybe don't need this -- just put everything in fieldsDir, clearly named
 
         if ( !is_dir( $fieldsDir ) ) {
-            Logger::debug( '*** fieldsDir: ' . $fieldsDir . ' not found. Aborting registration.', 'wxc' );
+            ///Logger::debug( '*** fieldsDir: ' . $fieldsDir . ' not found. Aborting registration.', 'wxc' );
             return;
         }
 
@@ -182,7 +182,11 @@ class FieldGroupLoader
                 }
             } else {
                 // Something's wrong. Do some logging.
-                if ( !class_exists( $className ) ) { Logger::debug( '*** class: ' . $className . ' DNE' ); } else if ( !is_subclass_of( $className, FieldGroupInterface::class ) ) { Logger::debug( '*** class: ' . $className . ' is not subclass of FieldGroupInterface' ); }
+                if ( !class_exists( $className ) ) { 
+                    ///Logger::debug( '*** class: ' . $className . ' DNE' );
+                } else if ( !is_subclass_of( $className, FieldGroupInterface::class ) ) {
+                    ///Logger::debug( '*** class: ' . $className . ' is not subclass of FieldGroupInterface' );
+                }
             }
         }
     }

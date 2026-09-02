@@ -63,10 +63,11 @@ final class PostQuery
         $dateMeta = $p['date_meta'] ?? [];
         $dateBounds = self::resolveScope($p['scope'] ?? null, $dateMeta['meta_type'] ?? null);
         $dateMetaSpec  = self::dateMetaSpecFromBounds($dateMeta, $dateBounds);
-        Logger::debug( 'scope:'.print_r($scope, true), null, $logCtx );
-        //Logger::debug( 'dateMeta:'.print_r($dateMeta, true), null, $logCtx );
-        //Logger::debug( 'dateBounds:'.print_r($dateBounds, true), null, $logCtx );
-        //Logger::debug( 'dateMetaSpec:'.print_r($dateMetaSpec, true), null, $logCtx );
+        //
+        Logger::debug( 'scope: '.print_r($scope, true), null, $logCtx );
+        Logger::debug( 'dateMeta: '.print_r($dateMeta, true), null, $logCtx );
+        Logger::debug( 'dateBounds: '.print_r($dateBounds, true), null, $logCtx );
+        Logger::debug( 'dateMetaSpec: '.print_r($dateMetaSpec, true), null, $logCtx );
         
         // 2) Build combined meta_query spec
         $metaSpec  = $p['meta'] ?? [];
