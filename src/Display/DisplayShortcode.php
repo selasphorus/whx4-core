@@ -170,6 +170,7 @@ final class DisplayShortcode implements ShortcodeInterface
 		
 		//Logger::debug( 'taxonomy: ['.$atts['taxonomy'].']', null, $logCtx );
 		//Logger::debug( 'tax_terms: ['.$atts['tax_terms'].']', null, $logCtx );
+		Logger::debug( 'scope: ['.$atts['scope'].']', null, $logCtx );
 		
 		$result = (new PostQuery())->find([
             'post_type'   => $atts['post_type'],
