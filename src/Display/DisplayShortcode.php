@@ -40,7 +40,8 @@ final class DisplayShortcode implements ShortcodeInterface
         $display_format  = (string) $atts['display_format'];
         
         //Logger::debug( 'atts merged with defaults', $atts, 'shortcodes' );
-        Logger::debug( 'display_format: '.$display_format, null, 'shortcodes' );
+        //Logger::debug( 'display_format: '.$display_format, null, 'shortcodes' );
+        Logger::debug( 'postType: '.$postType, null, 'shortcodes' );
 
         // Run posts query
         $posts = $this->query($atts);
@@ -164,8 +165,8 @@ final class DisplayShortcode implements ShortcodeInterface
 		    //Logger::debug( 'No need to ID default taxonomy.', null, 'shortcodes' );
 		}
 		
-		Logger::debug( 'taxonomy: ['.$atts['taxonomy'].']', null, 'shortcodes' );
-		Logger::debug( 'tax_terms: ['.$atts['tax_terms'].']', null, 'shortcodes' );
+		//Logger::debug( 'taxonomy: ['.$atts['taxonomy'].']', null, 'shortcodes' );
+		//Logger::debug( 'tax_terms: ['.$atts['tax_terms'].']', null, 'shortcodes' );
 		
 		$result = (new PostQuery())->find([
             'post_type'   => $atts['post_type'],
@@ -180,7 +181,8 @@ final class DisplayShortcode implements ShortcodeInterface
             'tax_terms'   => $atts['tax_terms'],
             'scope'       => $atts['scope'],
         ]);
-	
+        
+        Logger::debug( 'query_request', $result['query_request'], 'shortcodes' );
 		return $result['posts'] ?? [];
 	}
 	
