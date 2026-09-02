@@ -73,10 +73,10 @@ final class PostQuery
         $metaSpec  = $p['meta'] ?? [];
         
         $combinedMetaSpec  = MetaQueryBuilder::mergeSpecs([$dateMetaSpec, $metaSpec], 'AND');
-        //Logger::debug( 'combinedMetaSpec', $combinedMetaSpec, $logCtx );
+        Logger::debug( 'combinedMetaSpec', $combinedMetaSpec, $logCtx );
         
         $metaQuery = $combinedMetaSpec ? MetaQueryBuilder::build($combinedMetaSpec) : [];
-        //Logger::debug( 'metaQuery', $metaQuery, $logCtx );
+        Logger::debug( 'metaQuery', $metaQuery, $logCtx );
 		
 		// 3) Build tax_query from either a simple map or a full spec
 		$taxSpec = $p['tax'] ?? [];
