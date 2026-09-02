@@ -290,6 +290,10 @@ final class PostQuery
         if (isset($dateMetaIn['end_optional'])) {
             $dateMeta['end_optional'] = (bool)$dateMetaIn['end_optional'];
         }
+        
+        if ($dateMeta === []) {
+			$dateMeta = apply_filters("wxc_default_date_meta_{$ptype}", [], $params);
+		}
 
         // 8) User-provided meta spec (accept full spec OR shorthand)
 		$metaSpecIn = $params['meta'] ?? [];
