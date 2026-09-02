@@ -65,7 +65,7 @@ final class MetaQueryBuilder
 
         // WP expects: ['relation' => 'AND'|'OR', 0 => clause, 1 => clause, ...]
         return array_merge(['relation' => $relation], $built);
-    }
+    }    
 
     /**
      * Route a spec to the appropriate builder.
@@ -74,29 +74,23 @@ final class MetaQueryBuilder
      * @return array<string,mixed>|null Null when missing required fields or unknown type.
      */
     private static function makeClause(array $spec): ?array
-    {
-        // TEMP debug
-		if (!isset($spec['key'])) {
-			Logger::warn( 'missing key', $spec, 'query' );
-			return null;
-		}
-	
+    {	
 		// Handle shorthand: equals
 		if (array_key_exists('equals', $spec)) {
+			if (!isset($spec['key'])) {
+				Logger::warn('missing key', $spec, 'query');
+				return null;
+			}
 			$value = $spec['equals'];
 			if ($value === '' || $value === null) {
 				//Logger::debug( 'equals empty for key=', $spec['key'], 'query' );
 				return null;
 			}
-			$clause = [
+			return [
 				'key'     => (string)$spec['key'],
 				'value'   => $value,
 				'compare' => '=',
 			];
-			/*if (!empty($spec['cast'])) {
-				$clause['type'] = QueryHelpers::normalizeCast($spec['cast']); // if you have this
-			}*/
-			return $clause;
 		}
     
     
