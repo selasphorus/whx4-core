@@ -489,6 +489,22 @@ final class Plugin implements PluginContext
 		
 		return $this->activePostTypes;
 	}
+	
+	/**
+	 * Returns all active post type slugs, including both OOP handler-based
+	 * types (from getActivePostTypes()) and procedural contributions from
+	 * non-OOP plugins (e.g. SDG, MLib) via the wxc_active_post_types filter.
+	 *
+	 * Use this for validation/existence checks (e.g. PostQuery contract
+	 * normalization). Use getActivePostTypes() when you need the handler
+	 * class itself.
+	 *
+	 * @return string[]
+	 */
+	public function getActivePostTypeSlugs(): array
+	{
+		return apply_filters('wxc_active_post_types', array_keys($this->getActivePostTypes()));
+	}
 
 	/// WIP
 	public function assignPostTypeCaps(array $bootedModules = []): void

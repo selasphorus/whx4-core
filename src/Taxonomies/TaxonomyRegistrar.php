@@ -49,9 +49,9 @@ final class TaxonomyRegistrar
         }
 
         //Logger::debug("taxonomy handlers", $handlers, 'wxc' );
-
-        // Resolve active CPTs (for '*' wildcard); decouple via a filter
-        $activePostTypes = array_unique((array) apply_filters('wxc_active_post_types', []));
+        
+        // Resolve active CPTs (for '*' wildcard) via the canonical registry, which includes both OOP handler-based and procedural contributions.
+        $activePostTypes = App::ctx()->getActivePostTypeSlugs();
         //Logger::debug("activePostTypes", $activePostTypes, 'wxc' );
         
         foreach ($handlers as $h) {

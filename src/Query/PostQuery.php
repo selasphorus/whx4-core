@@ -202,7 +202,8 @@ final class PostQuery
     {
         // 1) Post type must be active/enabled
         $ptype = isset($params['post_type']) ? (string)$params['post_type'] : 'post';
-        $enabled = array_keys(App::ctx()->getActivePostTypes());
+        //$enabled = array_keys(App::ctx()->getActivePostTypes());
+        $enabled = App::ctx()->getActivePostTypeSlugs();
         if (!in_array($ptype, $enabled, true)) {
             // Fallback to 'post' (or throw) — your call:
             $ptype = 'post';
