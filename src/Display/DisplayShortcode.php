@@ -39,7 +39,7 @@ final class DisplayShortcode implements ShortcodeInterface
         $postType = (string) $atts['post_type'];
         $display_format  = (string) $atts['display_format'];
         
-        //Logger::debug( 'atts merged with defaults', $atts, 'shortcodes' );
+        Logger::debug( 'atts merged with defaults', $atts, 'shortcodes' );
         //Logger::debug( 'display_format: '.$display_format, null, 'shortcodes' );
         Logger::debug( 'postType: '.$postType, null, 'shortcodes' );
 
@@ -53,7 +53,7 @@ final class DisplayShortcode implements ShortcodeInterface
 
         // Resolve renderer and dispatch
         $renderer = ContentRenderer::resolve($postType);
-        Logger::debug( 'renderer', $renderer, 'shortcodes' );
+        //Logger::debug( 'renderer', $renderer, 'shortcodes' );
 
         // Group_by requires a different rendering path
         if (!empty($atts['group_by'])) {
