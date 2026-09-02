@@ -40,9 +40,10 @@ final class DisplayShortcode implements ShortcodeInterface
         $postType = (string) $atts['post_type'];
         $display_format  = (string) $atts['display_format'];
         
-        Logger::debug( 'atts merged with defaults', $atts, $logCtx );
+        //Logger::debug( 'atts merged with defaults', $atts, $logCtx );
         //Logger::debug( 'display_format: '.$display_format, null, '$logCtx );
         Logger::debug( 'postType: '.$postType, null, $logCtx );
+        Logger::debug( 'atts['scope']: '.$atts['scope'], null, $logCtx );
 
         // Run posts query
         $posts = $this->query($atts);
@@ -131,7 +132,6 @@ final class DisplayShortcode implements ShortcodeInterface
             // For table styling
             'fields'  => null,
             'headers'  => null,
-                
         ];
     }
 
