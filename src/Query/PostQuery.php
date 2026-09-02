@@ -64,19 +64,19 @@ final class PostQuery
         $dateBounds = self::resolveScope($p['scope'] ?? null, $dateMeta['meta_type'] ?? null);
         $dateMetaSpec  = self::dateMetaSpecFromBounds($dateMeta, $dateBounds);
         //
-        Logger::debug( 'scope: '.print_r($scope, true), null, $logCtx );
-        Logger::debug( 'dateMeta: '.print_r($dateMeta, true), null, $logCtx );
-        Logger::debug( 'dateBounds: '.print_r($dateBounds, true), null, $logCtx );
-        Logger::debug( 'dateMetaSpec: '.print_r($dateMetaSpec, true), null, $logCtx );
+        Logger::debug( 'scope', $scope, $logCtx );
+        Logger::debug( 'dateMeta', $dateMeta, $logCtx );
+        Logger::debug( 'dateBounds', $dateBounds, $logCtx );
+        Logger::debug( 'dateMetaSpec', $dateMetaSpec, $logCtx );
         
         // 2) Build combined meta_query spec
         $metaSpec  = $p['meta'] ?? [];
         
         $combinedMetaSpec  = MetaQueryBuilder::mergeSpecs([$dateMetaSpec, $metaSpec], 'AND');
-        //Logger::debug( 'combinedMetaSpec:'.print_r($combinedMetaSpec, true), null, $logCtx );
+        //Logger::debug( 'combinedMetaSpec', $combinedMetaSpec, $logCtx );
         
         $metaQuery = $combinedMetaSpec ? MetaQueryBuilder::build($combinedMetaSpec) : [];
-        //Logger::debug( 'metaQuery:'.print_r($metaQuery, true) );
+        //Logger::debug( 'metaQuery', $metaQuery, $logCtx );
 		
 		// 3) Build tax_query from either a simple map or a full spec
 		$taxSpec = $p['tax'] ?? [];
