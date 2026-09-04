@@ -63,7 +63,7 @@ final class DisplayShortcode implements ShortcodeInterface
             return $this->renderGrouped($posts, $atts, $renderer, $display_format);
         }
         
-        //Logger::debug( 'about to renderItems', null, $logCtx );
+        Logger::debug( 'about to renderItems() with atts', $atts, $logCtx );
         return $renderer->renderItems($posts, $atts, $display_format);
     }
 
