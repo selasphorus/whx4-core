@@ -12,7 +12,7 @@ use atc\WXC\Query\QueryHelpers;
 use atc\WXC\Query\MetaQueryBuilder;
 use atc\WXC\Query\TaxQueryBuilder;
 use atc\WXC\Contracts\QueryContributor;
-//use atc\WXC\Query\ScopedDateResolver;
+//use atc\WXC\Utils\ScopedDateResolver;
 use atc\WXC\Http\UrlParamBridge;
 
 final class PostQuery

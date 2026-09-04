@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace atc\WXC\Traits;
 
 use atc\WXC\Logger;
-use atc\WXC\Query\ScopedDateResolver;
+use atc\WXC\Utils\ScopedDateResolver;
 
 trait AppliesScopeToMainQuery
 {
