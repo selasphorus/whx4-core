@@ -7,7 +7,6 @@ use DateTimeInterface;
 use DateTimeZone;
 use Exception;
 use atc\WXC\App;
-use atc\WXC\Query\ScopedDateResolver;
 
 
 class DateHelper
@@ -164,6 +163,84 @@ class DateHelper
         }
     }
     
+    /**
+     * Build a single-day range (midnight to end-of-day) around a reference date.
+     *
+     * @param DateTimeImmutable $ref Reference date; only its date portion is used.
+     * @return array{start: DateTimeImmutable, end: DateTimeImmutable}
+     */
+    public static function dayRange(DateTimeImmutable $ref): array
+    {
+        $start = $ref->setTime(0, 0, 0);
+        $end = $ref->setTime(23, 59, 59);
+        return compact('start', 'end');
+    }
+
+    /**
+     * Build a Monday–Sunday (or Sunday–Saturday) week range around a reference date.
+     *
+     * @param DateTimeImmutable $ref         Reference date within the target week.
+     * @param int               $startOfWeek 0 = Sunday-start, 1 = Monday-start (WP default).
+     * @return array{start: DateTimeImmutable, end: DateTimeImmutable}
+     */
+    public static function weekRange(DateTimeImmutable $ref, int $startOfWeek = 1): array
+    {
+        if ($startOfWeek === 0) { // Sunday start
+            $w = (int) $ref->format('w'); // 0 (Sun) .. 6 (Sat)
+            $start = $ref->modify('-' . $w . ' days')->setTime(0, 0, 0);
+        } else { // Monday start
+            $w = (int) $ref->format('N'); // 1 (Mon) .. 7 (Sun)
+            $start = $ref->modify('-' . ($w - 1) . ' days')->setTime(0, 0, 0);
+        }
+
+        $end = $start->modify('+6 days')->setTime(23, 59, 59);
+        return compact('start', 'end');
+    }
+
+    /**
+     * Build a calendar-month range.
+     *
+     * @return array{start: DateTimeImmutable, end: DateTimeImmutable}
+     */
+    public static function monthRange(int $year, int $month, DateTimeZone $tz): array
+    {
+        $start = new DateTimeImmutable(sprintf('%04d-%02d-01 00:00:00', $year, $month), $tz);
+        $end = $start->modify('last day of this month')->setTime(23, 59, 59);
+        return compact('start', 'end');
+    }
+
+    /**
+     * Build a calendar-year range.
+     *
+     * @return array{start: DateTimeImmutable, end: DateTimeImmutable}
+     */
+    public static function yearRange(int $year, DateTimeZone $tz): array
+    {
+        $start = new DateTimeImmutable(sprintf('%04d-01-01 00:00:00', $year), $tz);
+        $end = new DateTimeImmutable(sprintf('%04d-12-31 23:59:59', $year), $tz);
+        return compact('start', 'end');
+    }
+
+    /**
+     * Build a "season" range (Sep 1 → May 31, spanning into the following year).
+     *
+     * @param int $year  Reference year.
+     * @param int $month Reference month (1-12); determines whether $year is the season's
+     *                    start year (month >= 9) or end year (month < 9).
+     * @return array{start: DateTimeImmutable, end: DateTimeImmutable}
+     */
+    public static function seasonRange(int $year, int $month, DateTimeZone $tz): array
+    {
+        if ($month >= 9) {
+            $start = new DateTimeImmutable(sprintf('%04d-09-01 00:00:00', $year), $tz);
+            $end = new DateTimeImmutable(sprintf('%04d-05-31 23:59:59', $year + 1), $tz);
+        } else {
+            $start = new DateTimeImmutable(sprintf('%04d-09-01 00:00:00', $year - 1), $tz);
+            $end = new DateTimeImmutable(sprintf('%04d-05-31 23:59:59', $year), $tz);
+        }
+        return compact('start', 'end');
+    }
+
     /**
 	 * Convert resolved scope bounds (strings like 'YYYY-mm-dd' or 'YYYY-mm-dd HH:ii:ss')
 	 * into a year window.
