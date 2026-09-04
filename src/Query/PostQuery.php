@@ -8,11 +8,11 @@ use WP_Query;
 use atc\WXC\App;
 use atc\WXC\Logger;
 use atc\WXC\Utils\DateHelper;
+use atc\WXC\Utils\ScopedDateResolver;
 use atc\WXC\Query\QueryHelpers;
 use atc\WXC\Query\MetaQueryBuilder;
 use atc\WXC\Query\TaxQueryBuilder;
 use atc\WXC\Contracts\QueryContributor;
-//use atc\WXC\Utils\ScopedDateResolver;
 use atc\WXC\Http\UrlParamBridge;
 
 final class PostQuery
