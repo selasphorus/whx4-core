@@ -2,15 +2,13 @@
 
 declare(strict_types=1);
 
-namespace atc\WXC\Query;
+namespace atc\WXC\Utils;
 
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
 use Exception; // for the defensive catch (Exception $e) when creating DateTimeZone
 use InvalidArgumentException; // for the explicit throw on bad args
-use atc\WXC\Utils\Text;
-use atc\WXC\Utils\DateHelper;
 
 class ScopedDateResolver
 {
@@ -161,7 +159,7 @@ class ScopedDateResolver
             $explicit = true;
         }
 
-        // Dispatch to the resolver only for string scopes (skip if explicit array already set start/end). If invalid, default to 'today'
+        // Dispatch to the resolver only for string scopes (skip if explicit array already set start/end). If invalid, default to 'today'.
         if (!$explicit) {
             $key      = Text::snake((string)$scope);               // e.g. "This Week" → "this_week"
             $resolver = $scopeResolvers[$key] ?? $scopeResolvers['today'] ?? null;
@@ -296,140 +294,105 @@ class ScopedDateResolver
     /**
      * Default named scopes.
      *
+     * Each entry is a thin closure that delegates to the reusable range builders on
+     * DateHelper (dayRange, weekRange, monthRange, yearRange, seasonRange), supplying
+     * whichever reference date/year/month the scope name implies.
+     *
      * @return array<string, callable(): array{start: DateTimeImmutable|null, end: DateTimeImmutable|null}>
      */
     private static function defaultScopes( DateTimeImmutable $now, array $options ): array
     {
         $Y = (int)$now->format('Y');
         $M = (int)$now->format('n');
-
-        // Helpers to avoid repetition
-        $dti = static function(int $y, int $m, int $d, int $H = 0, int $i = 0, int $s = 0) use ($now): DateTimeImmutable {
-            return $now->setDate($y, $m, $d)->setTime($H, $i, $s);
-        };
-
-        //
-        $dayRange = static function(DateTimeImmutable $ref): array {
-            $start = $ref->setTime(0, 0, 0);
-            $end = $ref->setTime(23, 59, 59);
-            return compact('start', 'end');
-        };
-
+        $tz = $now->getTimezone(); // new/cl
         $startOfWeek = function_exists('get_option') ? (int) get_option('start_of_week', 1) : 1;
-        $weekRange = static function(DateTimeImmutable $ref) use ($startOfWeek): array {
-            //$start = $ref->modify('monday this week')->setTime(0, 0, 0);
-            //$end = $ref->modify('sunday this week')->setTime(23, 59, 59);
-            if ($startOfWeek === 0) { // Sunday start
-                $w = (int) $ref->format('w'); // 0 (Sun) .. 6 (Sat)
-                $start = $ref->modify('-' . $w . ' days')->setTime(0, 0, 0);
-            } else { // Monday start (default if not 0)
-                $w = (int) $ref->format('N'); // 1 (Mon) .. 7 (Sun)
-                $start = $ref->modify('-' . ($w - 1) . ' days')->setTime(0, 0, 0);
-            }
-
-            $end = $start->modify('+6 days')->setTime(23, 59, 59);
-            return compact('start', 'end');
-        };
-
-        $monthRange = static function(int $y, int $m) use ($dti): array {
-            $start = $dti($y, $m, 1, 0, 0, 0);
-            $end = $start->modify('last day of this month')->setTime(23, 59, 59);
-            return compact('start', 'end');
-        };
-
-        $yearRange = static function(int $y) use ($dti): array {
-            $start = $dti($y, 1, 1, 0, 0, 0);
-            $end = $dti($y, 12, 31, 23, 59, 59);
-            return compact('start', 'end');
-        };
-
-        $seasonRange = static function(int $y, int $m) use ($dti): array {
-            if ($m >= 9) {
-                $start = $dti($y, 9, 1, 0, 0, 0);
-                $end = $dti($y + 1, 5, 31, 23, 59, 59);
-            } else {
-                $start = $dti($y - 1, 9, 1, 0, 0, 0);
-                $end = $dti($y, 5, 31, 23, 59, 59);
-            }
-            return compact('start', 'end');
-        };
-
+        
         return [
             // Days
-            'today' => function() use ($now, $dayRange) {
-                return $dayRange($now);
+            'today' => function() use ($now) {
+                return DateHelper::dayRange($now);
             },
-            'yesterday' => function() use ($now, $dayRange) {
-                return $dayRange($now->modify('-1 day'));
+            'yesterday' => function() use ($now) {
+                return DateHelper::dayRange($now->modify('-1 day'));
             },
-            'tomorrow' => function() use ($now, $dayRange) {
-                return $dayRange($now->modify('+1 day'));
+            'tomorrow' => function() use ($now) {
+                return DateHelper::dayRange($now->modify('+1 day'));
             },
 
             // Weeks
-            'this_week' => function() use ($now, $weekRange) {
-                return $weekRange($now);
+            'this_week' => function() use ($now, $startOfWeek) {
+                return DateHelper::weekRange($now, $startOfWeek);
             },
-            'last_week' => function() use ($now, $weekRange) {
-                return $weekRange($now->modify('-1 week'));
+            'last_week' => function() use ($now, $startOfWeek) {
+                return DateHelper::weekRange($now->modify('-1 week'), $startOfWeek);
             },
-            'next_week' => function() use ($now, $weekRange) {
-                return $weekRange($now->modify('+1 week'));
+            'next_week' => function() use ($now, $startOfWeek) {
+                return DateHelper::weekRange($now->modify('+1 week'), $startOfWeek);
             },
 
             // Months
-            'this_month' => function() use ($Y, $M, $monthRange) {
-                return $monthRange($Y, $M);
+            'this_month' => function() use ($Y, $M, $tz) {
+                return DateHelper::monthRange($Y, $M, $tz);
             },
-            'last_month' => function() use ($Y, $M, $monthRange) {
+            'last_month' => function() use ($Y, $M, $tz) {
                 $y = $Y;
                 $m = $M - 1;
                 if ($m < 1) { $m = 12; $y -= 1; }
-                return $monthRange($y, $m);
+                return DateHelper::monthRange($y, $m, $tz);
             },
-            'next_month' => function() use ($Y, $M, $monthRange) {
+            'next_month' => function() use ($Y, $M, $tz) {
                 $y = $Y;
                 $m = $M + 1;
                 if ($m > 12) { $m = 1; $y += 1; }
-                return $monthRange($y, $m);
+                return DateHelper::monthRange($y, $m, $tz);
             },
             // parameterized month via options['year'], options['month']
-            'month' => function() use ($options, $Y, $M, $monthRange) {
+            'month' => function() use ($options, $Y, $M, $tz) {
                 $year = isset($options['year']) ? (int)$options['year'] : $Y;
                 $mon = isset($options['month']) ? max(1, min(12, (int)$options['month'])) : $M;
-                return $monthRange($year, $mon);
+                return DateHelper::monthRange($year, $mon, $tz);
             },
 
             // Years
-            'this_year' => function() use ($Y, $yearRange) {
-                return $yearRange($Y);
+            'this_year' => function() use ($Y, $tz) {
+                return DateHelper::yearRange($Y, $tz);
             },
-            'last_year' => function() use ($Y, $yearRange) {
-                return $yearRange($Y - 1);
+            'last_year' => function() use ($Y, $tz) {
+                return DateHelper::yearRange($Y - 1, $tz);
             },
-            'next_year' => function() use ($Y, $yearRange) {
-                return $yearRange($Y + 1);
+            'next_year' => function() use ($Y, $tz) {
+                return DateHelper::yearRange($Y + 1, $tz);
             },
 
             // Seasons
             // The 'season' as defined above runs from Sep 1 -> May 31
-            'this_season' => function() use ($Y, $M, $seasonRange) {
-                return $seasonRange($Y, $M); // Sep 1 → May 31 spanning as needed
+            'this_season' => function() use ($Y, $M, $tz) {
+                return DateHelper::seasonRange($Y, $M, $tz); // Sep 1 → May 31 spanning as needed
             },
-            'next_season' => function() use ($Y, $M, $seasonRange) {
+            'next_season' => function() use ($Y, $M, $tz) {
                 $y = ($M >= 9) ? $Y + 1 : $Y; // next season’s start year
-                return $seasonRange($y, 9);   // force Sep branch
+                return DateHelper::seasonRange($y, 9, $tz);   // force Sep branch
             },
 
             // Other
-            'ytd' => function() use ($Y, $now, $dti) { // year-to-date, aka 'since_start_of_year'
-                 $start = $dti($Y, 1, 1, 0, 0, 0);
+            'ytd' => function() use ($Y, $now, $tz) { // year-to-date, aka 'since_start_of_year'
+                 $start = new DateTimeImmutable(sprintf('%04d-01-01 00:00:00', $Y), $tz);
                  $end = $now->setTime(23, 59, 59);
                  return ['start' => $start, 'end' => $end];
             },
             'until_today' => function() use ($now) {
                 $end = $now->setTime(23, 59, 59);
                 return ['start' => null, 'end' => $end];
+            },
+            'today_onward' => function() use ($now) {
+                $start = $now->setTime(0, 0, 0);
+                $end = $start->modify('+10 years')->setTime(23, 59, 59);
+                return ['start' => $start, 'end' => $end];
+            },
+            'upcoming' => function() use ($now) {
+                $start = $now->setTime(0, 0, 0);
+                $end = $start->modify('+6 days')->setTime(23, 59, 59);
+                return ['start' => $start, 'end' => $end];
             },
         ];
     }
