@@ -31,6 +31,9 @@ use atc\WXC\ACF\BlockRegistrar;
 
 final class Plugin implements PluginContext
 {
+    /** Option storing a hash of the rewrite-relevant post type config. */
+    private const REWRITE_HASH_OPTION = 'wxc_rewrite_hash';
+    
     private static ?self $instance = null;
     protected bool $booted = false;
 
@@ -218,6 +221,10 @@ final class Plugin implements PluginContext
         // Register Custom Taxonomies for active modules
         TaxonomyRegistrar::register();                           // add_action('init', bootstrap, BootOrder::TAXONOMY)
 
+        // Flush rewrites once whenever routable post types change.
+        // wp_loaded fires after init completes, so every CPT, taxonomy and add_rewrite_rule() is in place.
+        add_action( 'wp_loaded', [ $this, 'maybeFlushRewriteRules' ] );
+        
         // Seed subtype terms
         //SubtypeTermSeeder::register();                           // add_action('init', seed, BootOrder::TERM_SEED)
 
@@ -567,21 +574,61 @@ final class Plugin implements PluginContext
 		return $use_custom_caps;
 	}
 
-    protected static function activate(): void {
-       flush_rewrite_rules();
+    /********************/
+
+    /**
+     * Flushes rewrite rules when the active post types or their rewrite
+     * args differ from those used for the last flush.
+     *
+     * Hooked to wp_loaded so rules are regenerated only after all CPTs,
+     * taxonomies and custom rewrite rules have been registered on init.
+     *
+     * @return void
+     */
+    public function maybeFlushRewriteRules(): void
+    {
+        $hash = $this->getRewriteHash();
+
+        if ( get_option( self::REWRITE_HASH_OPTION ) === $hash ) {
+            return;
+        }
+
+        flush_rewrite_rules( false ); // Soft flush: CPT rules live in the DB, not .htaccess.
+        update_option( self::REWRITE_HASH_OPTION, $hash, true );
+        Logger::debug( 'Rewrite rules flushed: post type config changed.', 'wxc' );
     }
 
-    protected static function deactivate(): void {
-       flush_rewrite_rules();
+    /**
+     * Builds a hash of each active post type's slug and rewrite args.
+     *
+     * @return string
+     */
+    private function getRewriteHash(): string
+    {
+        $rewrites = [];
+
+        foreach ( $this->getActivePostTypeSlugs() as $slug ) {
+            $rewrites[ $slug ] = get_post_type_object( $slug )?->rewrite;
+        }
+
+        ksort( $rewrites );
+
+        return md5( (string) wp_json_encode( $rewrites ) );
     }
 
-    /*
-	register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
-	register_activation_hook( __FILE__, 'wxc_flush_rewrites' );
-	function wxc_flush_rewrites() {
-		// call your CPT registration function here (it should also be hooked into 'init')
-		myplugin_custom_post_types_registration();
-		flush_rewrite_rules();
-	}
-	*/
+    /**
+     * Deactivation handler.
+     *
+     * Clears the stored hash so reactivation triggers a flush, and deletes
+     * the stored rules so WP regenerates them on the next request, when
+     * WXC's CPTs are no longer registered. (Calling flush_rewrite_rules()
+     * here would rebuild the rules with the CPTs still in place.)
+     *
+     * @return void
+     */
+    public static function deactivate(): void
+    {
+        delete_option( self::REWRITE_HASH_OPTION );
+        delete_option( 'rewrite_rules' );
+    }
 }

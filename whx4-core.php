@@ -4,7 +4,7 @@
  * Description:       A WordPress plugin for core functionality used by WHx4, Bkkp, SDG, etc.
  * Dependencies:      
  * Requires Plugins:  advanced-custom-fields-pro
- * Version:           1.260915
+ * Version:           1.260925
  * Author:            atc
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -106,11 +106,14 @@ add_filter( 'wxc_events_post_type_slug', function() {
 });
 */
 // Deactivation
-register_deactivation_hook( __FILE__, function() {
+/*register_deactivation_hook( __FILE__, function() {
     $plugin = Plugin::getInstance();
     // WIP: cleanup on deactivation
     //$plugin->removePostTypeCapabilities();
 });
+*/
+
+register_deactivation_hook( __FILE__, [ \atc\WXC\Plugin::class, 'deactivate' ] );
 
 // =============================================================================
 // Global Wrapper Functions
