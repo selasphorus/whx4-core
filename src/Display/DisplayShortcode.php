@@ -33,7 +33,7 @@ final class DisplayShortcode implements ShortcodeInterface
 
     public function render(array $atts = [], string $content = '', string $tag = ''): string
     {
-        $logCtx = ['shortcodes', 'wip'];
+        $logCtx = ['shortcodes', 'display'];
         //Logger::debug( 'shortcode atts', $atts, $logCtx );
         
         $atts = shortcode_atts(self::defaults(), $atts, $tag);
@@ -148,7 +148,7 @@ final class DisplayShortcode implements ShortcodeInterface
     
     private function query(array $atts): array
 	{
-		$logCtx = ['shortcodes', 'wip'];
+		$logCtx = ['shortcodes', 'display'];
 		
 		// Resolve 'category' to the handler's default taxonomy
 		if (!empty($atts['category']) && empty($atts['taxonomy'])) {

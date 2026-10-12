@@ -47,7 +47,7 @@ final class PostQuery
     // TODO: consider pros/cons of making this a static function
     public function find(array $params): array
     {
-        $logCtx = ['wxc', 'query', 'wip'];
+        $logCtx = ['wxc', 'query'];
         //Logger::debug( 'params', $params, $logCtx );
         
         // First, ensure normalized contract

@@ -6,6 +6,7 @@ namespace atc\WXC\Templates;
 
 use atc\WXC\App;
 use atc\WXC\Logger;
+use atc\WXC\PostTypes\PostTypeHandler;
 use atc\WXC\Templates\ViewKind;
 use atc\WXC\Utils\Text;
 use atc\WXC\Utils\ClassInfo;
@@ -120,6 +121,7 @@ final class ViewLoader
         $kind        = Text::slugify($specs['kind'] ?? '');
         $module      = Text::slugify($specs['module'] ?? '');
         $postType    = Text::slugify($specs['post_type'] ?? '');
+        $postTypeDir = $postType !== '' ? self::resolvePostTypeDir($postType) : '';
         $allowTheme  = $specs['allow_theme'] ?? true;
         //Logger::debug( 'kind: ' . $kind . '' );
         //Logger::debug( 'module: ' . $module . '' );
@@ -133,7 +135,7 @@ final class ViewLoader
                     rtrim($root, '/'),
                     'wxc',          // theme subdir
                     $module,
-                    $postType,
+                    strtolower($postTypeDir),
                     $view,
                     true            // include module-specific permutations
                 );
@@ -144,12 +146,8 @@ final class ViewLoader
         if ($module !== '' && isset(self::$moduleViewRoots[$module])) {
             //Logger::debug( 'self::moduleViewRoots[module]: ' . self::$moduleViewRoots[$module] . '' );
             $root = rtrim(self::$moduleViewRoots[$module], '/');
-            if ($postType !== '') {
-                if ( $postType == "whx4_event" ) { $postType = "event"; } // Tmp WIP
-                $postTypePath = "{$root}/" . Text::studly($postType) . "/{$view}.php";
-                //$paths[] = "{$root}/" . Text::studly($postType) . "/{$view}.php"; // Within the Modules dir structure, postTypes are studly caps to match class names
-                $paths[] = $postTypePath;
-                //Logger::debug( 'postTypePath: ' . $postTypePath . '' );
+            if ($postTypeDir !== '') {
+                $paths[] = "{$root}/{$postTypeDir}/{$view}.php";
             }
             $paths[] = "{$root}/{$view}.php";
         }
@@ -197,6 +195,25 @@ final class ViewLoader
         }
 
         $list[] = "{$base}/{$view}.php";
+    }
+    
+    /**
+     * Resolve a post type identifier to its view directory name.
+     *
+     * WXC-managed post types map to their handler's short class name
+     * (e.g. 'whx4_event' => 'Event'), keeping view paths independent of
+     * post type prefixes. Unmanaged types fall back to StudlyCase.
+     *
+     * @param string $postType Post type identifier.
+     * @return string Directory name, e.g. 'Event'.
+     */
+    private static function resolvePostTypeDir(string $postType): string
+    {
+        $class = PostTypeHandler::getHandlerClassForPostType($postType);
+
+        return $class !== null
+            ? ClassInfo::getShortName($class)
+            : Text::studly($postType);
     }
 
     ///////

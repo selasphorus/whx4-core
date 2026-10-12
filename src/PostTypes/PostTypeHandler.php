@@ -602,8 +602,6 @@ abstract class PostTypeHandler extends BaseHandler
 			$preparedData = $handler->prepareViewData();
 			$vars = array_merge($vars, $preparedData);
 		}
-		if ( $postType == "whx4_event" ) { $postType = "event"; Logger::debug( '[PostTypeHandler] postType corrected to: ' . $postType, 'wxc' ); } // Tmp WIP
-	
 		$extra = ViewLoader::renderToString( 'content',
 			// vars
 			$vars,
